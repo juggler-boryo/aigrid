@@ -1,0 +1,3 @@
+[submodule "server/credentials"]
+	path = server/credentials
+	url = git@github.com:juggler-boryo/credentials.git
