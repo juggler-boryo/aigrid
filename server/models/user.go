@@ -1,6 +1,7 @@
 package models
 
 type User struct {
+	// required
 	Uid string `json:"uid"`
 	// optionals
 	Username       string `json:"username"`
