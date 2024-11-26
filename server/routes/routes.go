@@ -12,11 +12,12 @@ import (
 func SetupRouter() http.Handler {
 	router := mux.NewRouter()
 	// Public routes
-	router.HandleFunc("/", handlers.HelloHandler).Methods("GET")
+	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
 	// Protected routes
 	protectedRouter := router.PathPrefix("").Subrouter()
 	protectedRouter.Use(middleware.TokenRequired)
-	// protectedRouter.HandleFunc("/", handlers.HelloHandler).Methods("GET")
+	// TODO: tokenいれるなら、uidはパラメタに存在する必要はない。しかし脳死なのでこうしておく。誰か直してくださいお願いします
+	protectedRouter.HandleFunc("/users/{uid}", handlers.UpdateUserHandler).Methods("PUT")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

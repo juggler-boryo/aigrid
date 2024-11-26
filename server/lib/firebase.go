@@ -26,11 +26,6 @@ func InitializeFirebase(credPath string) error {
 	return nil
 }
 
-func CreateUser(uid string) error {
-	_, err := DB.Collection("users").Doc(uid).Set(context.Background(), map[string]interface{}{})
-	return err
-}
-
 func GetUser(uid string) (map[string]interface{}, bool, error) {
 	doc, err := DB.Collection("users").Doc(uid).Get(context.Background())
 	if err != nil {
@@ -40,4 +35,10 @@ func GetUser(uid string) (map[string]interface{}, bool, error) {
 		return nil, false, nil
 	}
 	return doc.Data(), true, nil
+}
+
+// TODO: 危なそう
+func UpsertUser(uid string, data map[string]interface{}) error {
+	_, err := DB.Collection("users").Doc(uid).Set(context.Background(), data)
+	return err
 }
