@@ -33,16 +33,18 @@ const OfflineList = () => {
       {loading ? (
         <CircularProgress />
       ) : (
-        <ul>
+        <Box>
           {offlineList.map((item, index) => (
-            <li key={index}>
+            <Box key={index} sx={{ mb: 1 }}>
               <UserProfile uid={item} />
-            </li>
+            </Box>
           ))}
           {offlineList.length === 0 && (
-            <Box>誰もいません...(jumango外出中⭐️)</Box>
+            <Typography level="body-lg">
+              誰もいません...(jumango外出中⭐️)
+            </Typography>
           )}
-        </ul>
+        </Box>
       )}
       {!loading && <InOutNotify offlineList={offlineList} />}
     </Box>

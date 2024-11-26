@@ -18,7 +18,7 @@ const UserProfile = ({ uid }: UserProfileProps) => {
     return <CircularProgress />;
   }
 
-  return <Typography>{user?.username || "anonymous"}</Typography>;
+  return <Typography level="h3">❤️ {user?.username || "anonymous"}</Typography>;
 };
 
 export default UserProfile;

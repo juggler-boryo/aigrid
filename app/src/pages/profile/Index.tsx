@@ -51,6 +51,13 @@ const Profile = () => {
     }
   };
 
+  const onLogout = () => {
+    if (window.confirm("ログアウトしますか？")) {
+      auth.signOut();
+      navigate("/login");
+    }
+  };
+
   useEffect(() => {
     if (me) {
       setUsername(me.username || "");
@@ -108,6 +115,11 @@ const Profile = () => {
       <Button type="submit" variant="solid">
         プロフィールを更新
       </Button>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button color="danger" onClick={onLogout}>
+          ログアウト
+        </Button>
+      </Box>
     </Box>
   );
 };
