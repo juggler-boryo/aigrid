@@ -45,7 +45,7 @@ const UserProfile = ({ uid }: UserProfileProps) => {
   }
 
   return (
-    <Box mr={1}>
+    <Box mr={2}>
       <Badge badgeContent={min2Str(inMinutes || 0)} variant="outlined" showZero>
         <Chip variant="outlined">
           <Typography level="title-md">

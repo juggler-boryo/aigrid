@@ -15,6 +15,7 @@ import { User } from "../../types/user";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
+import CheckAuth from "../CheckAuth";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -72,60 +73,62 @@ const Profile = () => {
   }
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        maxWidth: 400,
-        mx: "auto",
-        p: 2,
-      }}
-    >
-      <Card>
-        <Box display="flex" alignItems="center" gap={2}>
-          <FaRegUser />
-          <Typography level="title-lg">プロフィール設定</Typography>
-        </Box>
-      </Card>
-      <FormControl>
-        <FormLabel>ユーザー名</FormLabel>
-        <Input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="ユーザー名を入力"
-        />
-      </FormControl>
+    <CheckAuth>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          maxWidth: 400,
+          mx: "auto",
+          p: 2,
+        }}
+      >
+        <Card>
+          <Box display="flex" alignItems="center" gap={2}>
+            <FaRegUser />
+            <Typography level="title-lg">プロフィール設定</Typography>
+          </Box>
+        </Card>
+        <FormControl>
+          <FormLabel>ユーザー名</FormLabel>
+          <Input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="ユーザー名を入力"
+          />
+        </FormControl>
 
-      <FormControl disabled>
-        <FormLabel>アバター画像URL</FormLabel>
-        <Input
-          value={avatarImageUrl}
-          onChange={(e) => setAvatarImageUrl(e.target.value)}
-          placeholder="アバター画像URLを入力"
-        />
-      </FormControl>
+        <FormControl disabled>
+          <FormLabel>アバター画像URL</FormLabel>
+          <Input
+            value={avatarImageUrl}
+            onChange={(e) => setAvatarImageUrl(e.target.value)}
+            placeholder="アバター画像URLを入力"
+          />
+        </FormControl>
 
-      <FormControl disabled>
-        <FormLabel>Suica ID</FormLabel>
-        <Input
-          value={suicaId}
-          onChange={(e) => setSuicaId(e.target.value)}
-          placeholder="Suica IDを入力"
-        />
-      </FormControl>
+        <FormControl disabled>
+          <FormLabel>Suica ID</FormLabel>
+          <Input
+            value={suicaId}
+            onChange={(e) => setSuicaId(e.target.value)}
+            placeholder="Suica IDを入力"
+          />
+        </FormControl>
 
-      <Button type="submit" variant="solid">
-        プロフィールを更新
-      </Button>
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button color="danger" onClick={onLogout} variant="outlined">
-          ログアウト
+        <Button type="submit" variant="solid">
+          更新
         </Button>
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button color="danger" onClick={onLogout} variant="outlined">
+            ログアウト
+          </Button>
+        </Box>
       </Box>
-    </Box>
+    </CheckAuth>
   );
 };
 
