@@ -6,7 +6,7 @@ import { GetUser } from "../apis/user";
 import { User } from "../types/user";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../libs/firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 
 const Index = () => {
@@ -79,6 +79,9 @@ const Index = () => {
             }}
           />
         </Box>
+        <Link to="https://github.com/juggler-boryo/aigrid">
+          みんなでaigridを作ろう
+        </Link>
       </Box>
     </CheckAuth>
   );

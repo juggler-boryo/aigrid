@@ -17,7 +17,7 @@ export const GetUser = async (uid: string): Promise<User> => {
       return {} as User;
     }
     return data;
-  } catch (error) {
+  } catch {
     return {} as User;
   }
 };
@@ -37,7 +37,7 @@ export const UpdateUser = async (
       body: JSON.stringify(user),
     });
     return response.ok;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
