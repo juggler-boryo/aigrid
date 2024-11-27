@@ -11,7 +11,6 @@ import { getDatabase, ref, onValue } from "firebase/database";
 import { app } from "../../libs/firebase"; // firebase.tsからインポート
 import InOutNotify from "./InOutNotify";
 import UserProfile from "../UserProfile";
-import { Home } from "@mui/icons-material";
 
 const database = getDatabase(app);
 
