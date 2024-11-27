@@ -33,9 +33,9 @@ const UserProfile = ({ uid }: UserProfileProps) => {
   const { data: inMinutes, isLoading: inMinutesLoading } = useQuery<number>({
     queryKey: ["inMinutes", uid],
     queryFn: async () => {
-      if (!user?.uid) return 0;
-      const accessToken = await user.getIdToken();
-      return await getInMinutes(user.uid, accessToken);
+      const accessToken = await user?.getIdToken();
+      if (!accessToken) return 0;
+      return await getInMinutes(uid, accessToken);
     },
     enabled: !!uid,
   });

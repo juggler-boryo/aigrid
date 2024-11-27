@@ -69,6 +69,13 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// validate
+	// if user name is more than 20 characters, return error
+	if len(user.Username) > 20 {
+		http.Error(w, "username is too long", http.StatusBadRequest)
+		return
+	}
+
 	userData := map[string]interface{}{
 		"username":         user.Username,
 		"avatar_image_url": user.AvatarImageUrl,

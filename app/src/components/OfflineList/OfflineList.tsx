@@ -38,7 +38,7 @@ const OfflineList = () => {
     >
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} alignItems={"center"}>
-          <Typography level={"title-lg"}>in ジャグラ墓料</Typography>
+          <Typography level={"title-lg"}>in ジャグラー墓料</Typography>
         </Box>
         <Button disabled size={"sm"} variant="outlined">
           <FaChartBar />
@@ -50,7 +50,7 @@ const OfflineList = () => {
       {loading ? (
         <CircularProgress />
       ) : (
-        <Box gap={1} display={"flex"}>
+        <Box gap={1} display={"flex"} flexWrap={"wrap"}>
           {offlineList.map((item, index) => (
             <div key={index}>
               <UserProfile uid={item} />
