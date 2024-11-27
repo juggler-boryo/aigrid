@@ -20,7 +20,7 @@ const Index = () => {
   return (
     <CheckAuth>
       <Box gap={2} display="flex" flexDirection="column" alignItems="center">
-        <Box mt={2} gap={2} display={"flex"} flexDirection={"row"}>
+        <Box mt={2}>
           <Button
             variant="outlined"
             onClick={() => {

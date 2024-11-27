@@ -1,9 +1,17 @@
-import { Box, Typography, CircularProgress } from "@mui/joy";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Card,
+  Divider,
+  Chip,
+} from "@mui/joy";
 import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { app } from "../../libs/firebase"; // firebase.tsからインポート
 import InOutNotify from "./InOutNotify";
 import UserProfile from "../UserProfile";
+import { Home } from "@mui/icons-material";
 
 const database = getDatabase(app);
 
@@ -23,31 +31,34 @@ const OfflineList = () => {
   }, []);
 
   return (
-    <Box
-      style={{
-        width: "100%",
-        maxWidth: "600px",
+    <Card
+      sx={{
+        width: "90%",
       }}
     >
-      <Typography level="h3">- 現地リスト</Typography>
+      <Typography level={"title-lg"}>in ジャグラ墓料</Typography>
+      <Box m={0.5}>
+        <Divider />
+      </Box>
       {loading ? (
         <CircularProgress />
       ) : (
-        <Box>
+        <Box gap={1} display={"flex"}>
           {offlineList.map((item, index) => (
-            <Box key={index} sx={{ mb: 1 }}>
+            <Chip variant="soft" key={index}>
               <UserProfile uid={item} />
-            </Box>
+            </Chip>
           ))}
           {offlineList.length === 0 && (
-            <Typography level="body-lg">
-              誰もいません...(jumango外出中⭐️)
-            </Typography>
+            <Typography level="title-md">誰もいません</Typography>
           )}
         </Box>
       )}
+      <Box m={0.5}>
+        <Divider />
+      </Box>
       {!loading && <InOutNotify offlineList={offlineList} />}
-    </Box>
+    </Card>
   );
 };
 
