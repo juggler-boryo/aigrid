@@ -1,4 +1,4 @@
-import { CircularProgress } from "@mui/joy";
+import { Card, CircularProgress } from "@mui/joy";
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import { GetUser, UpdateUser } from "../../apis/user";
 import { User } from "../../types/user";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaRegUser } from "react-icons/fa";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -83,8 +84,12 @@ const Profile = () => {
         p: 2,
       }}
     >
-      <Typography level="h4">プロフィール設定</Typography>
-
+      <Card>
+        <Box display="flex" alignItems="center" gap={2}>
+          <FaRegUser />
+          <Typography level="title-lg">プロフィール設定</Typography>
+        </Box>
+      </Card>
       <FormControl>
         <FormLabel>ユーザー名</FormLabel>
         <Input
@@ -116,7 +121,7 @@ const Profile = () => {
         プロフィールを更新
       </Button>
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button color="danger" onClick={onLogout}>
+        <Button color="danger" onClick={onLogout} variant="outlined">
           ログアウト
         </Button>
       </Box>

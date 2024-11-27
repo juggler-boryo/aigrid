@@ -32,7 +32,7 @@ const Index = () => {
           p={1}
         >
           <Box mr={2} ml={1}>
-            <Typography level={"title-lg"}>AIGRID</Typography>
+            <Typography level={"title-lg"}>aigrid</Typography>
           </Box>
           <Divider orientation="vertical" />
           <Badge
@@ -59,15 +59,26 @@ const Index = () => {
           </Badge>
         </Box>
         <OfflineList />
-        <Box
-          component="img"
-          src="/catg.gif"
-          alt="Cat GIF"
-          sx={{
-            maxWidth: "100%",
-            height: "auto",
-          }}
-        />
+        <Box display="flex" flexDirection="row" gap={2} justifyContent="center">
+          <Box
+            component="img"
+            src="/catg.gif"
+            alt="Cat GIF"
+            sx={{
+              maxWidth: "50%",
+              height: "auto",
+            }}
+          />
+          <Box
+            component="img"
+            src="/catg2.gif"
+            alt="Cat GIF 2"
+            sx={{
+              maxWidth: "50%",
+              height: "auto",
+            }}
+          />
+        </Box>
       </Box>
     </CheckAuth>
   );
