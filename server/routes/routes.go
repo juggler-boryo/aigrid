@@ -18,7 +18,8 @@ func SetupRouter() http.Handler {
 	protectedRouter.Use(middleware.TokenRequired)
 	// TODO: tokenいれるなら、uidはパラメタに存在する必要はない。しかし脳死なのでこうしておく。誰か直してくださいお願いします
 	protectedRouter.HandleFunc("/users/{uid}", handlers.UpdateUserHandler).Methods("PUT")
-
+	protectedRouter.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
+	protectedRouter.HandleFunc("/inout/{uid}/minutes", handlers.GetInMinutesHandler).Methods("GET")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

@@ -3,6 +3,7 @@ import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../../libs/firebase";
+import { postInout } from "../../apis/inout";
 
 interface Props {
   offlineList: Array<string>;
@@ -19,6 +20,8 @@ const InOutNotify = ({ offlineList }: Props) => {
     const newList = [...offlineList, user.uid];
     try {
       await set(ref(database, "offlineList"), JSON.stringify(newList));
+      const accessToken = await user.getIdToken();
+      await postInout(user.uid, true, accessToken);
     } catch (error) {
       console.error("Error entering:", error);
     }
@@ -29,6 +32,8 @@ const InOutNotify = ({ offlineList }: Props) => {
     const newList = offlineList.filter((uid) => uid !== user.uid);
     try {
       await set(ref(database, "offlineList"), JSON.stringify(newList));
+      const accessToken = await user.getIdToken();
+      await postInout(user.uid, false, accessToken);
     } catch (error) {
       console.error("Error exiting:", error);
     }

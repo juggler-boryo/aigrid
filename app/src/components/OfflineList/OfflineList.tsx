@@ -1,14 +1,7 @@
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Card,
-  Divider,
-  Chip,
-} from "@mui/joy";
+import { Box, Typography, CircularProgress, Card, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
-import { app } from "../../libs/firebase"; // firebase.tsからインポート
+import { app } from "../../libs/firebase";
 import InOutNotify from "./InOutNotify";
 import UserProfile from "../UserProfile";
 
@@ -44,9 +37,9 @@ const OfflineList = () => {
       ) : (
         <Box gap={1} display={"flex"}>
           {offlineList.map((item, index) => (
-            <Chip variant="soft" key={index}>
+            <div key={index}>
               <UserProfile uid={item} />
-            </Chip>
+            </div>
           ))}
           {offlineList.length === 0 && (
             <Typography level="title-md">誰もいません</Typography>

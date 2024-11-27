@@ -52,7 +52,6 @@ const Index = () => {
                   navigate("/profile");
                 }}
                 loading={isMeLoading}
-                start
               >
                 <FaRegUser />
               </IconButton>
@@ -60,6 +59,15 @@ const Index = () => {
           </Badge>
         </Box>
         <OfflineList />
+        <Box
+          component="img"
+          src="/catg.gif"
+          alt="Cat GIF"
+          sx={{
+            maxWidth: "100%",
+            height: "auto",
+          }}
+        />
       </Box>
     </CheckAuth>
   );
