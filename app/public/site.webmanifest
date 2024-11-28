@@ -3,12 +3,12 @@
     "short_name": "aigrid",
     "icons": [
       {
-        "src": "/iconv1.png",
+        "src": "/icon.png",
         "sizes": "192x192",
         "type": "image/png"
       },
       {
-        "src": "/iconv1.png",
+        "src": "/icon.png",
         "sizes": "512x512",
         "type": "image/png"
       }
