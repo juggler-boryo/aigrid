@@ -1,7 +1,6 @@
-import { Box, Divider } from "@mui/joy";
+import { Box, Chip, Divider, Typography } from "@mui/joy";
 import CheckAuth from "./CheckAuth";
 import OfflineList from "../components/OfflineList/OfflineList";
-import { Link } from "react-router-dom";
 import TopBar from "../components/TopBar";
 
 const Index = () => {
@@ -33,9 +32,14 @@ const Index = () => {
             }}
           />
         </Box>
-        <Link to="https://github.com/juggler-boryo/aigrid">
-          みんなでaigridを作ろう
-        </Link>
+        <Chip
+          variant="outlined"
+          onClick={() => {
+            window.open("https://github.com/juggler-boryo/aigrid", "_blank");
+          }}
+        >
+          <Typography level="title-sm">みんなでaigridを作ろう</Typography>
+        </Chip>
       </Box>
     </CheckAuth>
   );

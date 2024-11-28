@@ -28,7 +28,7 @@ const TopBar = () => {
       p={1}
     >
       <Box mr={2} ml={1}>
-        <Typography level={"title-lg"}>aigrid</Typography>
+        <Typography level={"body-lg"}>aigrid</Typography>
       </Box>
       <Divider orientation="vertical" />
       <Badge
