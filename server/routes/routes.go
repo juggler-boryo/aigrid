@@ -19,6 +19,7 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/users/{uid}", handlers.UpdateUserHandler).Methods("PUT")
 	protectedRouter.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
 	protectedRouter.HandleFunc("/inout/{uid}/minutes", handlers.GetInMinutesHandler).Methods("GET")
+	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

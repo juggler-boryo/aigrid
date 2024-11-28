@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"aigrid/server/models"
 	"context"
 	"time"
 
@@ -74,4 +75,26 @@ func GetUserInMinutes(uid string) (int, error) {
 	minutes := time.Since(createdAt).Minutes()
 
 	return int(minutes), nil
+}
+
+func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
+	iter, err := DB.Collection("inouts").Where("uid", "==", uid).OrderBy("created_at", firestore.Desc).Documents(context.Background()).GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(iter) == 0 {
+		return []models.Inout{}, nil
+	}
+
+	inouts := make([]models.Inout, len(iter))
+	for i, doc := range iter {
+		data := doc.Data()
+		inouts[i] = models.Inout{
+			Uid:       data["uid"].(string),
+			IsIn:      data["is_in"].(bool),
+			CreatedAt: data["created_at"].(time.Time),
+		}
+	}
+	return inouts, nil
 }
