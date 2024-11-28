@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
 	"aigrid/server/lib"
@@ -14,7 +16,6 @@ type InoutRequest struct {
 	IsIn bool `json:"isIn"`
 }
 
-// PostInoutHandler handles recording entry and exit actions to Firestore.
 func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uid := vars["uid"]
@@ -29,10 +30,30 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Record the inout action to Firestore
+	// Firestoreに入退室記録を保存する
 	if err := lib.RecordInout(uid, inoutReq.IsIn); err != nil {
-		http.Error(w, "Failed to record inout action", http.StatusInternalServerError)
+		http.Error(w, "入退室記録の保存に失敗しました", http.StatusInternalServerError)
 		return
+	}
+
+	// Discordに通知する
+	userData, exists, err := lib.GetUser(uid)
+	if err != nil {
+		http.Error(w, "Failed to get user data", http.StatusInternalServerError)
+		return
+	}
+	if exists {
+		username := ""
+		if v, ok := userData["username"].(string); ok && v != "" {
+			username = v
+		}
+		isIn := "入室"
+		if !inoutReq.IsIn {
+			isIn = "退室"
+		}
+		msg := fmt.Sprintf("%sが%sしたよ", username, isIn)
+		log.Println(msg)
+		lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
 	}
 
 	w.WriteHeader(http.StatusOK)
