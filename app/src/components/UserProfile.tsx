@@ -1,4 +1,11 @@
-import { Typography, CircularProgress, Badge, Chip, Box } from "@mui/joy";
+import {
+  Typography,
+  CircularProgress,
+  Badge,
+  Chip,
+  Box,
+  Avatar,
+} from "@mui/joy";
 import { useQuery } from "@tanstack/react-query";
 import { GetUser } from "../apis/user";
 import { User } from "../types/user";
@@ -54,22 +61,14 @@ const UserProfile = ({ uid }: UserProfileProps) => {
           onClick={() => {
             navigate(`/profile/${uid}`);
           }}
+          size="lg"
           sx={{ cursor: "pointer" }}
           startDecorator={
-            <Box
-              component="img"
-              src={userData?.avatarImageUrl ?? ""}
-              alt="avatar"
-              sx={{
-                width: 24,
-                height: 24,
-                borderRadius: "50%",
-              }}
-            />
+            <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
           }
         >
           <Typography level="title-md">
-            @{userData?.username || "anonymous"}
+            {userData?.username || "anonymous"}
           </Typography>
         </Chip>
       </Badge>

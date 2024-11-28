@@ -44,8 +44,8 @@ const ProfileSettings = () => {
       {
         uid: user.uid,
         username,
-        avatarImageUrl,
-        suicaId,
+        avatar_image_url: avatarImageUrl,
+        suica_id: suicaId,
       },
       accessToken
     );
@@ -71,6 +71,7 @@ const ProfileSettings = () => {
     try {
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
+      console.log(downloadURL);
       setAvatarImageUrl(downloadURL);
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -81,8 +82,8 @@ const ProfileSettings = () => {
   useEffect(() => {
     if (me) {
       setUsername(me.username || "");
-      setAvatarImageUrl(me.avatarImageUrl || "");
-      setSuicaId(me.suicaId || "");
+      setAvatarImageUrl(me.avatar_image_url || "");
+      setSuicaId(me.suica_id || "");
     }
   }, [me]);
 

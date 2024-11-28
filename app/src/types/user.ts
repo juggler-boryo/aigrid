@@ -3,6 +3,6 @@ export interface User {
   uid: string;
   // optionals
   username?: string;
-  avatarImageUrl?: string;
-  suicaId?: string;
+  avatar_image_url?: string;
+  suica_id?: string;
 }
