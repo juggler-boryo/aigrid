@@ -40,7 +40,7 @@ const InOutNotify = ({ offlineList }: Props) => {
   };
 
   return (
-    <Box gap={2} display={"flex"} sx={{ justifyContent: "center" }}>
+    <Box gap={2} display={"flex"} sx={{ justifyContent: "flex-end" }}>
       <Button color="primary" disabled={isMein} onClick={handleEnter} size="md">
         入室
       </Button>

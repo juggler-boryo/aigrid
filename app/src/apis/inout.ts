@@ -1,3 +1,4 @@
+import { Inout } from "../types/inout";
 import { Endpoint } from "./endpoint";
 
 export const postInout = async (
@@ -32,4 +33,17 @@ export const getInMinutes = async (
   });
   const data = await response.json();
   return data.minutes;
+};
+
+export const getInoutHistory = async (
+  uid: string,
+  accessToken: string
+): Promise<Inout[]> => {
+  const response = await fetch(`${Endpoint}inout/${uid}/history`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data.history;
 };

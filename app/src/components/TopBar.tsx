@@ -27,7 +27,19 @@ const TopBar = () => {
       borderRadius={"12px"}
       p={1}
     >
-      <Box mr={2} ml={1}>
+      <Box
+        mr={2}
+        ml={1}
+        onClick={() => navigate("/")}
+        sx={{
+          cursor: "pointer",
+          "&:hover": {
+            bgcolor: "neutral.softBg",
+          },
+          borderRadius: "6px",
+          px: 1,
+        }}
+      >
         <Typography level={"body-lg"}>aigrid</Typography>
       </Box>
       <Divider orientation="vertical" />

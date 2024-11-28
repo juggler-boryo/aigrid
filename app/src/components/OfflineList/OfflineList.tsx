@@ -40,9 +40,11 @@ const OfflineList = () => {
         <Box display={"flex"} alignItems={"center"}>
           <Typography level={"title-md"}>in ジャグラー墓料</Typography>
         </Box>
-        <Button disabled size={"sm"}>
-          <FaChartBar />
-        </Button>
+        <Box>
+          <Button disabled size={"sm"}>
+            <FaChartBar />
+          </Button>
+        </Box>
       </Box>
       <Box m={0.5}>
         <Divider />
