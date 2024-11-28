@@ -55,6 +55,18 @@ const UserProfile = ({ uid }: UserProfileProps) => {
             navigate(`/profile/${uid}`);
           }}
           sx={{ cursor: "pointer" }}
+          startDecorator={
+            <Box
+              component="img"
+              src={userData?.avatarImageUrl ?? ""}
+              alt="avatar"
+              sx={{
+                width: 24,
+                height: 24,
+                borderRadius: "50%",
+              }}
+            />
+          }
         >
           <Typography level="title-md">
             @{userData?.username || "anonymous"}

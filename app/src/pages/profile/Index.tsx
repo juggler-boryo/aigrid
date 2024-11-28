@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import CheckAuth from "../CheckAuth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../libs/firebase";
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
@@ -57,6 +59,22 @@ const ProfileSettings = () => {
     if (window.confirm("ログアウトしますか？")) {
       auth.signOut();
       navigate("/login");
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !user?.uid) return;
+
+    const file = e.target.files[0];
+    const storageRef = ref(storage, `thumbnails/${user.uid}.png`);
+
+    try {
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setAvatarImageUrl(downloadURL);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("画像のアップロードに失敗しました");
     }
   };
 
@@ -104,7 +122,15 @@ const ProfileSettings = () => {
           <FormLabel>アバター画像</FormLabel>
           <Box display="flex" alignItems="center" gap={2}>
             <Avatar src={avatarImageUrl} />
-            <Button variant="outlined">変更</Button>
+            <Button component="label" variant="outlined">
+              変更
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleImageUpload}
+              />
+            </Button>
           </Box>
         </FormControl>
 
