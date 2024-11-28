@@ -32,8 +32,8 @@ const TopBar = () => {
       </Box>
       <Divider orientation="vertical" />
       <Badge
-        badgeContent={me ? 0 : "!"}
-        color="danger"
+        badgeContent={isMeLoading ? 0 : me ? 0 : "!"}
+        color={isMeLoading ? "neutral" : "danger"}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -42,7 +42,7 @@ const TopBar = () => {
         <Box ml={2}>
           <IconButton
             variant="outlined"
-            color={me ? "neutral" : "danger"}
+            color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
             size="sm"
             onClick={() => {
               navigate("/profile");
