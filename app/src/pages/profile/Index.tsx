@@ -1,4 +1,4 @@
-import { Card, CircularProgress, Divider } from "@mui/joy";
+import { Avatar, Card, CircularProgress, Divider } from "@mui/joy";
 import {
   Box,
   Button,
@@ -100,14 +100,12 @@ const ProfileSettings = () => {
             placeholder="ユーザー名を入力"
           />
         </FormControl>
-
-        <FormControl disabled>
-          <FormLabel>アバター画像URL</FormLabel>
-          <Input
-            value={avatarImageUrl}
-            onChange={(e) => setAvatarImageUrl(e.target.value)}
-            placeholder="アバター画像URLを入力"
-          />
+        <FormControl>
+          <FormLabel>アバター画像</FormLabel>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Avatar src={avatarImageUrl} />
+            <Button variant="outlined">変更</Button>
+          </Box>
         </FormControl>
 
         <FormControl disabled>
