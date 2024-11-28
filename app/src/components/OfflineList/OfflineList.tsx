@@ -33,14 +33,14 @@ const OfflineList = () => {
   return (
     <Card
       sx={{
-        width: "90%",
+        width: "85%",
       }}
     >
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} alignItems={"center"}>
-          <Typography level={"title-lg"}>in ジャグラー墓料</Typography>
+          <Typography level={"title-md"}>in ジャグラー墓料</Typography>
         </Box>
-        <Button disabled size={"sm"} variant="outlined">
+        <Button disabled size={"sm"}>
           <FaChartBar />
         </Button>
       </Box>

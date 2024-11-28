@@ -1,4 +1,4 @@
-import { Card, CircularProgress } from "@mui/joy";
+import { Card, CircularProgress, Divider } from "@mui/joy";
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import CheckAuth from "../CheckAuth";
 
-const Profile = () => {
+const ProfileSettings = () => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const { data: me, isLoading } = useQuery<User>({
@@ -119,6 +119,10 @@ const Profile = () => {
           />
         </FormControl>
 
+        <Box m={0.5}>
+          <Divider />
+        </Box>
+
         <Button type="submit" variant="solid">
           更新
         </Button>
@@ -132,4 +136,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileSettings;

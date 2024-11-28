@@ -5,6 +5,7 @@ import { User } from "../types/user";
 import { getInMinutes } from "../apis/inout";
 import { auth } from "../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 interface UserProfileProps {
   uid: string;
@@ -23,6 +24,7 @@ const min2Str = (minutes: number) => {
 };
 
 const UserProfile = ({ uid }: UserProfileProps) => {
+  const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const { data: userData, isLoading: isUserDataLoading } = useQuery<User>({
     queryKey: ["user", uid],
@@ -47,7 +49,13 @@ const UserProfile = ({ uid }: UserProfileProps) => {
   return (
     <Box mr={2}>
       <Badge badgeContent={min2Str(inMinutes || 0)} variant="outlined" showZero>
-        <Chip variant="outlined">
+        <Chip
+          variant="outlined"
+          onClick={() => {
+            navigate(`/profile/${uid}`);
+          }}
+          sx={{ cursor: "pointer" }}
+        >
           <Typography level="title-md">
             @{userData?.username || "anonymous"}
           </Typography>

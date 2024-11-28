@@ -3,9 +3,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./pages/Index";
 import Login from "./pages/login/Index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Profile from "./pages/profile/Index";
+import ProfileSettings from "./pages/profile/Index";
 import "./global.css";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
+import Profile from "./pages/profile/uid/Index";
 const queryClient = new QueryClient();
 
 const theme = extendTheme({
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   },
   {
     path: "/profile",
+    element: <ProfileSettings />,
+  },
+  {
+    path: "/profile/:uid",
     element: <Profile />,
   },
 ]);
