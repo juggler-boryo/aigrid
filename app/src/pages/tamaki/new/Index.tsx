@@ -8,7 +8,6 @@ import {
   Option,
   Textarea,
   Typography,
-  Chip,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -92,7 +91,7 @@ const TamakiNew = () => {
             <FormLabel>種類</FormLabel>
             <Select
               value={kind}
-              onChange={(e, value) => setKind(Number(value))}
+              onChange={(_, value) => setKind(Number(value))}
               placeholder="たまきの種類を選択"
             >
               <Option value={1}>風呂</Option>
