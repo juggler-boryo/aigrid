@@ -14,6 +14,11 @@ const theme = extendTheme({
     display: "Iosevka Aile Iaso, Transparent",
     body: "Iosevka Aile Iaso, Transparent",
   },
+  radius: {
+    sm: "16px",
+    md: "16px",
+    lg: "16px",
+  },
 });
 
 const router = createBrowserRouter([

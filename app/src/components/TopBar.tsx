@@ -49,12 +49,16 @@ const TopBar = () => {
           vertical: "top",
           horizontal: "right",
         }}
+        sx={{}}
       >
         <Box ml={2}>
           <IconButton
             variant="outlined"
             color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
             size="sm"
+            sx={{
+              borderRadius: "12px",
+            }}
             onClick={() => {
               navigate("/profile");
             }}
