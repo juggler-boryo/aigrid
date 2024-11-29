@@ -33,9 +33,9 @@ const OfflineList = () => {
       ) : (
         <Box gap={1} display={"flex"} flexWrap={"wrap"}>
           {offlineList.map((item, index) => (
-            <div key={index}>
+            <Box key={index}>
               <UserProfile uid={item} />
-            </div>
+            </Box>
           ))}
           {offlineList.length === 0 && (
             <Typography level="title-md">誰もいません</Typography>
