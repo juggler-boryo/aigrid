@@ -28,8 +28,7 @@ const TopBar = () => {
       p={1}
     >
       <Box
-        mr={2}
-        ml={1}
+        mr={1}
         onClick={() => navigate("/")}
         sx={{
           cursor: "pointer",
