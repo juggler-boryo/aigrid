@@ -98,9 +98,11 @@ const ProfileSettings = () => {
 
   return (
     <CheckAuth>
-      <Box width={"90%"} sx={{mx: "auto", gap: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+      <Box sx={{mx: "auto", gap: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
         <TopBar/>
-        <Divider/>
+        <Box width={"90%"}>
+          <Divider/>
+        </Box>
       </Box>
         
       <Box
