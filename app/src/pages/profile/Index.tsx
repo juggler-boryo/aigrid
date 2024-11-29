@@ -18,6 +18,7 @@ import { FaRegUser } from "react-icons/fa";
 import CheckAuth from "../CheckAuth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../libs/firebase";
+import TopBar from "../../components/TopBar";
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
@@ -97,6 +98,11 @@ const ProfileSettings = () => {
 
   return (
     <CheckAuth>
+      <Box width={"90%"} sx={{mx: "auto", gap: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+        <TopBar/>
+        <Divider/>
+      </Box>
+        
       <Box
         component="form"
         onSubmit={handleSubmit}
