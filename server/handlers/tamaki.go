@@ -18,12 +18,32 @@ type TamakiEvent1DTO struct {
 }
 
 type TamakiEvent1 struct {
-	ID               string    `json:"id"`
-	Kind             int       `json:"kind"`
-	OrganizerUID     string    `json:"organizer_uid"`
-	ParticipantsUIDs []string  `json:"participants_uids"`
-	CreatedAt        time.Time `json:"created_at"`
-	Memo             string    `json:"memo,omitempty"`
+	ID               string    `json:"id" firestore:"id"`
+	Kind             int       `json:"kind" firestore:"kind"`
+	OrganizerUID     string    `json:"organizer_uid" firestore:"organizer_uid"`
+	ParticipantsUIDs []string  `json:"participants_uids" firestore:"participants_uids"`
+	CreatedAt        time.Time `json:"created_at" firestore:"created_at"`
+	Memo             string    `json:"memo,omitempty" firestore:"memo,omitempty"`
+}
+
+func GetTamakiHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	doc, err := lib.DB.Collection("tamaki_events").Doc(id).Get(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var tamakiEvent TamakiEvent1
+	if err := doc.DataTo(&tamakiEvent); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(tamakiEvent)
 }
 
 func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,9 +59,10 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.Context().Value("uid").(string)
+	id := uuid.New().String()
 
-	tamaki_event := TamakiEvent1{
-		ID:               uuid.New().String(),
+	tamakiEvent := TamakiEvent1{
+		ID:               id,
 		Kind:             dto.Kind,
 		OrganizerUID:     userID,
 		ParticipantsUIDs: dto.ParticipantsUIDs,
@@ -49,14 +70,14 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		Memo:             dto.Memo,
 	}
 
-	_, err := lib.DB.Collection("tamaki_events").Doc(tamaki_event.ID).Set(r.Context(), tamaki_event)
+	_, err := lib.DB.Collection("tamaki_events").Doc(id).Set(r.Context(), tamakiEvent)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tamaki_event)
+	json.NewEncoder(w).Encode(tamakiEvent)
 }
 
 func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,43 +128,34 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("uid").(string)
-
-	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Documents(r.Context())
+	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Limit(5).Documents(r.Context())
 	docs, err := iter.GetAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	var events []TamakiEvent1
+	var tamakiEvents []TamakiEvent1
 	for _, doc := range docs {
-		var event TamakiEvent1
-		if err := doc.DataTo(&event); err != nil {
+		var tamakiEvent TamakiEvent1
+		if err := doc.DataTo(&tamakiEvent); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if event.OrganizerUID == userID || contains(event.ParticipantsUIDs, userID) {
-			events = append(events, event)
-		}
+		tamakiEvents = append(tamakiEvents, tamakiEvent)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(events)
+	json.NewEncoder(w).Encode(tamakiEvents)
 }
 
 func DeleteTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	lib.DB.Collection("tamaki_events").Doc(id).Delete(r.Context())
-}
-
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
+	_, err := lib.DB.Collection("tamaki_events").Doc(id).Delete(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	return false
 }

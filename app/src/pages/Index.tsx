@@ -2,6 +2,7 @@ import { Box, Chip, Divider, Typography } from "@mui/joy";
 import CheckAuth from "./CheckAuth";
 import OfflineList from "../components/OfflineList/OfflineList";
 import TopBar from "../components/TopBar";
+import Tamaki from "../components/Tamaki/Tamaki";
 
 const Index = () => {
   return (
@@ -12,6 +13,7 @@ const Index = () => {
           <Divider />
         </Box>
         <OfflineList />
+        <Tamaki />
         <Box display="flex" flexDirection="row" gap={2} justifyContent="center">
           <Box
             component="img"

@@ -9,6 +9,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
+	users, err := lib.ListUsers()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
+
 func GetUserByUIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uid := vars["uid"]

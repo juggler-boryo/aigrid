@@ -13,24 +13,21 @@ import { getInMinutes } from "../apis/inout";
 import { auth } from "../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
+import { Min2Str } from "../libs/min2str";
 
 interface UserProfileProps {
   uid: string;
+  isOnlyAvatar?: boolean;
+  disableClick?: boolean;
+  selected?: boolean;
 }
 
-const min2Str = (minutes: number) => {
-  if (minutes < 60) {
-    return `${minutes}m`;
-  }
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) {
-    return `${hours}h`;
-  }
-  const days = Math.floor(hours / 24);
-  return `${days}d`;
-};
-
-const UserProfile = ({ uid }: UserProfileProps) => {
+const UserProfile = ({
+  uid,
+  isOnlyAvatar = false,
+  disableClick = false,
+  selected = false,
+}: UserProfileProps) => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const { data: userData, isLoading: isUserDataLoading } = useQuery<User>({
@@ -53,16 +50,34 @@ const UserProfile = ({ uid }: UserProfileProps) => {
     return <CircularProgress size="sm" />;
   }
 
+  if (isOnlyAvatar) {
+    return (
+      <Box>
+        <Avatar
+          size="sm"
+          src={userData?.avatar_image_url ?? ""}
+          onClick={() => navigate(`/profile/${uid}`)}
+          sx={{ cursor: "pointer" }}
+        />
+      </Box>
+    );
+  }
+
   return (
     <Box mr={2}>
-      <Badge badgeContent={min2Str(inMinutes || 0)} variant="outlined" showZero>
+      <Badge badgeContent={Min2Str(inMinutes || 0)} variant="outlined" showZero>
         <Chip
-          variant="outlined"
+          variant={selected ? "solid" : "outlined"}
           onClick={() => {
-            navigate(`/profile/${uid}`);
+            if (!disableClick) {
+              navigate(`/profile/${uid}`);
+            }
           }}
           size="lg"
-          sx={{ cursor: "pointer" }}
+          sx={{
+            cursor: disableClick ? "default" : "pointer",
+            backgroundColor: selected ? "primary.softBg" : undefined,
+          }}
           startDecorator={
             <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
           }

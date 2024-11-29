@@ -1,6 +1,25 @@
 import { User } from "../types/user";
 import { Endpoint } from "./endpoint";
 
+export const GetAllUsers = async (accessToken: string): Promise<string[]> => {
+  try {
+    const response = await fetch(`${Endpoint}users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (!response.ok) {
+      return [];
+    }
+    const data = await response.json();
+    return data;
+  } catch {
+    return [];
+  }
+};
+
 export const GetUser = async (uid: string): Promise<User> => {
   try {
     const response = await fetch(`${Endpoint}users/${uid}`, {

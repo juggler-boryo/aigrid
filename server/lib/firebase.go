@@ -28,6 +28,20 @@ func InitializeFirebase(credPath string) error {
 	return nil
 }
 
+func ListUsers() ([]string, error) {
+	iter := DB.Collection("users").Documents(context.Background())
+	docs, err := iter.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]string, len(docs))
+	for i, doc := range docs {
+		users[i] = doc.Ref.ID
+	}
+	return users, nil
+}
+
 func GetUser(uid string) (map[string]interface{}, bool, error) {
 	doc, err := DB.Collection("users").Doc(uid).Get(context.Background())
 	if err != nil {

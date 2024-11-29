@@ -29,7 +29,9 @@ const OfflineList = () => {
       }}
     >
       {loading ? (
-        <CircularProgress />
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Box>
       ) : (
         <Box gap={1} display={"flex"} flexWrap={"wrap"}>
           {offlineList.map((item, index) => (

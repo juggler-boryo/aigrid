@@ -11,13 +11,12 @@ import (
 
 func SetupRouter() http.Handler {
 	router := mux.NewRouter()
-	// -- Public routes
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
-
 	// -- Protected routes
 	protectedRouter := router.PathPrefix("").Subrouter()
 	protectedRouter.Use(middleware.TokenRequired)
 	// Users
+	protectedRouter.HandleFunc("/users", handlers.ListUsersHandler).Methods("GET")
 	protectedRouter.HandleFunc("/users/{uid}", handlers.UpdateUserHandler).Methods("PUT")
 
 	// Inout
@@ -26,6 +25,7 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
 
 	// Tamaki
+	protectedRouter.HandleFunc("/tamaki/{id}", handlers.GetTamakiHandler).Methods("GET")
 	protectedRouter.HandleFunc("/tamaki", handlers.ListTamakiHandler).Methods("GET")
 	protectedRouter.HandleFunc("/tamaki", handlers.CreateTamakiHandler).Methods("POST")
 	protectedRouter.HandleFunc("/tamaki/{id}", handlers.UpdateTamakiHandler).Methods("PUT")

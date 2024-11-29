@@ -7,6 +7,8 @@ import ProfileSettings from "./pages/profile/Index";
 import "./global.css";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
 import Profile from "./pages/profile/uid/Index";
+import TamakiNew from "./pages/tamaki/new/Index";
+import TamakiDetail from "./pages/tamaki/id/Index";
 const queryClient = new QueryClient();
 
 const theme = extendTheme({
@@ -37,6 +39,14 @@ const router = createBrowserRouter([
   {
     path: "/profile/:uid",
     element: <Profile />,
+  },
+  {
+    path: "/tamaki/new",
+    element: <TamakiNew />,
+  },
+  {
+    path: "/tamaki/:id",
+    element: <TamakiDetail />,
   },
 ]);
 createRoot(document.getElementById("root")!).render(
