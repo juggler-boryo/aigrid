@@ -31,6 +31,7 @@ const ProfileSettings = () => {
   const [username, setUsername] = useState("");
   const [avatarImageUrl, setAvatarImageUrl] = useState("");
   const [suicaId, setSuicaId] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +66,7 @@ const ProfileSettings = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0] || !user?.uid) return;
 
+    setIsUploading(true);
     const file = e.target.files[0];
     const storageRef = ref(storage, `thumbnails/${user.uid}.png`);
 
@@ -76,6 +78,8 @@ const ProfileSettings = () => {
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("画像のアップロードに失敗しました");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -122,8 +126,12 @@ const ProfileSettings = () => {
         <FormControl>
           <FormLabel>アバター画像</FormLabel>
           <Box display="flex" alignItems="center" gap={2}>
-            <Avatar src={avatarImageUrl} />
-            <Button component="label" variant="outlined">
+            {isUploading ? (
+              <CircularProgress size="sm" />
+            ) : (
+              <Avatar src={avatarImageUrl} />
+            )}
+            <Button component="label" variant="outlined" disabled={isUploading}>
               変更
               <input
                 type="file"

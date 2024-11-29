@@ -25,6 +25,7 @@ const Index = () => {
         navigate("/");
       } else {
         await createUserWithEmailAndPassword(auth, form.email, form.password);
+        navigate("/profile");
       }
     } catch (error) {
       if (

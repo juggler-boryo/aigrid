@@ -1,17 +1,9 @@
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Card,
-  Divider,
-  Button,
-} from "@mui/joy";
+import { Box, Typography, CircularProgress, Card, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { app } from "../../libs/firebase";
 import InOutNotify from "./InOutNotify";
 import UserProfile from "../UserProfile";
-import { FaChartBar } from "react-icons/fa";
 
 const database = getDatabase(app);
 
@@ -36,19 +28,6 @@ const OfflineList = () => {
         width: "85%",
       }}
     >
-      <Box display={"flex"} justifyContent={"space-between"}>
-        <Box display={"flex"} alignItems={"center"}>
-          <Typography level={"title-md"}>in ジャグラー墓料</Typography>
-        </Box>
-        <Box>
-          <Button disabled size={"sm"}>
-            <FaChartBar />
-          </Button>
-        </Box>
-      </Box>
-      <Box m={0.5}>
-        <Divider />
-      </Box>
       {loading ? (
         <CircularProgress />
       ) : (
