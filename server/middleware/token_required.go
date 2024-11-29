@@ -52,8 +52,7 @@ func TokenRequired(next http.Handler) http.Handler {
 			return
 		}
 
-		// Optionally, you can add the token claims to the request context
-		ctx := context.WithValue(r.Context(), "firebaseToken", token)
+		ctx := context.WithValue(r.Context(), "uid", token.UID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
