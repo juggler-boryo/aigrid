@@ -156,7 +156,7 @@ const Tamaki = () => {
               onClick={() => navigate("/tamaki/new")}
               startDecorator={<IoMdAdd />}
             >
-              新規たまき作成
+              魂環
             </Button>
           </Box>
         </Box>
