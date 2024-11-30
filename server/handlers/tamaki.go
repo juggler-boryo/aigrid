@@ -128,7 +128,8 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
-	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Limit(5).Documents(r.Context())
+	len := 3
+	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Limit(len).Documents(r.Context())
 	docs, err := iter.GetAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

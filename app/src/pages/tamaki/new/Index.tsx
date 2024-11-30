@@ -24,7 +24,7 @@ import UserProfile from "../../../components/UserProfile";
 
 const TamakiNew = () => {
   const navigate = useNavigate();
-  const [user] = useIdToken(auth);
+  const [meUser] = useIdToken(auth);
 
   const [kind, setKind] = useState(1);
   const [memo, setMemo] = useState("");
@@ -32,24 +32,30 @@ const TamakiNew = () => {
   const { data: allUsers } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      if (!user?.uid) return [];
-      const accessToken = await user.getIdToken();
+      if (!meUser?.uid) return [];
+      const accessToken = await meUser.getIdToken();
       if (!accessToken) return [];
       const users = await GetAllUsers(accessToken);
-      return users.filter((uid) => uid !== user.uid);
+      return users;
     },
-    enabled: !!user,
+    enabled: !!meUser,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.uid) return;
+    if (!meUser?.uid) return;
 
-    const accessToken = await user.getIdToken();
+    const accessToken = await meUser.getIdToken();
     if (!accessToken) return;
 
     try {
-      await createTamaki(kind, user.uid, participants_uids, memo, accessToken);
+      await createTamaki(
+        kind,
+        meUser.uid,
+        participants_uids,
+        memo,
+        accessToken
+      );
       navigate("/");
     } catch (error) {
       console.error("Error creating tamaki:", error);
@@ -119,6 +125,8 @@ const TamakiNew = () => {
                   gap={2}
                   alignItems="center"
                   onClick={() => {
+                    if (!meUser) return;
+                    if (user === meUser.uid) return;
                     setParticipants_uids(
                       participants_uids.includes(user)
                         ? participants_uids.filter((uid) => uid !== user)
@@ -129,7 +137,9 @@ const TamakiNew = () => {
                   <UserProfile
                     uid={user}
                     disableClick
-                    selected={participants_uids.includes(user)}
+                    selected={
+                      participants_uids.includes(user) || user === meUser?.uid
+                    }
                   />
                 </Box>
               ))}

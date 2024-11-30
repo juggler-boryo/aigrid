@@ -4,9 +4,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Modal,
   ModalDialog,
 } from "@mui/joy";
+import { IoStatsChart } from "react-icons/io5";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { getDatabase, ref, set } from "firebase/database";
@@ -53,51 +55,57 @@ const InOutNotify = ({ offlineList }: Props) => {
   };
 
   return (
-    <Box gap={2} display={"flex"} sx={{ justifyContent: "flex-end" }}>
-      <Modal open={openEnterModal} onClose={() => setOpenEnterModal(false)}>
-        <ModalDialog>
-          <DialogTitle>確認</DialogTitle>
-          <DialogContent>入室しますか？</DialogContent>
-          <DialogActions>
-            <Button variant="plain" onClick={() => setOpenEnterModal(false)}>
-              キャンセル
-            </Button>
-            <Button onClick={handleEnter}>入室</Button>
-          </DialogActions>
-        </ModalDialog>
-      </Modal>
+    <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
+      <IconButton color="neutral" disabled={true} size="md" variant="solid">
+        <IoStatsChart />
+      </IconButton>
 
-      <Modal open={openExitModal} onClose={() => setOpenExitModal(false)}>
-        <ModalDialog>
-          <DialogTitle>確認</DialogTitle>
-          <DialogContent>退出しますか？</DialogContent>
-          <DialogActions>
-            <Button variant="plain" onClick={() => setOpenExitModal(false)}>
-              キャンセル
-            </Button>
-            <Button color="danger" onClick={handleExit}>
-              退出
-            </Button>
-          </DialogActions>
-        </ModalDialog>
-      </Modal>
+      <Box gap={2} display={"flex"}>
+        <Modal open={openEnterModal} onClose={() => setOpenEnterModal(false)}>
+          <ModalDialog>
+            <DialogTitle>確認</DialogTitle>
+            <DialogContent>入室しますか？</DialogContent>
+            <DialogActions>
+              <Button variant="plain" onClick={() => setOpenEnterModal(false)}>
+                キャンセル
+              </Button>
+              <Button onClick={handleEnter}>入室</Button>
+            </DialogActions>
+          </ModalDialog>
+        </Modal>
 
-      <Button
-        color="primary"
-        disabled={isMein}
-        onClick={() => setOpenEnterModal(true)}
-        size="md"
-      >
-        入室
-      </Button>
-      <Button
-        color="danger"
-        disabled={!isMein}
-        onClick={() => setOpenExitModal(true)}
-        size="md"
-      >
-        退出
-      </Button>
+        <Modal open={openExitModal} onClose={() => setOpenExitModal(false)}>
+          <ModalDialog>
+            <DialogTitle>確認</DialogTitle>
+            <DialogContent>退出しますか？</DialogContent>
+            <DialogActions>
+              <Button variant="plain" onClick={() => setOpenExitModal(false)}>
+                キャンセル
+              </Button>
+              <Button color="danger" onClick={handleExit}>
+                退出
+              </Button>
+            </DialogActions>
+          </ModalDialog>
+        </Modal>
+
+        <Button
+          color="primary"
+          disabled={isMein}
+          onClick={() => setOpenEnterModal(true)}
+          size="md"
+        >
+          入室
+        </Button>
+        <Button
+          color="danger"
+          disabled={!isMein}
+          onClick={() => setOpenExitModal(true)}
+          size="md"
+        >
+          退出
+        </Button>
+      </Box>
     </Box>
   );
 };

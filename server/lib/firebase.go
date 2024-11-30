@@ -92,7 +92,7 @@ func GetUserInMinutes(uid string) (int, error) {
 }
 
 func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
-	iter, err := DB.Collection("inouts").Where("uid", "==", uid).OrderBy("created_at", firestore.Desc).Documents(context.Background()).GetAll()
+	iter, err := DB.Collection("inouts").Where("uid", "==", uid).OrderBy("created_at", firestore.Desc).Limit(limit).Documents(context.Background()).GetAll()
 	if err != nil {
 		return nil, err
 	}

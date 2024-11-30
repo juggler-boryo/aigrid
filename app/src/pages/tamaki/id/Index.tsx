@@ -28,7 +28,7 @@ import { Kind2title } from "../../../components/Tamaki/Tamaki";
 const TamakiDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [user] = useIdToken(auth);
+  const [meUser] = useIdToken(auth);
   const queryClient = useQueryClient();
   const [memo, setMemo] = useState("");
   const [participants_uids, setParticipants_uids] = useState<string[]>([]);
@@ -37,33 +37,33 @@ const TamakiDetail = () => {
   const { data: tamaki } = useQuery({
     queryKey: ["tamaki", id],
     queryFn: async () => {
-      if (!user?.uid || !id) return null;
-      const accessToken = await user.getIdToken();
+      if (!meUser?.uid || !id) return null;
+      const accessToken = await meUser.getIdToken();
       if (!accessToken) return null;
       const data = await getTamaki(id, accessToken);
       setMemo(data.memo || "");
       setParticipants_uids(data.participants_uids);
       return data;
     },
-    enabled: !!user && !!id,
+    enabled: !!meUser && !!id,
   });
 
   const { data: allUsers } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      if (!user?.uid) return [];
-      const accessToken = await user.getIdToken();
+      if (!meUser?.uid) return [];
+      const accessToken = await meUser.getIdToken();
       if (!accessToken) return [];
       const users = await GetAllUsers(accessToken);
-      return users.filter((uid) => uid !== user.uid);
+      return users;
     },
-    enabled: !!user,
+    enabled: !!meUser,
   });
 
   const handleUpdate = async () => {
-    if (!user?.uid || !id || !tamaki) return;
+    if (!meUser?.uid || !id || !tamaki) return;
 
-    const accessToken = await user.getIdToken();
+    const accessToken = await meUser.getIdToken();
     if (!accessToken) return;
 
     try {
@@ -84,9 +84,9 @@ const TamakiDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (!user?.uid || !id) return;
+    if (!meUser?.uid || !id) return;
 
-    const accessToken = await user.getIdToken();
+    const accessToken = await meUser.getIdToken();
     if (!accessToken) return;
 
     try {
@@ -168,6 +168,8 @@ const TamakiDetail = () => {
                   gap={2}
                   alignItems="center"
                   onClick={() => {
+                    if (!meUser) return;
+                    if (user === meUser.uid) return;
                     setParticipants_uids(
                       participants_uids.includes(user)
                         ? participants_uids.filter((uid) => uid !== user)
@@ -178,7 +180,10 @@ const TamakiDetail = () => {
                   <UserProfile
                     uid={user}
                     disableClick
-                    selected={participants_uids.includes(user)}
+                    selected={
+                      participants_uids.includes(user) ||
+                      user === tamaki?.organizer_uid // 主催者は参加者として扱う
+                    }
                   />
                 </Box>
               ))}

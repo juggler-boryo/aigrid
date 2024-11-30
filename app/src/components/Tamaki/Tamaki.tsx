@@ -97,8 +97,9 @@ const Tamaki = () => {
               color="primary"
               fullWidth
               onClick={() => navigate("/tamaki/new")}
+              startDecorator={<IoMdAdd />}
             >
-              <IoMdAdd />
+              新規たまき作成
             </Button>
           </Box>
         </Box>
