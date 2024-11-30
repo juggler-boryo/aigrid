@@ -1,20 +1,10 @@
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Modal,
-  ModalDialog,
-} from "@mui/joy";
+import { Box, Button, IconButton } from "@mui/joy";
 import { IoStatsChart } from "react-icons/io5";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../../libs/firebase";
 import { postInout } from "../../apis/inout";
-import { useState } from "react";
 
 interface Props {
   offlineList: Array<string>;
@@ -25,11 +15,11 @@ const database = getDatabase(app);
 const InOutNotify = ({ offlineList }: Props) => {
   const [user] = useIdToken(auth);
   const isMein = offlineList.includes(user?.uid || "114514");
-  const [openEnterModal, setOpenEnterModal] = useState(false);
-  const [openExitModal, setOpenExitModal] = useState(false);
 
   const handleEnter = async () => {
     if (!user?.uid) return;
+    if (!window.confirm("入室しますか？")) return;
+
     try {
       await set(ref(database, `inoutList/${user.uid}`), true);
       const accessToken = await user.getIdToken();
@@ -37,11 +27,12 @@ const InOutNotify = ({ offlineList }: Props) => {
     } catch (error) {
       console.error("Error entering:", error);
     }
-    setOpenEnterModal(false);
   };
 
   const handleExit = async () => {
     if (!user?.uid) return;
+    if (!window.confirm("退出しますか？")) return;
+
     try {
       await set(ref(database, `inoutList/${user.uid}`), false);
       const accessToken = await user.getIdToken();
@@ -49,7 +40,6 @@ const InOutNotify = ({ offlineList }: Props) => {
     } catch (error) {
       console.error("Error exiting:", error);
     }
-    setOpenExitModal(false);
   };
 
   return (
@@ -59,38 +49,10 @@ const InOutNotify = ({ offlineList }: Props) => {
       </IconButton>
 
       <Box gap={2} display={"flex"}>
-        <Modal open={openEnterModal} onClose={() => setOpenEnterModal(false)}>
-          <ModalDialog>
-            <DialogTitle>確認</DialogTitle>
-            <DialogContent>入室しますか？</DialogContent>
-            <DialogActions>
-              <Button variant="plain" onClick={() => setOpenEnterModal(false)}>
-                キャンセル
-              </Button>
-              <Button onClick={handleEnter}>入室</Button>
-            </DialogActions>
-          </ModalDialog>
-        </Modal>
-
-        <Modal open={openExitModal} onClose={() => setOpenExitModal(false)}>
-          <ModalDialog>
-            <DialogTitle>確認</DialogTitle>
-            <DialogContent>退出しますか？</DialogContent>
-            <DialogActions>
-              <Button variant="plain" onClick={() => setOpenExitModal(false)}>
-                キャンセル
-              </Button>
-              <Button color="danger" onClick={handleExit}>
-                退出
-              </Button>
-            </DialogActions>
-          </ModalDialog>
-        </Modal>
-
         <Button
           color="primary"
           disabled={isMein}
-          onClick={() => setOpenEnterModal(true)}
+          onClick={handleEnter}
           size="md"
         >
           入室
@@ -98,7 +60,7 @@ const InOutNotify = ({ offlineList }: Props) => {
         <Button
           color="danger"
           disabled={!isMein}
-          onClick={() => setOpenExitModal(true)}
+          onClick={handleExit}
           size="md"
         >
           退出

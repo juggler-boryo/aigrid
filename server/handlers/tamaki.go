@@ -3,6 +3,7 @@ package handlers
 import (
 	"aigrid/server/lib"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,13 +18,17 @@ type TamakiEvent1DTO struct {
 	Memo             string   `json:"memo,omitempty"`
 }
 
+type TamakiEvent struct {
+	ID           string    `json:"id" firestore:"id"`
+	Kind         int       `json:"kind" firestore:"kind"`
+	OrganizerUID string    `json:"organizer_uid" firestore:"organizer_uid"`
+	CreatedAt    time.Time `json:"created_at" firestore:"created_at"`
+}
+
 type TamakiEvent1 struct {
-	ID               string    `json:"id" firestore:"id"`
-	Kind             int       `json:"kind" firestore:"kind"`
-	OrganizerUID     string    `json:"organizer_uid" firestore:"organizer_uid"`
-	ParticipantsUIDs []string  `json:"participants_uids" firestore:"participants_uids"`
-	CreatedAt        time.Time `json:"created_at" firestore:"created_at"`
-	Memo             string    `json:"memo,omitempty" firestore:"memo,omitempty"`
+	TamakiEvent
+	ParticipantsUIDs []string `json:"participants_uids" firestore:"participants_uids"`
+	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
 }
 
 func GetTamakiHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,14 +41,25 @@ func GetTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tamakiEvent TamakiEvent1
-	if err := doc.DataTo(&tamakiEvent); err != nil {
+	// First get base event to check kind
+	var baseEvent TamakiEvent
+	if err := doc.DataTo(&baseEvent); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tamakiEvent)
+	switch baseEvent.Kind {
+	case 1:
+		var event TamakiEvent1
+		if err := doc.DataTo(&event); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(event)
+	default:
+		http.Error(w, fmt.Sprintf("Unknown event kind: %d", baseEvent.Kind), http.StatusBadRequest)
+	}
 }
 
 func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
@@ -62,11 +78,13 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	id := uuid.New().String()
 
 	tamakiEvent := TamakiEvent1{
-		ID:               id,
-		Kind:             dto.Kind,
-		OrganizerUID:     userID,
+		TamakiEvent: TamakiEvent{
+			ID:           id,
+			Kind:         dto.Kind,
+			OrganizerUID: userID,
+			CreatedAt:    time.Now(),
+		},
 		ParticipantsUIDs: dto.ParticipantsUIDs,
-		CreatedAt:        time.Now(),
 		Memo:             dto.Memo,
 	}
 
@@ -136,14 +154,25 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tamakiEvents []TamakiEvent1
+	var tamakiEvents []interface{}
 	for _, doc := range docs {
-		var tamakiEvent TamakiEvent1
-		if err := doc.DataTo(&tamakiEvent); err != nil {
+		var baseEvent TamakiEvent
+		if err := doc.DataTo(&baseEvent); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		tamakiEvents = append(tamakiEvents, tamakiEvent)
+
+		switch baseEvent.Kind {
+		case 1:
+			var event TamakiEvent1
+			if err := doc.DataTo(&event); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			tamakiEvents = append(tamakiEvents, event)
+		default:
+			tamakiEvents = append(tamakiEvents, baseEvent)
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
