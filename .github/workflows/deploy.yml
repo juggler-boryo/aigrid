@@ -31,7 +31,8 @@ jobs:
       - name: Deploy to Vercel
         env:
           VERCEL_APIKEY: ${{ secrets.VERCEL_APIKEY }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm install -g vercel
           cd app
-          vercel --prod --token $VERCEL_APIKEY --yes
+          vercel deploy --prod --token $VERCEL_APIKEY --yes --project prj_O5Rho5B9PrINmUhH8yrGQGUNXeYi
