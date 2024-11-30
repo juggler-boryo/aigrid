@@ -11,7 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// InoutRequest represents the expected request body for the inout endpoint.
 type InoutRequest struct {
 	IsIn bool `json:"isIn"`
 }
@@ -30,13 +29,29 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Firestoreに入退室記録を保存する
+	history, err := lib.GetInoutHistory(uid, 1)
+	if err != nil {
+		http.Error(w, "入退室履歴の取得に失敗しました", http.StatusInternalServerError)
+		return
+	}
+
+	if len(history) > 0 {
+		lastRecord := history[0]
+		if lastRecord.IsIn == inoutReq.IsIn {
+			msg := "既に入室しています"
+			if !inoutReq.IsIn {
+				msg = "既に退室しています"
+			}
+			http.Error(w, msg, http.StatusBadRequest)
+			return
+		}
+	}
+
 	if err := lib.RecordInout(uid, inoutReq.IsIn); err != nil {
 		http.Error(w, "入退室記録の保存に失敗しました", http.StatusInternalServerError)
 		return
 	}
 
-	// Discordに通知する
 	userData, exists, err := lib.GetUser(uid)
 	if err != nil {
 		http.Error(w, "Failed to get user data", http.StatusInternalServerError)
