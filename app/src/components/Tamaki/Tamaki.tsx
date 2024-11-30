@@ -7,7 +7,8 @@ import {
   Button,
 } from "@mui/joy";
 import { useQuery } from "@tanstack/react-query";
-import { listTamaki, TamakiEvent } from "../../apis/tamaki";
+import { listTamaki } from "../../apis/tamaki";
+import { TamakiEvent } from "../../types/tamaki";
 import UserProfile from "../UserProfile";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../libs/firebase";
