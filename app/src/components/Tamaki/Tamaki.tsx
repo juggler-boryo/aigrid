@@ -5,6 +5,7 @@ import {
   Card,
   Divider,
   Button,
+  Chip,
 } from "@mui/joy";
 import { useQuery } from "@tanstack/react-query";
 import { listTamaki } from "../../apis/tamaki";
@@ -12,7 +13,7 @@ import { TamakiEvent } from "../../types/tamaki";
 import UserProfile from "../UserProfile";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../libs/firebase";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoMdCheckmark } from "react-icons/io";
 import { Min2Str } from "../../libs/min2str";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -65,64 +66,84 @@ const Tamaki = () => {
       ) : (
         <Box gap={1} display="flex" flexDirection="column">
           {(tamakiList || []).map((tamaki) => (
-            <Card
-              key={tamaki.id}
-              variant="outlined"
-              sx={{
-                p: 1.5,
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "var(--joy-palette-neutral-100, #F0F4F8)",
-                  transition: "all 0.2s ease-in-out",
-                },
-              }}
-              onClick={() => {
-                navigate(`/tamaki/${tamaki.id}`);
-              }}
-            >
-              <Box
-                display="flex"
-                gap={2}
-                alignItems="center"
-                justifyContent="space-between"
+            <Box key={tamaki.id} position="relative">
+              {(tamaki.participants_uids?.includes(user?.uid || "") ||
+                tamaki.organizer_uid === user?.uid) && (
+                <Chip
+                  size="sm"
+                  variant="outlined"
+                  color="success"
+                  startDecorator={<IoMdCheckmark />}
+                  sx={{
+                    position: "absolute",
+                    top: -4,
+                    left: -4,
+                    zIndex: 10,
+                  }}
+                />
+              )}
+              <Card
+                key={tamaki.id}
+                variant="outlined"
+                sx={{
+                  p: 1.5,
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "var(--joy-palette-neutral-100, #F0F4F8)",
+                    transition: "all 0.2s ease-in-out",
+                  },
+                  position: "relative",
+                }}
+                onClick={() => {
+                  navigate(`/tamaki/${tamaki.id}`);
+                }}
               >
-                <Box display="flex" gap={2} alignItems="center">
-                  <Typography level="title-md">
-                    {Kind2title(tamaki.kind)}
+                <Box
+                  display="flex"
+                  gap={2}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box display="flex" gap={2} alignItems="center">
+                    <Box display="flex" gap={1} alignItems="center">
+                      <Typography level="title-md">
+                        {Kind2title(tamaki.kind)}
+                      </Typography>
+                    </Box>
+                    <Divider orientation="vertical" />
+                    <UserProfile
+                      uid={tamaki.organizer_uid}
+                      isOnlyAvatar
+                      disableClick
+                    />
+                    {(tamaki.participants_uids || []).length > 0 &&
+                      [
+                        ...Array(Math.min(3, tamaki.participants_uids.length)),
+                      ].map((_, i) => {
+                        const startIndex = rotationIndexes[tamaki.id] || 0;
+                        const participantIndex =
+                          (startIndex + i) % tamaki.participants_uids.length;
+                        return (
+                          <UserProfile
+                            key={tamaki.participants_uids[participantIndex]}
+                            uid={tamaki.participants_uids[participantIndex]}
+                            isOnlyAvatar
+                            disableClick
+                          />
+                        );
+                      })}
+                  </Box>
+                  <Typography level="body-sm" textColor="neutral.500">
+                    {Min2Str(
+                      (new Date().getTime() -
+                        new Date(tamaki.created_at).getTime()) /
+                        1000 /
+                        60
+                    )}
                   </Typography>
-                  <Divider orientation="vertical" />
-                  <UserProfile
-                    uid={tamaki.organizer_uid}
-                    isOnlyAvatar
-                    disableClick
-                  />
-                  {(tamaki.participants_uids || []).length > 0 &&
-                    [
-                      ...Array(Math.min(3, tamaki.participants_uids.length)),
-                    ].map((_, i) => {
-                      const startIndex = rotationIndexes[tamaki.id] || 0;
-                      const participantIndex =
-                        (startIndex + i) % tamaki.participants_uids.length;
-                      return (
-                        <UserProfile
-                          key={tamaki.participants_uids[participantIndex]}
-                          uid={tamaki.participants_uids[participantIndex]}
-                          isOnlyAvatar
-                          disableClick
-                        />
-                      );
-                    })}
                 </Box>
-                <Typography level="body-sm" textColor="neutral.500">
-                  {Min2Str(
-                    (new Date().getTime() -
-                      new Date(tamaki.created_at).getTime()) /
-                      1000 /
-                      60
-                  )}
-                </Typography>
-              </Box>
-            </Card>
+              </Card>
+            </Box>
           ))}
           <Box display="flex" justifyContent="center" width="100%">
             <Button
