@@ -67,7 +67,6 @@ const UserProfile = ({
     <Box mr={2}>
       <Badge badgeContent={Min2Str(inMinutes || 0)} variant="outlined" showZero>
         <Chip
-          variant={selected ? "solid" : "outlined"}
           onClick={() => {
             if (!disableClick) {
               navigate(`/profile/${uid}`);
@@ -76,7 +75,9 @@ const UserProfile = ({
           size="lg"
           sx={{
             cursor: disableClick ? "default" : "pointer",
-            backgroundColor: selected ? "primary.softBg" : undefined,
+            border: selected
+              ? "3px solid var(--joy-palette-primary-500)"
+              : undefined,
           }}
           startDecorator={
             <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
