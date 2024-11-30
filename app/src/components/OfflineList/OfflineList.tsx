@@ -1,15 +1,17 @@
 import { Box, Typography, CircularProgress, Card, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
-import { app } from "../../libs/firebase";
+import { app, auth } from "../../libs/firebase";
 import InOutNotify from "./InOutNotify";
 import UserProfile from "../UserProfile";
+import { useIdToken } from "react-firebase-hooks/auth";
 
 const database = getDatabase(app);
 
 const OfflineList = () => {
   const [offlineList, setOfflineList] = useState<Array<string>>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [user] = useIdToken(auth);
 
   useEffect(() => {
     const offlineListRef = ref(database, "inoutList");
@@ -50,7 +52,12 @@ const OfflineList = () => {
       <Box m={0.5}>
         <Divider />
       </Box>
-      {!loading && <InOutNotify offlineList={offlineList} />}
+      {!loading && user && (
+        <InOutNotify
+          offlineList={offlineList}
+          control_uid={user.uid || "114514"}
+        />
+      )}
     </Card>
   );
 };

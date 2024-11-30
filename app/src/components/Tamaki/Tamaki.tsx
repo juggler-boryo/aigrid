@@ -45,7 +45,7 @@ const Tamaki = () => {
       setRotationIndexes((prev) => {
         const newIndexes = { ...prev };
         tamakiList.forEach((tamaki) => {
-          if (tamaki.participants_uids?.length > 3) {
+          if (tamaki.participants_uids && tamaki.participants_uids.length > 3) {
             newIndexes[tamaki.id] =
               ((prev[tamaki.id] || 0) + 1) % tamaki.participants_uids.length;
           }
@@ -116,13 +116,16 @@ const Tamaki = () => {
                       isOnlyAvatar
                       disableClick
                     />
-                    {(tamaki.participants_uids || []).length > 0 &&
+                    {tamaki.participants_uids &&
+                      tamaki.participants_uids.length > 0 &&
                       [
                         ...Array(Math.min(3, tamaki.participants_uids.length)),
                       ].map((_, i) => {
+                        if (!tamaki.participants_uids) return <></>;
                         const startIndex = rotationIndexes[tamaki.id] || 0;
                         const participantIndex =
-                          (startIndex + i) % tamaki.participants_uids.length;
+                          (startIndex + i) %
+                          (tamaki.participants_uids.length || 0);
                         return (
                           <UserProfile
                             key={tamaki.participants_uids[participantIndex]}

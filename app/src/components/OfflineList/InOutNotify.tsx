@@ -8,11 +8,13 @@ import { postInout } from "../../apis/inout";
 
 interface Props {
   offlineList: Array<string>;
+  control_uid: string;
+  isNoAnal?: boolean; // no analysis
 }
 
 const database = getDatabase(app);
 
-const InOutNotify = ({ offlineList }: Props) => {
+const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
   const isMein = offlineList.includes(user?.uid || "114514");
 
@@ -21,9 +23,9 @@ const InOutNotify = ({ offlineList }: Props) => {
     if (!window.confirm("入室しますか？")) return;
 
     try {
-      await set(ref(database, `inoutList/${user.uid}`), true);
+      await set(ref(database, `inoutList/${control_uid}`), true);
       const accessToken = await user.getIdToken();
-      await postInout(user.uid, true, accessToken);
+      await postInout(control_uid, true, accessToken);
     } catch (error) {
       console.error("Error entering:", error);
     }
@@ -34,9 +36,9 @@ const InOutNotify = ({ offlineList }: Props) => {
     if (!window.confirm("退出しますか？")) return;
 
     try {
-      await set(ref(database, `inoutList/${user.uid}`), false);
+      await set(ref(database, `inoutList/${control_uid}`), false);
       const accessToken = await user.getIdToken();
-      await postInout(user.uid, false, accessToken);
+      await postInout(control_uid, false, accessToken);
     } catch (error) {
       console.error("Error exiting:", error);
     }
@@ -44,9 +46,12 @@ const InOutNotify = ({ offlineList }: Props) => {
 
   return (
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
-      <IconButton color="neutral" disabled={true} size="md" variant="solid">
-        <IoStatsChart />
-      </IconButton>
+      {!isNoAnal && (
+        <IconButton color="neutral" disabled={true} size="md" variant="solid">
+          <IoStatsChart />
+        </IconButton>
+      )}
+      {isNoAnal && <Box width={40} />}
 
       <Box gap={2} display={"flex"}>
         <Button
