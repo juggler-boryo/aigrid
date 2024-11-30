@@ -15,6 +15,7 @@ import { auth } from "../../libs/firebase";
 import { IoMdAdd } from "react-icons/io";
 import { Min2Str } from "../../libs/min2str";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -33,6 +34,27 @@ const Tamaki = () => {
     },
     enabled: !!user,
   });
+
+  const [rotationIndexes, setRotationIndexes] = useState<{
+    [key: string]: number;
+  }>({});
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRotationIndexes((prev) => {
+        const newIndexes = { ...prev };
+        tamakiList.forEach((tamaki) => {
+          if (tamaki.participants_uids?.length > 3) {
+            newIndexes[tamaki.id] =
+              ((prev[tamaki.id] || 0) + 1) % tamaki.participants_uids.length;
+          }
+        });
+        return newIndexes;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [tamakiList]);
 
   return (
     <Card sx={{ width: "85%" }}>
@@ -74,14 +96,22 @@ const Tamaki = () => {
                     isOnlyAvatar
                     disableClick
                   />
-                  {(tamaki.participants_uids || []).map((uid) => (
-                    <UserProfile
-                      key={uid}
-                      uid={uid}
-                      isOnlyAvatar
-                      disableClick
-                    />
-                  ))}
+                  {(tamaki.participants_uids || []).length > 0 &&
+                    [
+                      ...Array(Math.min(3, tamaki.participants_uids.length)),
+                    ].map((_, i) => {
+                      const startIndex = rotationIndexes[tamaki.id] || 0;
+                      const participantIndex =
+                        (startIndex + i) % tamaki.participants_uids.length;
+                      return (
+                        <UserProfile
+                          key={tamaki.participants_uids[participantIndex]}
+                          uid={tamaki.participants_uids[participantIndex]}
+                          isOnlyAvatar
+                          disableClick
+                        />
+                      );
+                    })}
                 </Box>
                 <Typography level="body-sm" textColor="neutral.500">
                   {Min2Str(
