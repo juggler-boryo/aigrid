@@ -67,6 +67,7 @@ const UserProfile = ({
     <Box mr={2}>
       <Badge badgeContent={Min2Str(inMinutes || 0)} variant="outlined" showZero>
         <Chip
+          variant="outlined"
           onClick={() => {
             if (!disableClick) {
               navigate(`/profile/${uid}`);
