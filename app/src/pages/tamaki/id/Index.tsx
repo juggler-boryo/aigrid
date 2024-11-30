@@ -42,7 +42,7 @@ const TamakiDetail = () => {
       if (!accessToken) return null;
       const data = await getTamaki(id, accessToken);
       setMemo(data.memo || "");
-      setParticipants_uids(data.participants_uids);
+      setParticipants_uids(data.participants_uids || []);
       return data;
     },
     enabled: !!meUser && !!id,
