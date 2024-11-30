@@ -188,7 +188,6 @@ const Index = () => {
                 slotProps={{
                   legend: {
                     itemGap: 10,
-                    disableHighlight: true,
                   },
                 }}
               />
@@ -211,7 +210,6 @@ const Index = () => {
                   slotProps={{
                     legend: {
                       itemGap: 10,
-                      disableHighlight: true,
                     },
                   }}
                 />
