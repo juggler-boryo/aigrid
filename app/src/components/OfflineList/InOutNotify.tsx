@@ -5,6 +5,7 @@ import { useIdToken } from "react-firebase-hooks/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../../libs/firebase";
 import { postInout } from "../../apis/inout";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   offlineList: Array<string>;
@@ -17,6 +18,7 @@ const database = getDatabase(app);
 const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
   const isMein = offlineList.includes(user?.uid || "114514");
+  const navigate = useNavigate();
 
   const handleEnter = async () => {
     if (!user?.uid) return;
@@ -47,7 +49,14 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   return (
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
       {!isNoAnal && (
-        <IconButton color="neutral" disabled={true} size="md" variant="solid">
+        <IconButton
+          color="primary"
+          size="md"
+          variant="soft"
+          onClick={() => {
+            navigate("/inout/anal");
+          }}
+        >
           <IoStatsChart />
         </IconButton>
       )}

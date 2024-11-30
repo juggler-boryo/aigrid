@@ -114,3 +114,16 @@ func GetInoutHistoryHandler(w http.ResponseWriter, r *http.Request) {
 		"history": history,
 	})
 }
+
+func GetInoutAnalyticsHandler(w http.ResponseWriter, r *http.Request) {
+	history, err := lib.GetInoutHistoryByMonth()
+	if err != nil {
+		http.Error(w, "Failed to get inout history: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"history": history,
+	})
+}

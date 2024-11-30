@@ -112,3 +112,28 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 	}
 	return inouts, nil
 }
+
+func GetInoutHistoryByMonth() ([]models.Inout, error) {
+	now := time.Now()
+	oneMonthAgo := now.AddDate(0, -1, 0)
+
+	iter, err := DB.Collection("inouts").Where("created_at", ">=", oneMonthAgo).Where("created_at", "<=", now).OrderBy("created_at", firestore.Desc).Documents(context.Background()).GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(iter) == 0 {
+		return []models.Inout{}, nil
+	}
+
+	inouts := make([]models.Inout, len(iter))
+	for i, doc := range iter {
+		data := doc.Data()
+		inouts[i] = models.Inout{
+			Uid:       data["uid"].(string),
+			IsIn:      data["is_in"].(bool),
+			CreatedAt: data["created_at"].(time.Time),
+		}
+	}
+	return inouts, nil
+}

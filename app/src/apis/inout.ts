@@ -47,3 +47,13 @@ export const getInoutHistory = async (
   const data = await response.json();
   return data.history;
 };
+
+export const getInoutAnalytics = async (
+  accessToken: string
+): Promise<Inout[]> => {
+  const response = await fetch(`${Endpoint}inout/anal`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const data = await response.json();
+  return data.history;
+};

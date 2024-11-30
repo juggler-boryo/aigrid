@@ -9,6 +9,7 @@ import { CssVarsProvider, extendTheme } from "@mui/joy";
 import Profile from "./pages/profile/uid/Index";
 import TamakiNew from "./pages/tamaki/new/Index";
 import TamakiDetail from "./pages/tamaki/id/Index";
+import InOutAnal from "./pages/inout/anal/Index";
 const queryClient = new QueryClient();
 
 const theme = extendTheme({
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
   {
     path: "/tamaki/:id",
     element: <TamakiDetail />,
+  },
+  {
+    path: "/inout/anal",
+    element: <InOutAnal />,
   },
 ]);
 createRoot(document.getElementById("root")!).render(
