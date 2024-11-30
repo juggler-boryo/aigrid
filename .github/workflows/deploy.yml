@@ -35,4 +35,4 @@ jobs:
         run: |
           npm install -g vercel
           cd app
-          vercel deploy --prod --token $VERCEL_APIKEY --yes --project prj_O5Rho5B9PrINmUhH8yrGQGUNXeYi
+          vercel deploy --prod --token $VERCEL_APIKEY --yes
