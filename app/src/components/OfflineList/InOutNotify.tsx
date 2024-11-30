@@ -30,9 +30,8 @@ const InOutNotify = ({ offlineList }: Props) => {
 
   const handleEnter = async () => {
     if (!user?.uid) return;
-    const newList = [...offlineList, user.uid];
     try {
-      await set(ref(database, "offlineList"), JSON.stringify(newList));
+      await set(ref(database, `inoutList/${user.uid}`), true);
       const accessToken = await user.getIdToken();
       await postInout(user.uid, true, accessToken);
     } catch (error) {
@@ -43,9 +42,8 @@ const InOutNotify = ({ offlineList }: Props) => {
 
   const handleExit = async () => {
     if (!user?.uid) return;
-    const newList = offlineList.filter((uid) => uid !== user.uid);
     try {
-      await set(ref(database, "offlineList"), JSON.stringify(newList));
+      await set(ref(database, `inoutList/${user.uid}`), false);
       const accessToken = await user.getIdToken();
       await postInout(user.uid, false, accessToken);
     } catch (error) {

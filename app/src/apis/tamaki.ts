@@ -1,13 +1,5 @@
+import { TamakiEvent } from "../types/tamaki";
 import { Endpoint } from "./endpoint";
-
-export interface TamakiEvent {
-  id: string;
-  kind: number;
-  organizer_uid: string;
-  participants_uids: string[];
-  created_at: string;
-  memo?: string;
-}
 
 export const getTamaki = async (
   id: string,

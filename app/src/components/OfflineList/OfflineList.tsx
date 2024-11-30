@@ -12,11 +12,14 @@ const OfflineList = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const offlineListRef = ref(database, "offlineList");
+    const offlineListRef = ref(database, "inoutList");
     onValue(offlineListRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        setOfflineList(JSON.parse(data));
+        const uids = Object.entries(data)
+          .filter(([, isIn]) => isIn)
+          .map(([uid]) => uid);
+        setOfflineList(uids);
       }
       setLoading(false);
     });
@@ -34,9 +37,9 @@ const OfflineList = () => {
         </Box>
       ) : (
         <Box gap={1} display={"flex"} flexWrap={"wrap"}>
-          {offlineList.map((item, index) => (
-            <Box key={index}>
-              <UserProfile uid={item} />
+          {offlineList.map((uid) => (
+            <Box key={uid}>
+              <UserProfile uid={uid} />
             </Box>
           ))}
           {offlineList.length === 0 && (

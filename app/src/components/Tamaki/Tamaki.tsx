@@ -53,7 +53,9 @@ const Tamaki = () => {
                   transition: "all 0.2s ease-in-out",
                 },
               }}
-              onClick={() => navigate(`/tamaki/${tamaki.id}`)}
+              onClick={() => {
+                navigate(`/tamaki/${tamaki.id}`);
+              }}
             >
               <Box
                 display="flex"
