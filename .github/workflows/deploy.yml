@@ -1,0 +1,37 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install Dependencies
+        run: |
+          cd app
+          yarn install
+
+      - name: Build Project
+        run: |
+          cd app
+          yarn build
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_APIKEY: ${{ secrets.VERCEL_APIKEY }}
+        run: |
+          npm install -g vercel
+          cd app
+          vercel --prod --token $VERCEL_APIKEY

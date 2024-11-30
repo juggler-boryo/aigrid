@@ -8,6 +8,7 @@ import {
   Option,
   Textarea,
   Typography,
+  Chip,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -139,6 +140,19 @@ const TamakiNew = () => {
             作成
           </Button>
         </Box>
+        <Chip
+          variant="outlined"
+          onClick={() => {
+            window.open(
+              "https://github.com/juggler-boryo/tamaki-protocol/tree/main",
+              "_blank"
+            );
+          }}
+        >
+          <Typography level="title-sm">
+            Tamaki Protocol Specification
+          </Typography>
+        </Chip>
       </Box>
     </CheckAuth>
   );
