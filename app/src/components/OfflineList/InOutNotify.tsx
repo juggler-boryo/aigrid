@@ -70,7 +70,7 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
           onClick={handleEnter}
           size="md"
         >
-          入室
+          ただいま
         </Button>
         <Button
           color="danger"
@@ -78,7 +78,7 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
           onClick={handleExit}
           size="md"
         >
-          退出
+          撤退
         </Button>
       </Box>
     </Box>
