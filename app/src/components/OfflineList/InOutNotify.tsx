@@ -8,7 +8,7 @@ import { getInoutList, postInout } from "../../apis/inout";
 import { useNavigate } from "react-router-dom";
 import useSound from "use-sound";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { useState } from "react";
 interface Props {
   control_uid: string;
   isNoAnal?: boolean; // no analysis
@@ -30,9 +30,13 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
   const navigate = useNavigate();
   const [inSound] = useSound("/in.mp3");
   const [outSound] = useSound("/bb.mp3");
+  const [isEntering, setIsEntering] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+
   const handleEnter = async () => {
     if (!user?.uid) return;
     inSound();
+    setIsEntering(true);
 
     try {
       await set(ref(database, `inoutList/${control_uid}`), true);
@@ -41,12 +45,15 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["inout", control_uid] });
     } catch (error) {
       console.error("Error entering:", error);
+    } finally {
+      setIsEntering(false);
     }
   };
 
   const handleExit = async () => {
     if (!user?.uid) return;
     outSound();
+    setIsExiting(true);
 
     try {
       await set(ref(database, `inoutList/${control_uid}`), false);
@@ -55,6 +62,8 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["inout", control_uid] });
     } catch (error) {
       console.error("Error exiting:", error);
+    } finally {
+      setIsExiting(false);
     }
   };
 
@@ -80,17 +89,19 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
       <Box gap={2} display={"flex"}>
         <Button
           color="primary"
-          disabled={isIn || isFetching}
+          disabled={isIn || isFetching || isEntering}
           onClick={handleEnter}
           size="md"
+          loading={isEntering}
         >
           ただいま
         </Button>
         <Button
           color="danger"
-          disabled={!isIn || isFetching}
+          disabled={!isIn || isFetching || isExiting}
           onClick={handleExit}
           size="md"
+          loading={isExiting}
         >
           撤退
         </Button>
