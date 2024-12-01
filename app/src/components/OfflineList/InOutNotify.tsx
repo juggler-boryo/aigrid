@@ -4,29 +4,21 @@ import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../../libs/firebase";
-import { getInoutList, postInout } from "../../apis/inout";
+import { postInout } from "../../apis/inout";
 import { useNavigate } from "react-router-dom";
 import useSound from "use-sound";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 interface Props {
+  offlineList: Array<string>;
   control_uid: string;
   isNoAnal?: boolean; // no analysis
 }
 
 const database = getDatabase(app);
 
-const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
+const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
-  const queryClient = useQueryClient();
-  const { data: isIn, isFetching } = useQuery({
-    queryKey: ["inout", control_uid],
-    queryFn: async () => {
-      if (!user) return false;
-      const accessToken = await user.getIdToken();
-      return await getInoutList(control_uid, accessToken);
-    },
-  });
+  const isIn = offlineList.includes(control_uid);
   const navigate = useNavigate();
   const [inSound] = useSound("/in.mp3");
   const [outSound] = useSound("/bb.mp3");
@@ -42,7 +34,6 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
       await set(ref(database, `inoutList/${control_uid}`), true);
       const accessToken = await user.getIdToken();
       await postInout(control_uid, true, accessToken);
-      queryClient.invalidateQueries({ queryKey: ["inout", control_uid] });
     } catch (error) {
       console.error("Error entering:", error);
     } finally {
@@ -59,15 +50,12 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
       await set(ref(database, `inoutList/${control_uid}`), false);
       const accessToken = await user.getIdToken();
       await postInout(control_uid, false, accessToken);
-      queryClient.invalidateQueries({ queryKey: ["inout", control_uid] });
     } catch (error) {
       console.error("Error exiting:", error);
     } finally {
       setIsExiting(false);
     }
   };
-
-  if (isFetching) return null;
 
   return (
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
@@ -89,7 +77,7 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
       <Box gap={2} display={"flex"}>
         <Button
           color="primary"
-          disabled={isIn || isFetching || isEntering}
+          disabled={isIn || isEntering}
           onClick={handleEnter}
           size="md"
           loading={isEntering}
@@ -98,7 +86,7 @@ const InOutNotify = ({ control_uid, isNoAnal }: Props) => {
         </Button>
         <Button
           color="danger"
-          disabled={!isIn || isFetching || isExiting}
+          disabled={!isIn || isExiting}
           onClick={handleExit}
           size="md"
           loading={isExiting}

@@ -54,7 +54,12 @@ const OfflineList = () => {
       <Box m={0.5}>
         <Divider />
       </Box>
-      {user && <InOutNotify control_uid={user.uid || "114514"} />}
+      {user && !loading && (
+        <InOutNotify
+          offlineList={offlineList}
+          control_uid={user.uid || "114514"}
+        />
+      )}
     </Card>
   );
 };

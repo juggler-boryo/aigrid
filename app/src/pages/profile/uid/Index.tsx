@@ -7,11 +7,13 @@ import InOutNotify from "../../../components/OfflineList/InOutNotify";
 import { useEffect } from "react";
 import { ref, onValue, getDatabase } from "firebase/database";
 import { app } from "../../../libs/firebase";
-
+import { useState } from "react";
 const database = getDatabase(app);
 
 const Profile = () => {
   const { uid } = useParams();
+  const [offlineList, setOfflineList] = useState<Array<string>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const offlineListRef = ref(database, "inoutList");
@@ -21,8 +23,9 @@ const Profile = () => {
         const uids = Object.entries(data)
           .filter(([, isIn]) => isIn)
           .map(([uid]) => uid);
-        console.log(uids);
+        setOfflineList(uids);
       }
+      setLoading(false);
     });
   }, []);
 
@@ -38,7 +41,13 @@ const Profile = () => {
             <UserProfile uid={uid || ""} />
             <Box>
               <Typography level="title-md">UID: {uid}</Typography>
-              <InOutNotify isNoAnal={true} control_uid={uid || "114514"} />
+              {!loading && (
+                <InOutNotify
+                  offlineList={offlineList}
+                  isNoAnal={true}
+                  control_uid={uid || "114514"}
+                />
+              )}
             </Box>
           </Box>
           <Box m={0.5}>
