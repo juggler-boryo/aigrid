@@ -6,16 +6,18 @@ import {
   Divider,
   Button,
   Chip,
+  IconButton,
 } from "@mui/joy";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { listTamaki } from "../../apis/tamaki";
-import { TamakiEvent } from "../../types/tamaki";
 import UserProfile from "../UserProfile";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../libs/firebase";
 import { IoMdAdd, IoMdCheckmark } from "react-icons/io";
 import { Min2Str } from "../../libs/min2str";
 import { useNavigate } from "react-router-dom";
+import { BsThreeDots } from "react-icons/bs";
+import { useState, useMemo } from "react";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -25,15 +27,28 @@ export const Kind2title = (kind: number) => {
 const Tamaki = () => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
-  const { data: tamakiList = [], isLoading } = useQuery<TamakiEvent[]>({
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["tamaki"],
-    queryFn: async () => {
+    queryFn: async ({ pageParam }) => {
       const accessToken = await user?.getIdToken();
-      if (!accessToken) return [];
-      return await listTamaki(accessToken);
+      if (!accessToken) return { events: [], has_more: false };
+      return await listTamaki(accessToken, !pageParam, pageParam);
     },
+    getNextPageParam: (lastPage) => lastPage.next_cursor,
     enabled: !!user,
   });
+
+  const tamakiList = useMemo(() => {
+    return data?.pages.flatMap((page) => page.events) ?? [];
+  }, [data]);
+
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    await fetchNextPage();
+    setIsLoadingMore(false);
+  };
 
   return (
     <Card sx={{ width: "85%" }}>
@@ -43,7 +58,7 @@ const Tamaki = () => {
         </Box>
       ) : (
         <Box gap={1} display="flex" flexDirection="column">
-          {(tamakiList || []).map((tamaki) => (
+          {tamakiList.map((tamaki) => (
             <Box key={tamaki.id} position="relative">
               {(tamaki.participants_uids?.includes(user?.uid || "") ||
                 tamaki.organizer_uid === user?.uid) && (
@@ -114,15 +129,33 @@ const Tamaki = () => {
               </Card>
             </Box>
           ))}
-          <Box display="flex" justifyContent="center" width="100%">
+          <Box display="flex" width="100%" justifyContent="flex-end" gap={1}>
+            {hasNextPage && (
+              <Button
+                variant="outlined"
+                color="neutral"
+                fullWidth
+                size="sm"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+              >
+                {isLoadingMore ? (
+                  <CircularProgress size="sm" />
+                ) : (
+                  <BsThreeDots />
+                )}
+              </Button>
+            )}
             <Button
               variant="outlined"
               color="primary"
-              fullWidth
               onClick={() => navigate("/tamaki/new")}
               startDecorator={<IoMdAdd />}
+              sx={{
+                minWidth: "100px",
+              }}
             >
-              魂環
+              たまき
             </Button>
           </Box>
         </Box>

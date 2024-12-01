@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -224,16 +225,44 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
-	limit := 3
-	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Limit(limit).Documents(r.Context())
-	docs, err := iter.GetAll()
+	size := 3
+	if sizeStr := r.URL.Query().Get("size"); sizeStr != "" {
+		if s, err := strconv.Atoi(sizeStr); err == nil && s > 0 {
+			size = s
+		}
+	}
+
+	cursor := r.URL.Query().Get("cursor")
+
+	query := lib.DB.Collection("tamaki_events").
+		OrderBy("created_at", firestore.Desc).
+		Limit(size + 1)
+
+	if cursor != "" {
+		cursorDoc, err := lib.DB.Collection("tamaki_events").Doc(cursor).Get(r.Context())
+		if err != nil {
+			http.Error(w, "Invalid cursor", http.StatusBadRequest)
+			return
+		}
+		query = query.StartAfter(cursorDoc)
+	}
+
+	docs, err := query.Documents(r.Context()).GetAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	hasMore := false
+	if len(docs) > size {
+		hasMore = true
+		docs = docs[:size]
+	}
+
 	var tamakiEvents []interface{}
+	var lastID string
 	for _, doc := range docs {
+		lastID = doc.Ref.ID
 		var baseEvent models.TamakiEvent
 		if err := doc.DataTo(&baseEvent); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -260,8 +289,21 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	response := struct {
+		Events     []interface{} `json:"events"`
+		NextCursor string        `json:"next_cursor,omitempty"`
+		HasMore    bool          `json:"has_more"`
+	}{
+		Events:  tamakiEvents,
+		HasMore: hasMore,
+	}
+
+	if hasMore {
+		response.NextCursor = lastID
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tamakiEvents)
+	json.NewEncoder(w).Encode(response)
 }
 
 func DeleteTamakiHandler(w http.ResponseWriter, r *http.Request) {

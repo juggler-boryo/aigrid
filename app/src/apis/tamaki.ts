@@ -45,9 +45,19 @@ export const updateTamaki = async (
 };
 
 export const listTamaki = async (
-  accessToken: string
-): Promise<TamakiEvent[]> => {
-  const response = await fetch(`${Endpoint}tamaki`, {
+  accessToken: string,
+  isInitial: boolean = true,
+  cursor?: string
+): Promise<{
+  events: TamakiEvent[];
+  next_cursor?: string;
+  has_more: boolean;
+}> => {
+  const params = new URLSearchParams();
+  params.append("size", isInitial ? "3" : "10");
+  if (cursor) params.append("cursor", cursor);
+
+  const response = await fetch(`${Endpoint}tamaki?${params.toString()}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
