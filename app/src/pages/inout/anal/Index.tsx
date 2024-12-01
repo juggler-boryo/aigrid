@@ -8,6 +8,7 @@ import { PieChart, LineChart } from "@mui/x-charts";
 import { Min2Str } from "../../../libs/min2str";
 import { GetUser } from "../../../apis/user";
 import TopBar from "../../../components/TopBar";
+import { useMemo } from "react";
 
 const InOutList2EachPersonMinutes = (
   inoutList: Inout[]
@@ -125,34 +126,42 @@ const Index = () => {
     enabled: !!user,
   });
 
-  const minutesData = data?.inoutList
-    ? InOutList2EachPersonMinutes(data.inoutList)
-    : {};
-  const chartData = Object.entries(minutesData)
-    .filter(([, minutes]) => minutes > 0)
-    .map(([uid, minutes], index) => ({
-      id: index,
-      value: minutes,
-      label: `${data?.userMap[uid]?.username || "Unknown User"} (${Min2Str(
-        minutes
-      )})`,
-    }));
+  const { chartData } = useMemo(() => {
+    if (!data?.inoutList) return { chartData: [] };
 
-  const userDailyData = data?.inoutList
-    ? getDailyMinutesByUser(data.inoutList)
-    : {};
-  const userSeries = Object.entries(userDailyData)
-    .filter(([, dailyData]) => dailyData.length > 0)
-    .map(([uid, dailyData]) => ({
-      data: dailyData.map((d) => d.minutes),
-      label: data?.userMap[uid]?.username || "Unknown User",
-    }));
+    const minutes = InOutList2EachPersonMinutes(data.inoutList);
+    const chart = Object.entries(minutes)
+      .filter(([, mins]) => mins > 0)
+      .map(([uid, mins], index) => ({
+        id: index,
+        value: mins,
+        label: `${data?.userMap[uid]?.username || "Unknown User"} (${Min2Str(
+          mins
+        )})`,
+      }));
 
-  const allDates = Object.values(userDailyData)
-    .flat()
-    .map((d) => d.date)
-    .filter((date, index, self) => self.indexOf(date) === index)
-    .sort((a, b) => a - b);
+    return { chartData: chart };
+  }, [data?.inoutList, data?.userMap]);
+
+  const { userSeries, allDates } = useMemo(() => {
+    if (!data?.inoutList) return { userSeries: [], allDates: [] };
+
+    const dailyData = getDailyMinutesByUser(data.inoutList);
+    const series = Object.entries(dailyData)
+      .filter(([, userData]) => userData.length > 0)
+      .map(([uid]) => ({
+        data: dailyData[uid].map((d) => d.minutes),
+        label: data?.userMap[uid]?.username || "Unknown User",
+      }));
+
+    const dates = Object.values(dailyData)
+      .flat()
+      .map((d) => d.date)
+      .filter((date, index, self) => self.indexOf(date) === index)
+      .sort((a, b) => a - b);
+
+    return { userSeries: series, allDates: dates };
+  }, [data?.inoutList, data?.userMap]);
 
   return (
     <Box

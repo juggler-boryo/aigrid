@@ -5,12 +5,23 @@ import Login from "./pages/login/Index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProfileSettings from "./pages/profile/Index";
 import "./global.css";
-import { Box, CssVarsProvider, extendTheme } from "@mui/joy";
+import { Box, CssVarsProvider, extendTheme, CircularProgress } from "@mui/joy";
 import Profile from "./pages/profile/uid/Index";
 import TamakiNew from "./pages/tamaki/new/Index";
-import TamakiDetail from "./pages/tamaki/id/Index";
-import InOutAnal from "./pages/inout/anal/Index";
-const queryClient = new QueryClient();
+import { lazy, Suspense } from "react";
+
+const TamakiDetail = lazy(() => import("./pages/tamaki/id/Index"));
+const InOutAnal = lazy(() => import("./pages/inout/anal/Index"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 0,
+      cacheTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: true,
+    },
+  },
+});
 
 const theme = extendTheme({
   fontFamily: {
@@ -47,13 +58,34 @@ const router = createBrowserRouter([
   },
   {
     path: "/tamaki/:id",
-    element: <TamakiDetail />,
+    element: (
+      <Suspense
+        fallback={
+          <Box display="flex" justifyContent="center">
+            <CircularProgress />
+          </Box>
+        }
+      >
+        <TamakiDetail />
+      </Suspense>
+    ),
   },
   {
     path: "/inout/anal",
-    element: <InOutAnal />,
+    element: (
+      <Suspense
+        fallback={
+          <Box display="flex" justifyContent="center">
+            <CircularProgress />
+          </Box>
+        }
+      >
+        <InOutAnal />
+      </Suspense>
+    ),
   },
 ]);
+
 createRoot(document.getElementById("root")!).render(
   <CssVarsProvider theme={theme} defaultMode="light">
     <QueryClientProvider client={queryClient}>

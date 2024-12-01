@@ -48,6 +48,17 @@ export const getInoutHistory = async (
   return data.history;
 };
 
+export const getInoutList = async (
+  uid: string,
+  accessToken: string
+): Promise<boolean> => {
+  const response = await fetch(`${Endpoint}inout/${uid}/is_in`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const data = await response.json();
+  return data.isIn;
+};
+
 export const getInoutAnalytics = async (
   accessToken: string
 ): Promise<Inout[]> => {

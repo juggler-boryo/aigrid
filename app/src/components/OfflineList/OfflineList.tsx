@@ -15,7 +15,7 @@ const OfflineList = () => {
 
   useEffect(() => {
     const offlineListRef = ref(database, "inoutList");
-    onValue(offlineListRef, (snapshot) => {
+    const unsubscribe = onValue(offlineListRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const uids = Object.entries(data)
@@ -25,6 +25,8 @@ const OfflineList = () => {
       }
       setLoading(false);
     });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -52,12 +54,7 @@ const OfflineList = () => {
       <Box m={0.5}>
         <Divider />
       </Box>
-      {!loading && user && (
-        <InOutNotify
-          offlineList={offlineList}
-          control_uid={user.uid || "114514"}
-        />
-      )}
+      {user && <InOutNotify control_uid={user.uid || "114514"} />}
     </Card>
   );
 };

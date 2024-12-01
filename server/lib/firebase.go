@@ -113,6 +113,19 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 	return inouts, nil
 }
 
+func GetIsIn(uid string) (bool, error) {
+	history, err := GetInoutHistory(uid, 1)
+	if err != nil {
+		return false, err
+	}
+
+	if len(history) == 0 {
+		return false, nil
+	}
+
+	return history[0].IsIn, nil
+}
+
 func GetInoutHistoryByMonth() ([]models.Inout, error) {
 	now := time.Now()
 	oneMonthAgo := now.AddDate(0, -1, 0)

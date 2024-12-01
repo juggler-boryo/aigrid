@@ -115,6 +115,26 @@ func GetInoutHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func GetIsInHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid := vars["uid"]
+	if uid == "" {
+		http.Error(w, "uid is required", http.StatusBadRequest)
+		return
+	}
+
+	isIn, err := lib.GetIsIn(uid)
+	if err != nil {
+		http.Error(w, "Failed to get is in: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"isIn": isIn,
+	})
+}
+
 func GetInoutAnalyticsHandler(w http.ResponseWriter, r *http.Request) {
 	history, err := lib.GetInoutHistoryByMonth()
 	if err != nil {

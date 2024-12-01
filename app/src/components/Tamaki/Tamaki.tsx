@@ -16,7 +16,8 @@ import { IoMdAdd, IoMdCheckmark } from "react-icons/io";
 import { Min2Str } from "../../libs/min2str";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { TamakiEvent } from "../../types/tamaki";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -40,14 +41,90 @@ const Tamaki = () => {
   });
 
   const tamakiList = useMemo(() => {
-    return data?.pages.flatMap((page) => page.events) ?? [];
-  }, [data]);
+    if (!data?.pages) return [];
+    return data.pages.flatMap((page) => page.events);
+  }, [data?.pages]);
 
-  const handleLoadMore = async () => {
+  const handleLoadMore = useCallback(async () => {
     setIsLoadingMore(true);
-    await fetchNextPage();
-    setIsLoadingMore(false);
-  };
+    try {
+      await fetchNextPage();
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [fetchNextPage]);
+
+  const renderTamakiItem = useCallback(
+    (tamaki: TamakiEvent) => (
+      <Box key={tamaki.id} position="relative">
+        {(tamaki.participants_uids?.includes(user?.uid || "") ||
+          tamaki.organizer_uid === user?.uid) && (
+          <Chip
+            size="sm"
+            variant="outlined"
+            color="success"
+            startDecorator={<IoMdCheckmark />}
+            sx={{
+              position: "absolute",
+              top: -4,
+              left: -4,
+              zIndex: 10,
+            }}
+          />
+        )}
+        <Card
+          key={tamaki.id}
+          variant="outlined"
+          sx={{
+            p: 1.5,
+            cursor: "pointer",
+            "&:hover": {
+              backgroundColor: "var(--joy-palette-neutral-100, #F0F4F8)",
+              transition: "all 0.2s ease-in-out",
+            },
+            position: "relative",
+          }}
+          onClick={() => {
+            navigate(`/tamaki/${tamaki.id}`);
+          }}
+        >
+          <Box
+            display="flex"
+            gap={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box display="flex" gap={2} alignItems="center">
+              <UserProfile
+                uid={tamaki.organizer_uid}
+                isOnlyAvatar
+                disableClick
+              />
+
+              <Divider orientation="vertical" />
+              <Box display="flex" gap={1} alignItems="center">
+                <Typography level="title-md">
+                  {tamaki.kind === 0 ? tamaki.title : Kind2title(tamaki.kind)}
+                </Typography>
+                <Typography level="title-sm">
+                  {tamaki.participants_uids &&
+                    `(${tamaki.participants_uids.length + 1})`}
+                </Typography>
+              </Box>
+            </Box>
+            <Typography level="body-sm" textColor="neutral.500">
+              {Min2Str(
+                (new Date().getTime() - new Date(tamaki.created_at).getTime()) /
+                  1000 /
+                  60
+              )}
+            </Typography>
+          </Box>
+        </Card>
+      </Box>
+    ),
+    [user?.uid, navigate]
+  );
 
   return (
     <Card sx={{ width: "85%" }}>
@@ -57,77 +134,7 @@ const Tamaki = () => {
         </Box>
       ) : (
         <Box gap={1} display="flex" flexDirection="column">
-          {tamakiList.map((tamaki) => (
-            <Box key={tamaki.id} position="relative">
-              {(tamaki.participants_uids?.includes(user?.uid || "") ||
-                tamaki.organizer_uid === user?.uid) && (
-                <Chip
-                  size="sm"
-                  variant="outlined"
-                  color="success"
-                  startDecorator={<IoMdCheckmark />}
-                  sx={{
-                    position: "absolute",
-                    top: -4,
-                    left: -4,
-                    zIndex: 10,
-                  }}
-                />
-              )}
-              <Card
-                key={tamaki.id}
-                variant="outlined"
-                sx={{
-                  p: 1.5,
-                  cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: "var(--joy-palette-neutral-100, #F0F4F8)",
-                    transition: "all 0.2s ease-in-out",
-                  },
-                  position: "relative",
-                }}
-                onClick={() => {
-                  navigate(`/tamaki/${tamaki.id}`);
-                }}
-              >
-                <Box
-                  display="flex"
-                  gap={2}
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box display="flex" gap={2} alignItems="center">
-                    <UserProfile
-                      uid={tamaki.organizer_uid}
-                      isOnlyAvatar
-                      disableClick
-                    />
-
-                    <Divider orientation="vertical" />
-                    <Box display="flex" gap={1} alignItems="center">
-                      <Typography level="title-md">
-                        {tamaki.kind === 0
-                          ? tamaki.title
-                          : Kind2title(tamaki.kind)}
-                      </Typography>
-                      <Typography level="title-sm">
-                        {tamaki.participants_uids &&
-                          `(${tamaki.participants_uids.length + 1})`}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Typography level="body-sm" textColor="neutral.500">
-                    {Min2Str(
-                      (new Date().getTime() -
-                        new Date(tamaki.created_at).getTime()) /
-                        1000 /
-                        60
-                    )}
-                  </Typography>
-                </Box>
-              </Card>
-            </Box>
-          ))}
+          {tamakiList.map(renderTamakiItem)}
           <Box display="flex" width="100%" justifyContent="flex-end" gap={1}>
             {hasNextPage && (
               <Button
