@@ -148,6 +148,7 @@ const Tamaki = () => {
             <Button
               variant="outlined"
               color="primary"
+              size="sm"
               onClick={() => navigate("/tamaki/new")}
               startDecorator={<IoMdAdd />}
               sx={{
