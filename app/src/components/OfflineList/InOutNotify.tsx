@@ -6,6 +6,7 @@ import { getDatabase, ref, set } from "firebase/database";
 import { app } from "../../libs/firebase";
 import { postInout } from "../../apis/inout";
 import { useNavigate } from "react-router-dom";
+import useSound from "use-sound";
 
 interface Props {
   offlineList: Array<string>;
@@ -17,12 +18,13 @@ const database = getDatabase(app);
 
 const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
-  const isMein = offlineList.includes(user?.uid || "114514");
+  const isMein = offlineList.includes(control_uid);
   const navigate = useNavigate();
-
+  const [inSound] = useSound("/in.mp3");
+  const [outSound] = useSound("/bb.mp3");
   const handleEnter = async () => {
     if (!user?.uid) return;
-    if (!window.confirm("入室しますか？")) return;
+    inSound();
 
     try {
       await set(ref(database, `inoutList/${control_uid}`), true);
@@ -35,7 +37,7 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
 
   const handleExit = async () => {
     if (!user?.uid) return;
-    if (!window.confirm("退出しますか？")) return;
+    outSound();
 
     try {
       await set(ref(database, `inoutList/${control_uid}`), false);

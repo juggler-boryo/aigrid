@@ -188,11 +188,6 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if existingEvent.OrganizerUID != userID {
-			http.Error(w, "Unauthorized", http.StatusForbidden)
-			return
-		}
-
 		existingEvent.ParticipantsUIDs = dto.ParticipantsUIDs
 		existingEvent.Title = dto.Title
 		existingEvent.Memo = dto.Memo
@@ -215,11 +210,6 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		var existingEvent models.TamakiEvent1
 		if err := doc.DataTo(&existingEvent); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if existingEvent.OrganizerUID != userID {
-			http.Error(w, "Unauthorized", http.StatusForbidden)
 			return
 		}
 
