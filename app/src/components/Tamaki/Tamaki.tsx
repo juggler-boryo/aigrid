@@ -98,7 +98,7 @@ const Tamaki = () => {
                       </Typography>
                       <Typography level="title-sm">
                         {tamaki.participants_uids &&
-                          `(${tamaki.participants_uids.length})`}
+                          `(${tamaki.participants_uids.length + 1})`}
                       </Typography>
                     </Box>
                   </Box>
