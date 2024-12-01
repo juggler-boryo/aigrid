@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"aigrid/server/lib"
+	"aigrid/server/models"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -12,23 +14,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type TamakiEvent1DTO struct {
-	Kind             int      `json:"kind"`
-	ParticipantsUIDs []string `json:"participants_uids"`
-	Memo             string   `json:"memo,omitempty"`
-}
-
-type TamakiEvent struct {
-	ID           string    `json:"id" firestore:"id"`
-	Kind         int       `json:"kind" firestore:"kind"`
-	OrganizerUID string    `json:"organizer_uid" firestore:"organizer_uid"`
-	CreatedAt    time.Time `json:"created_at" firestore:"created_at"`
-}
-
-type TamakiEvent1 struct {
-	TamakiEvent
-	ParticipantsUIDs []string `json:"participants_uids" firestore:"participants_uids"`
-	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
+func handleTamakiEvent[T any](doc *firestore.DocumentSnapshot, w http.ResponseWriter) error {
+	var event T
+	if err := doc.DataTo(&event); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(event)
 }
 
 func GetTamakiHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,79 +34,126 @@ func GetTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// First get base event to check kind
-	var baseEvent TamakiEvent
+	var baseEvent models.TamakiEvent
 	if err := doc.DataTo(&baseEvent); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	switch baseEvent.Kind {
+	case 0:
+		handleTamakiEvent[models.TamakiEvent0](doc, w)
 	case 1:
-		var event TamakiEvent1
-		if err := doc.DataTo(&event); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(event)
+		handleTamakiEvent[models.TamakiEvent1](doc, w)
 	default:
 		http.Error(w, fmt.Sprintf("Unknown event kind: %d", baseEvent.Kind), http.StatusBadRequest)
 	}
 }
 
-func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
-	var dto TamakiEvent1DTO
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if dto.Kind != 1 {
-		http.Error(w, "Invalid event kind", http.StatusBadRequest)
-		return
-	}
-
-	userID := r.Context().Value("uid").(string)
-	id := uuid.New().String()
-
-	tamakiEvent := TamakiEvent1{
-		TamakiEvent: TamakiEvent{
-			ID:           id,
-			Kind:         dto.Kind,
-			OrganizerUID: userID,
-			CreatedAt:    time.Now(),
-		},
-		ParticipantsUIDs: dto.ParticipantsUIDs,
-		Memo:             dto.Memo,
-	}
-
-	_, err := lib.DB.Collection("tamaki_events").Doc(id).Set(r.Context(), tamakiEvent)
+func createTamakiEvent[T any](dto T, id string, w http.ResponseWriter, r *http.Request) {
+	_, err := lib.DB.Collection("tamaki_events").Doc(id).Set(r.Context(), dto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tamakiEvent)
+	json.NewEncoder(w).Encode(dto)
+}
+
+func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
+	var baseDTO models.TamakiEventDTO
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := json.Unmarshal(body, &baseDTO); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	userID := r.Context().Value("uid").(string)
+	id := uuid.New().String()
+	createdAt := time.Now()
+
+	switch baseDTO.Kind {
+	case 0:
+		var dto models.TamakiEvent0DTO
+		if err := json.Unmarshal(body, &dto); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		tamakiEvent := models.TamakiEvent0{
+			TamakiEvent: models.TamakiEvent{
+				ID:           id,
+				Kind:         dto.Kind,
+				OrganizerUID: userID,
+				CreatedAt:    createdAt,
+			},
+			ParticipantsUIDs: dto.ParticipantsUIDs,
+			Title:            dto.Title,
+			Memo:             dto.Memo,
+			Price:            dto.Price,
+		}
+		createTamakiEvent(tamakiEvent, id, w, r)
+
+		priceText := "未定"
+		if dto.Price > 0 {
+			priceText = fmt.Sprintf("%d円", dto.Price)
+		}
+		message := fmt.Sprintf("わくわくイベント発生\nLタイトル: %s\nLメモ: %s\nL値段: %s", dto.Title, dto.Memo, priceText)
+		channelID := lib.GetDiscordChannelID()
+		if err := lib.SendMessageToDiscord(channelID, message); err != nil {
+			fmt.Printf("Failed to send Discord notification: %v\n", err)
+		}
+
+	case 1:
+		var dto models.TamakiEvent1DTO
+		if err := json.Unmarshal(body, &dto); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		tamakiEvent := models.TamakiEvent1{
+			TamakiEvent: models.TamakiEvent{
+				ID:           id,
+				Kind:         dto.Kind,
+				OrganizerUID: userID,
+				CreatedAt:    createdAt,
+			},
+			ParticipantsUIDs: dto.ParticipantsUIDs,
+			Memo:             dto.Memo,
+		}
+		createTamakiEvent(tamakiEvent, id, w, r)
+
+	default:
+		http.Error(w, "Unsupported event kind", http.StatusBadRequest)
+	}
+}
+
+func updateTamakiEvent[T any](doc *firestore.DocumentSnapshot, dto T, userID string, id string, w http.ResponseWriter, r *http.Request) error {
+	var existingEvent T
+	if err := doc.DataTo(&existingEvent); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	_, err := lib.DB.Collection("tamaki_events").Doc(id).Set(r.Context(), dto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(dto)
 }
 
 func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-
-	var dto TamakiEvent1DTO
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if dto.Kind != 1 {
-		http.Error(w, "Invalid event kind", http.StatusBadRequest)
-		return
-	}
-
-	userID := r.Context().Value("uid").(string)
 
 	doc, err := lib.DB.Collection("tamaki_events").Doc(id).Get(r.Context())
 	if err != nil {
@@ -121,33 +161,81 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var existingEvent TamakiEvent1
-	if err := doc.DataTo(&existingEvent); err != nil {
+	var baseEvent models.TamakiEvent
+	if err := doc.DataTo(&baseEvent); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if existingEvent.OrganizerUID != userID {
-		http.Error(w, "Unauthorized", http.StatusForbidden)
-		return
+	userID := r.Context().Value("uid").(string)
+
+	switch baseEvent.Kind {
+	case 0:
+		var dto models.TamakiEvent0DTO
+		if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if dto.Kind != 0 {
+			http.Error(w, "Invalid event kind", http.StatusBadRequest)
+			return
+		}
+
+		var existingEvent models.TamakiEvent0
+		if err := doc.DataTo(&existingEvent); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if existingEvent.OrganizerUID != userID {
+			http.Error(w, "Unauthorized", http.StatusForbidden)
+			return
+		}
+
+		existingEvent.ParticipantsUIDs = dto.ParticipantsUIDs
+		existingEvent.Title = dto.Title
+		existingEvent.Memo = dto.Memo
+		existingEvent.Price = dto.Price
+
+		updateTamakiEvent(doc, existingEvent, userID, id, w, r)
+
+	case 1:
+		var dto models.TamakiEvent1DTO
+		if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if dto.Kind != 1 {
+			http.Error(w, "Invalid event kind", http.StatusBadRequest)
+			return
+		}
+
+		var existingEvent models.TamakiEvent1
+		if err := doc.DataTo(&existingEvent); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if existingEvent.OrganizerUID != userID {
+			http.Error(w, "Unauthorized", http.StatusForbidden)
+			return
+		}
+
+		existingEvent.ParticipantsUIDs = dto.ParticipantsUIDs
+		existingEvent.Memo = dto.Memo
+
+		updateTamakiEvent(doc, existingEvent, userID, id, w, r)
+
+	default:
+		http.Error(w, "Unsupported event kind", http.StatusBadRequest)
 	}
-
-	existingEvent.ParticipantsUIDs = dto.ParticipantsUIDs
-	existingEvent.Memo = dto.Memo
-
-	_, err = lib.DB.Collection("tamaki_events").Doc(id).Set(r.Context(), existingEvent)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(existingEvent)
 }
 
 func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
-	len := 3
-	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Limit(len).Documents(r.Context())
+	limit := 3
+	iter := lib.DB.Collection("tamaki_events").OrderBy("created_at", firestore.Desc).Limit(limit).Documents(r.Context())
 	docs, err := iter.GetAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -156,15 +244,22 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 
 	var tamakiEvents []interface{}
 	for _, doc := range docs {
-		var baseEvent TamakiEvent
+		var baseEvent models.TamakiEvent
 		if err := doc.DataTo(&baseEvent); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		switch baseEvent.Kind {
+		case 0:
+			var event models.TamakiEvent0
+			if err := doc.DataTo(&event); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			tamakiEvents = append(tamakiEvents, event)
 		case 1:
-			var event TamakiEvent1
+			var event models.TamakiEvent1
 			if err := doc.DataTo(&event); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -188,4 +283,6 @@ func DeleteTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

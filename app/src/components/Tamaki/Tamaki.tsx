@@ -16,11 +16,10 @@ import { auth } from "../../libs/firebase";
 import { IoMdAdd, IoMdCheckmark } from "react-icons/io";
 import { Min2Str } from "../../libs/min2str";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
-  return "その他";
+  return "invalid kind";
 };
 
 const Tamaki = () => {
@@ -35,27 +34,6 @@ const Tamaki = () => {
     },
     enabled: !!user,
   });
-
-  const [rotationIndexes, setRotationIndexes] = useState<{
-    [key: string]: number;
-  }>({});
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRotationIndexes((prev) => {
-        const newIndexes = { ...prev };
-        tamakiList.forEach((tamaki) => {
-          if (tamaki.participants_uids && tamaki.participants_uids.length > 3) {
-            newIndexes[tamaki.id] =
-              ((prev[tamaki.id] || 0) + 1) % tamaki.participants_uids.length;
-          }
-        });
-        return newIndexes;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [tamakiList]);
 
   return (
     <Card sx={{ width: "85%" }}>
@@ -105,36 +83,24 @@ const Tamaki = () => {
                   justifyContent="space-between"
                 >
                   <Box display="flex" gap={2} alignItems="center">
-                    <Box display="flex" gap={1} alignItems="center">
-                      <Typography level="title-md">
-                        {Kind2title(tamaki.kind)}
-                      </Typography>
-                    </Box>
-                    <Divider orientation="vertical" />
                     <UserProfile
                       uid={tamaki.organizer_uid}
                       isOnlyAvatar
                       disableClick
                     />
-                    {tamaki.participants_uids &&
-                      tamaki.participants_uids.length > 0 &&
-                      [
-                        ...Array(Math.min(3, tamaki.participants_uids.length)),
-                      ].map((_, i) => {
-                        if (!tamaki.participants_uids) return <></>;
-                        const startIndex = rotationIndexes[tamaki.id] || 0;
-                        const participantIndex =
-                          (startIndex + i) %
-                          (tamaki.participants_uids.length || 0);
-                        return (
-                          <UserProfile
-                            key={tamaki.participants_uids[participantIndex]}
-                            uid={tamaki.participants_uids[participantIndex]}
-                            isOnlyAvatar
-                            disableClick
-                          />
-                        );
-                      })}
+
+                    <Divider orientation="vertical" />
+                    <Box display="flex" gap={1} alignItems="center">
+                      <Typography level="title-md">
+                        {tamaki.kind === 0
+                          ? tamaki.title
+                          : Kind2title(tamaki.kind)}
+                      </Typography>
+                      <Typography level="title-sm">
+                        {tamaki.participants_uids &&
+                          `(${tamaki.participants_uids.length})`}
+                      </Typography>
+                    </Box>
                   </Box>
                   <Typography level="body-sm" textColor="neutral.500">
                     {Min2Str(

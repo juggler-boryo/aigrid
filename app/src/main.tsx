@@ -5,7 +5,7 @@ import Login from "./pages/login/Index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProfileSettings from "./pages/profile/Index";
 import "./global.css";
-import { CssVarsProvider, extendTheme } from "@mui/joy";
+import { Box, CssVarsProvider, extendTheme } from "@mui/joy";
 import Profile from "./pages/profile/uid/Index";
 import TamakiNew from "./pages/tamaki/new/Index";
 import TamakiDetail from "./pages/tamaki/id/Index";
@@ -62,6 +62,7 @@ createRoot(document.getElementById("root")!).render(
         href="https://cdn.xeiaso.net/static/css/iosevka/family.css"
       />
       <RouterProvider router={router} />
+      <Box sx={{ mb: 8 }} />
     </QueryClientProvider>
   </CssVarsProvider>
 );

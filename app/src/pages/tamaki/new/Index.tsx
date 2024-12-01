@@ -9,6 +9,8 @@ import {
   Textarea,
   Typography,
   Chip,
+  Input,
+  CircularProgress,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -21,13 +23,17 @@ import { FaRegCalendarPlus } from "react-icons/fa";
 import { GetAllUsers } from "../../../apis/user";
 import { useQuery } from "@tanstack/react-query";
 import UserProfile from "../../../components/UserProfile";
+import { TamakiEvent, TamakiEventDTO } from "../../../types/tamaki";
 
 const TamakiNew = () => {
   const navigate = useNavigate();
   const [meUser] = useIdToken(auth);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [kind, setKind] = useState(1);
-  const [memo, setMemo] = useState("");
+  const [kind, setKind] = useState<number>(0);
+  const [title, setTitle] = useState<string>("");
+  const [memo, setMemo] = useState<string>("");
+  const [price, setPrice] = useState<number | undefined>(undefined);
   const [participants_uids, setParticipants_uids] = useState<string[]>([]);
   const { data: allUsers } = useQuery({
     queryKey: ["users"],
@@ -44,22 +50,48 @@ const TamakiNew = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!meUser?.uid) return;
+    setIsSubmitting(true);
 
     const accessToken = await meUser.getIdToken();
-    if (!accessToken) return;
+    if (!accessToken) {
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      await createTamaki(
+      const baseEvent: Omit<TamakiEvent, "id" | "created_at"> = {
         kind,
-        meUser.uid,
+        organizer_uid: meUser.uid,
         participants_uids,
-        memo,
-        accessToken
-      );
+      };
+
+      let event: TamakiEventDTO;
+
+      if (kind === 0) {
+        // わくわくイベント
+        event = {
+          ...baseEvent,
+          title,
+          memo,
+          price: price !== undefined ? price : -1,
+        };
+      } else if (kind === 1) {
+        // お風呂券
+        event = {
+          ...baseEvent,
+          memo,
+        };
+      } else {
+        throw new Error("Unsupported event kind");
+      }
+
+      await createTamaki(event, accessToken);
       navigate("/");
     } catch (error) {
       console.error("Error creating tamaki:", error);
       alert("たまきの作成に失敗しました");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -101,53 +133,89 @@ const TamakiNew = () => {
               onChange={(_, value) => setKind(Number(value))}
               placeholder="たまきの種類を選択"
             >
-              <Option value={1}>風呂</Option>
+              <Option value={0}>わくわくイベント</Option>
+              <Option value={1}>お風呂券</Option>
             </Select>
           </FormControl>
 
-          <FormControl>
-            <FormLabel>メモ</FormLabel>
-            <Textarea
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              placeholder="メモを入力"
-              minRows={3}
-            />
-          </FormControl>
+          {kind === 0 && (
+            <FormControl required>
+              <FormLabel>タイトル</FormLabel>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="イベントのタイトルを入力"
+                required
+              />
+            </FormControl>
+          )}
 
-          <FormControl>
-            <FormLabel>参加者</FormLabel>
-            <Box display="flex" flexWrap="wrap" gap={1}>
-              {(allUsers || []).map((user) => (
-                <Box
-                  key={user}
-                  display="flex"
-                  gap={2}
-                  alignItems="center"
-                  onClick={() => {
-                    if (!meUser) return;
-                    if (user === meUser.uid) return;
-                    setParticipants_uids(
-                      participants_uids.includes(user)
-                        ? participants_uids.filter((uid) => uid !== user)
-                        : [...participants_uids, user]
-                    );
-                  }}
-                >
-                  <UserProfile
-                    uid={user}
-                    disableClick
-                    selected={
-                      participants_uids.includes(user) || user === meUser?.uid
-                    }
-                  />
-                </Box>
-              ))}
-            </Box>
-          </FormControl>
+          {(kind === 0 || kind === 1) && (
+            <FormControl>
+              <FormLabel>メモ</FormLabel>
+              <Textarea
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                placeholder="メモを入力"
+                minRows={3}
+              />
+            </FormControl>
+          )}
 
-          <Button type="submit" variant="solid">
-            作成
+          {kind === 0 && (
+            <FormControl>
+              <FormLabel>価格</FormLabel>
+              <Input
+                type="number"
+                value={price !== undefined ? price : ""}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                placeholder="価格を入力"
+              />
+            </FormControl>
+          )}
+
+          {(kind === 0 || kind === 1) && (
+            <FormControl>
+              <FormLabel>参加者</FormLabel>
+              <Box display="flex" flexWrap="wrap" gap={1}>
+                {(allUsers || []).map((uid) => (
+                  <Box
+                    key={uid}
+                    display="flex"
+                    gap={2}
+                    alignItems="center"
+                    onClick={() => {
+                      if (!meUser) return;
+                      if (uid === meUser.uid) return;
+                      setParticipants_uids((prev) =>
+                        prev.includes(uid)
+                          ? prev.filter((uid) => uid !== uid)
+                          : [...prev, uid]
+                      );
+                    }}
+                  >
+                    <UserProfile
+                      uid={uid}
+                      disableClick
+                      selected={
+                        participants_uids.includes(uid) || uid === meUser?.uid
+                      }
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </FormControl>
+          )}
+
+          <Button
+            type="submit"
+            variant="solid"
+            disabled={isSubmitting}
+            startDecorator={
+              isSubmitting ? <CircularProgress size="sm" /> : null
+            }
+          >
+            {isSubmitting ? "作成中..." : "作成"}
           </Button>
         </Box>
         <Chip

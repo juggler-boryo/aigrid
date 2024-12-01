@@ -129,7 +129,7 @@ const Index = () => {
     ? InOutList2EachPersonMinutes(data.inoutList)
     : {};
   const chartData = Object.entries(minutesData)
-    .filter(([_, minutes]) => minutes > 0)
+    .filter(([, minutes]) => minutes > 0)
     .map(([uid, minutes], index) => ({
       id: index,
       value: minutes,
@@ -142,7 +142,7 @@ const Index = () => {
     ? getDailyMinutesByUser(data.inoutList)
     : {};
   const userSeries = Object.entries(userDailyData)
-    .filter(([_, dailyData]) => dailyData.length > 0)
+    .filter(([, dailyData]) => dailyData.length > 0)
     .map(([uid, dailyData]) => ({
       data: dailyData.map((d) => d.minutes),
       label: data?.userMap[uid]?.username || "Unknown User",

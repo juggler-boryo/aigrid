@@ -1,4 +1,4 @@
-import { TamakiEvent } from "../types/tamaki";
+import { TamakiEvent, TamakiEventDTO } from "../types/tamaki";
 import { Endpoint } from "./endpoint";
 
 export const getTamaki = async (
@@ -14,10 +14,7 @@ export const getTamaki = async (
 };
 
 export const createTamaki = async (
-  kind: number,
-  organizer_uid: string,
-  participants_uids: string[],
-  memo: string,
+  event: TamakiEventDTO,
   accessToken: string
 ): Promise<TamakiEvent> => {
   const response = await fetch(`${Endpoint}tamaki`, {
@@ -26,17 +23,14 @@ export const createTamaki = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ kind, organizer_uid, participants_uids, memo }),
+    body: JSON.stringify(event),
   });
   return response.json();
 };
 
 export const updateTamaki = async (
   id: string,
-  kind: number,
-  organizer_uid: string,
-  participants_uids: string[],
-  memo: string,
+  event: TamakiEventDTO,
   accessToken: string
 ): Promise<TamakiEvent> => {
   const response = await fetch(`${Endpoint}tamaki/${id}`, {
@@ -45,7 +39,7 @@ export const updateTamaki = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ kind, organizer_uid, participants_uids, memo }),
+    body: JSON.stringify(event),
   });
   return response.json();
 };

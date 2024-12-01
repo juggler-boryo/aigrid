@@ -50,6 +50,7 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
       {!isNoAnal && (
         <IconButton
+          disabled
           color="primary"
           size="md"
           variant="soft"
