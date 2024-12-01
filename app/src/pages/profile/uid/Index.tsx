@@ -4,7 +4,7 @@ import UserProfile from "../../../components/UserProfile";
 import { useParams } from "react-router-dom";
 import InOutHistory from "./InOutHistory";
 import InOutNotify from "../../../components/OfflineList/InOutNotify";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { ref, onValue, getDatabase } from "firebase/database";
 import { app } from "../../../libs/firebase";
 
@@ -12,8 +12,6 @@ const database = getDatabase(app);
 
 const Profile = () => {
   const { uid } = useParams();
-  const [offlineList, setOfflineList] = useState<Array<string>>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const offlineListRef = ref(database, "inoutList");
@@ -23,9 +21,8 @@ const Profile = () => {
         const uids = Object.entries(data)
           .filter(([, isIn]) => isIn)
           .map(([uid]) => uid);
-        setOfflineList(uids);
+        console.log(uids);
       }
-      setLoading(false);
     });
   }, []);
 
