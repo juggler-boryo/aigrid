@@ -8,6 +8,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -30,7 +31,8 @@ func InitializeFirebase(credPath string) error {
 }
 
 func ListUsers() ([]string, error) {
-	iter := DB.Collection("users").Documents(context.Background())
+	// Use Select to only fetch IDs rather than full documents
+	iter := DB.Collection("users").Select().Documents(context.Background())
 	docs, err := iter.GetAll()
 	if err != nil {
 		return nil, err
@@ -70,46 +72,59 @@ func RecordInout(uid string, isIn bool) error {
 }
 
 func GetUserInMinutes(uid string) (int, error) {
-	iter, err := DB.Collection("inouts").Where("uid", "==", uid).OrderBy("created_at", firestore.Desc).Documents(context.Background()).GetAll()
+	// Only fetch the latest record instead of all records
+	iter := DB.Collection("inouts").
+		Where("uid", "==", uid).
+		OrderBy("created_at", firestore.Desc).
+		Limit(1).
+		Documents(context.Background())
+
+	doc, err := iter.Next()
 	if err != nil {
+		if err == iterator.Done {
+			return 0, nil
+		}
 		return 0, err
 	}
 
-	if len(iter) == 0 {
+	data := doc.Data()
+	if !data["is_in"].(bool) {
 		return 0, nil
 	}
 
-	latestDoc := iter[0]
-	latestData := latestDoc.Data()
-
-	if !latestData["is_in"].(bool) {
-		return 0, nil
-	}
-
-	createdAt := latestData["created_at"].(time.Time)
+	createdAt := data["created_at"].(time.Time)
 	minutes := time.Since(createdAt).Minutes()
 
 	return int(minutes), nil
 }
 
 func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
-	iter, err := DB.Collection("inouts").Where("uid", "==", uid).OrderBy("created_at", firestore.Desc).Limit(limit).Documents(context.Background()).GetAll()
-	if err != nil {
-		return nil, err
-	}
+	iter := DB.Collection("inouts").
+		Where("uid", "==", uid).
+		OrderBy("created_at", firestore.Desc).
+		Limit(limit).
+		Documents(context.Background())
 
-	if len(iter) == 0 {
-		return []models.Inout{}, nil
-	}
+	var inouts []models.Inout
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
 
-	inouts := make([]models.Inout, len(iter))
-	for i, doc := range iter {
 		data := doc.Data()
-		inouts[i] = models.Inout{
+		inouts = append(inouts, models.Inout{
 			Uid:       data["uid"].(string),
 			IsIn:      data["is_in"].(bool),
 			CreatedAt: data["created_at"].(time.Time),
-		}
+		})
+	}
+
+	if len(inouts) == 0 {
+		return []models.Inout{}, nil
 	}
 	return inouts, nil
 }
@@ -118,26 +133,32 @@ func GetInoutHistoryByMonthByUID(uid string) ([]map[string]interface{}, error) {
 	now := time.Now()
 	oneMonthAgo := now.AddDate(0, -1, 0)
 
-	iter, err := DB.Collection("inouts").
+	// Use streaming iterator for better memory efficiency
+	iter := DB.Collection("inouts").
 		Where("uid", "==", uid).
 		Where("created_at", ">=", oneMonthAgo).
 		Where("created_at", "<=", now).
 		Where("is_in", "==", true).
 		OrderBy("created_at", firestore.Desc).
-		Documents(context.Background()).GetAll()
-	if err != nil {
-		return nil, err
-	}
+		Documents(context.Background())
 
 	dateCount := make(map[string]int)
-	for _, doc := range iter {
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
 		data := doc.Data()
 		createdAt := data["created_at"].(time.Time)
 		date := createdAt.Format("2006-01-02")
 		dateCount[date]++
 	}
 
-	var result []map[string]interface{}
+	result := make([]map[string]interface{}, 0, len(dateCount))
 	for date, count := range dateCount {
 		parsedDate, _ := time.Parse("2006-01-02", date)
 		result = append(result, map[string]interface{}{
@@ -154,39 +175,56 @@ func GetInoutHistoryByMonthByUID(uid string) ([]map[string]interface{}, error) {
 }
 
 func GetIsIn(uid string) (bool, error) {
-	history, err := GetInoutHistory(uid, 1)
+	// Only fetch the latest record instead of all records
+	iter := DB.Collection("inouts").
+		Where("uid", "==", uid).
+		OrderBy("created_at", firestore.Desc).
+		Limit(1).
+		Documents(context.Background())
+
+	doc, err := iter.Next()
 	if err != nil {
+		if err == iterator.Done {
+			return false, nil
+		}
 		return false, err
 	}
 
-	if len(history) == 0 {
-		return false, nil
-	}
-
-	return history[0].IsIn, nil
+	data := doc.Data()
+	return data["is_in"].(bool), nil
 }
 
 func GetInoutHistoryByMonth() ([]models.Inout, error) {
 	now := time.Now()
 	oneMonthAgo := now.AddDate(0, -1, 0)
 
-	iter, err := DB.Collection("inouts").Where("created_at", ">=", oneMonthAgo).Where("created_at", "<=", now).OrderBy("created_at", firestore.Desc).Documents(context.Background()).GetAll()
-	if err != nil {
-		return nil, err
-	}
+	// Use streaming iterator for better memory efficiency
+	iter := DB.Collection("inouts").
+		Where("created_at", ">=", oneMonthAgo).
+		Where("created_at", "<=", now).
+		OrderBy("created_at", firestore.Desc).
+		Documents(context.Background())
 
-	if len(iter) == 0 {
-		return []models.Inout{}, nil
-	}
+	var inouts []models.Inout
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
 
-	inouts := make([]models.Inout, len(iter))
-	for i, doc := range iter {
 		data := doc.Data()
-		inouts[i] = models.Inout{
+		inouts = append(inouts, models.Inout{
 			Uid:       data["uid"].(string),
 			IsIn:      data["is_in"].(bool),
 			CreatedAt: data["created_at"].(time.Time),
-		}
+		})
+	}
+
+	if len(inouts) == 0 {
+		return []models.Inout{}, nil
 	}
 	return inouts, nil
 }
