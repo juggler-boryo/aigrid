@@ -220,8 +220,7 @@ const TamakiDetail = () => {
                     gap={2}
                     alignItems="center"
                     onClick={() => {
-                      if (!meUser) return;
-                      if (user === meUser.uid) return;
+                      if (user === tamaki?.organizer_uid) return;
                       setParticipants_uids(
                         participants_uids.includes(user)
                           ? participants_uids.filter((uid) => uid !== user)
