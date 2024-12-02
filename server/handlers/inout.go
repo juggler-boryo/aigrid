@@ -115,7 +115,7 @@ func GetInoutHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func GetInoutHistoryByDayHandler(w http.ResponseWriter, r *http.Request) {
+func GetInoutHistoryByMonthHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uid := vars["uid"]
 	if uid == "" {
@@ -123,7 +123,7 @@ func GetInoutHistoryByDayHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	history, err := lib.GetInoutHistoryByDay(uid)
+	history, err := lib.GetInoutHistoryByMonthByUID(uid)
 	if err != nil {
 		http.Error(w, "Failed to get inout history: "+err.Error(), http.StatusInternalServerError)
 		return

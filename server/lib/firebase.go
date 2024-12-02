@@ -114,7 +114,7 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 	return inouts, nil
 }
 
-func GetInoutHistoryByDay(uid string) ([]map[string]interface{}, error) {
+func GetInoutHistoryByMonthByUID(uid string) ([]map[string]interface{}, error) {
 	now := time.Now()
 	oneMonthAgo := now.AddDate(0, -1, 0)
 

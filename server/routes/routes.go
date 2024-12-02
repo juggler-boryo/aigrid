@@ -23,7 +23,7 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
 	protectedRouter.HandleFunc("/inout/{uid}/minutes", handlers.GetInMinutesHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
-	protectedRouter.HandleFunc("/inout/{uid}/history/day", handlers.GetInoutHistoryByDayHandler).Methods("GET")
+	protectedRouter.HandleFunc("/inout/{uid}/kusa", handlers.GetInoutHistoryByMonthHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/is_in", handlers.GetIsInHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/anal", handlers.GetInoutAnalyticsHandler).Methods("GET")
 
