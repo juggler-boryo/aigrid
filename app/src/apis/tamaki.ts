@@ -47,7 +47,8 @@ export const updateTamaki = async (
 export const listTamaki = async (
   accessToken: string,
   isInitial: boolean = true,
-  cursor?: string
+  cursor?: string,
+  kind?: number
 ): Promise<{
   events: TamakiEvent[];
   next_cursor?: string;
@@ -56,6 +57,7 @@ export const listTamaki = async (
   const params = new URLSearchParams();
   params.append("size", isInitial ? "3" : "10");
   if (cursor) params.append("cursor", cursor);
+  if (kind !== undefined) params.append("kind", kind.toString());
 
   const response = await fetch(`${Endpoint}tamaki?${params.toString()}`, {
     headers: {

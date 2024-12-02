@@ -236,10 +236,21 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cursor := r.URL.Query().Get("cursor")
+	kindStr := r.URL.Query().Get("kind")
 
 	query := lib.DB.Collection("tamaki_events").
-		OrderBy("created_at", firestore.Desc).
-		Limit(size + 1)
+		OrderBy("created_at", firestore.Desc)
+
+	if kindStr != "" {
+		kind, err := strconv.Atoi(kindStr)
+		if err != nil {
+			http.Error(w, "Invalid kind parameter", http.StatusBadRequest)
+			return
+		}
+		query = query.Where("kind", "==", kind)
+	}
+
+	query = query.Limit(size + 1)
 
 	if cursor != "" {
 		cursorDoc, err := lib.DB.Collection("tamaki_events").Doc(cursor).Get(r.Context())

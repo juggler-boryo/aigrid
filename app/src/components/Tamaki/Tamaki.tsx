@@ -6,6 +6,8 @@ import {
   Divider,
   Button,
   Chip,
+  Select,
+  Option,
 } from "@mui/joy";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { listTamaki } from "../../apis/tamaki";
@@ -28,13 +30,19 @@ const Tamaki = () => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedKind, setSelectedKind] = useState<number | -1>(-1);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["tamaki"],
+    queryKey: ["tamaki", selectedKind],
     queryFn: async ({ pageParam }) => {
       const accessToken = await user?.getIdToken();
       if (!accessToken) return { events: [], has_more: false };
-      return await listTamaki(accessToken, !pageParam, pageParam);
+      return await listTamaki(
+        accessToken,
+        !pageParam,
+        pageParam,
+        selectedKind === -1 ? undefined : selectedKind
+      );
     },
     getNextPageParam: (lastPage) => lastPage.next_cursor,
     enabled: !!user,
@@ -128,6 +136,18 @@ const Tamaki = () => {
 
   return (
     <Card sx={{ width: "85%" }}>
+      <Box>
+        <Select
+          placeholder="Choose one…"
+          variant="outlined"
+          value={selectedKind}
+          onChange={(_, value) => setSelectedKind(value ?? -1)}
+        >
+          <Option value={-1}>すべて</Option>
+          <Option value={0}>わくわくイベント</Option>
+          <Option value={1}>風呂券</Option>
+        </Select>
+      </Box>
       {isLoading ? (
         <Box display="flex" justifyContent="center" alignItems="center">
           <CircularProgress />
