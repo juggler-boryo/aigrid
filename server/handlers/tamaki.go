@@ -105,7 +105,10 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		if dto.Price > 0 {
 			priceText = fmt.Sprintf("%d円", dto.Price)
 		}
-		message := fmt.Sprintf("わくわくイベント発生\nLタイトル: %s\nLメモ: %s\nL値段: %s", dto.Title, dto.Memo, priceText)
+		// najdorFourierの提案により、2ch風にURLを表示する。hはスパムっぽいので意図的に抜くとする
+		url := fmt.Sprintf("ttps://aigrid.vercel.app/tamaki/%s", id)
+
+		message := fmt.Sprintf("わくわくイベント発生\nLタイトル: %s\nLメモ: %s\nL値段: %s\nLURL: %s", dto.Title, dto.Memo, priceText, url)
 		channelID := lib.GetDiscordChannelID()
 		if err := lib.SendMessageToDiscord(channelID, message); err != nil {
 			fmt.Printf("Failed to send Discord notification: %v\n", err)
