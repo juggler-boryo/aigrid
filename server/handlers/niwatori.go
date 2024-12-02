@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Cloud Scheduler APIから呼ばれる
 func WakeUpDiscordNotificationHandler(w http.ResponseWriter, r *http.Request) {
 	message := "ｺｯｹｺｯｺｫｵｵｵｵｵｵｵｵｵｵｵｵｵｵwwwwwwwwwwwwww"
 	channelID := lib.GetDiscordChannelID()
