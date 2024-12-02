@@ -3,6 +3,7 @@ package lib
 import (
 	"aigrid/server/models"
 	"context"
+	"sort"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -111,6 +112,45 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 		}
 	}
 	return inouts, nil
+}
+
+func GetInoutHistoryByDay(uid string) ([]map[string]interface{}, error) {
+	now := time.Now()
+	oneMonthAgo := now.AddDate(0, -1, 0)
+
+	iter, err := DB.Collection("inouts").
+		Where("uid", "==", uid).
+		Where("created_at", ">=", oneMonthAgo).
+		Where("created_at", "<=", now).
+		Where("is_in", "==", true).
+		OrderBy("created_at", firestore.Desc).
+		Documents(context.Background()).GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	dateCount := make(map[string]int)
+	for _, doc := range iter {
+		data := doc.Data()
+		createdAt := data["created_at"].(time.Time)
+		date := createdAt.Format("2006-01-02")
+		dateCount[date]++
+	}
+
+	var result []map[string]interface{}
+	for date, count := range dateCount {
+		parsedDate, _ := time.Parse("2006-01-02", date)
+		result = append(result, map[string]interface{}{
+			"count": count,
+			"date":  parsedDate,
+		})
+	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i]["date"].(time.Time).After(result[j]["date"].(time.Time))
+	})
+
+	return result, nil
 }
 
 func GetIsIn(uid string) (bool, error) {

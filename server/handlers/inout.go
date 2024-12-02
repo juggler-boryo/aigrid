@@ -115,6 +115,26 @@ func GetInoutHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func GetInoutHistoryByDayHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid := vars["uid"]
+	if uid == "" {
+		http.Error(w, "uid is required", http.StatusBadRequest)
+		return
+	}
+
+	history, err := lib.GetInoutHistoryByDay(uid)
+	if err != nil {
+		http.Error(w, "Failed to get inout history: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"history": history,
+	})
+}
+
 func GetIsInHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uid := vars["uid"]
