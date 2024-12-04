@@ -30,7 +30,7 @@ const Tamaki = () => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [selectedKind, setSelectedKind] = useState<number | -1>(-1);
+  const [selectedKind, setSelectedKind] = useState<number | -1>(0);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["tamaki", selectedKind],
