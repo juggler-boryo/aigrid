@@ -13,6 +13,7 @@ import {
   DialogActions,
   Chip,
   Input,
+  IconButton,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -21,7 +22,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getTamaki, updateTamaki, deleteTamaki } from "../../../apis/tamaki";
 import TopBar from "../../../components/TopBar";
 import CheckAuth from "../../CheckAuth";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaShare } from "react-icons/fa";
 import { GetAllUsers } from "../../../apis/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserProfile from "../../../components/UserProfile";
@@ -162,6 +163,18 @@ const TamakiDetail = () => {
                 </Typography>
               </Box>
               <Box display="flex" gap={1}>
+                <IconButton
+                  variant="outlined"
+                  color="neutral"
+                  onClick={() => {
+                    const url = `https://aigrid.vercel.app/tamaki/${id}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                      alert("URLをコピーしました");
+                    });
+                  }}
+                >
+                  <FaShare />
+                </IconButton>
                 <Button
                   variant="outlined"
                   color="danger"
