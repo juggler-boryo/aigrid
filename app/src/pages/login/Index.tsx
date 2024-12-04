@@ -12,6 +12,7 @@ const Index = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    secretCode: "",
   });
   const navigate = useNavigate();
   const handleSubmit = async () => {
@@ -24,6 +25,10 @@ const Index = () => {
         await signInWithEmailAndPassword(auth, form.email, form.password);
         navigate("/");
       } else {
+        if (form.secretCode !== "1454") {
+          alert("シークレットコードが間違っています");
+          return;
+        }
         await createUserWithEmailAndPassword(auth, form.email, form.password);
         navigate("/profile");
       }
@@ -57,7 +62,14 @@ const Index = () => {
         placeholder="パスワード"
         type="password"
       />
-
+      {!isLoginMode && (
+        <Input
+          value={form.secretCode}
+          onChange={(e) => setForm({ ...form, secretCode: e.target.value })}
+          placeholder="シークレットコード"
+          type="password"
+        />
+      )}
       <Button onClick={handleSubmit}>
         {isLoginMode ? "ログイン" : "新規登録"}
       </Button>
