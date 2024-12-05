@@ -12,8 +12,6 @@ import (
 func SetupRouter() http.Handler {
 	router := mux.NewRouter()
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
-	router.HandleFunc("/niwatori", handlers.WakeUpDiscordNotificationHandler).Methods("POST")
-	router.HandleFunc("/neporeon", handlers.SleepDiscordNotificationHandler).Methods("POST")
 	// -- Protected routes
 	protectedRouter := router.PathPrefix("").Subrouter()
 	protectedRouter.Use(middleware.TokenRequired)
@@ -25,9 +23,6 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
 	protectedRouter.HandleFunc("/inout/{uid}/minutes", handlers.GetInMinutesHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
-	protectedRouter.HandleFunc("/inout/{uid}/kusa", handlers.GetInoutHistoryByMonthHandler).Methods("GET")
-	protectedRouter.HandleFunc("/inout/{uid}/is_in", handlers.GetIsInHandler).Methods("GET")
-	protectedRouter.HandleFunc("/inout/anal", handlers.GetInoutAnalyticsHandler).Methods("GET")
 
 	// Tamaki
 	protectedRouter.HandleFunc("/tamaki/{id}", handlers.GetTamakiHandler).Methods("GET")
