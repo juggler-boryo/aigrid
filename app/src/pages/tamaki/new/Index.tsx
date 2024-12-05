@@ -81,6 +81,13 @@ const TamakiNew = () => {
           ...baseEvent,
           memo,
         };
+      } else if (kind === 2) {
+        // 最強レシピ
+        event = {
+          ...baseEvent,
+          title,
+          memo,
+        };
       } else {
         throw new Error("Unsupported event kind");
       }
@@ -131,26 +138,27 @@ const TamakiNew = () => {
             <Select
               value={kind}
               onChange={(_, value) => setKind(Number(value))}
-              placeholder="たまきの種類を選択"
+              placeholder="たま���の種類を選択"
             >
               <Option value={0}>わくわくイベント</Option>
               <Option value={1}>お風呂券</Option>
+              <Option value={2}>最強レシピ</Option>
             </Select>
           </FormControl>
 
-          {kind === 0 && (
+          {(kind === 0 || kind === 2) && (
             <FormControl required>
               <FormLabel>タイトル</FormLabel>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="イベントのタイトルを入力"
+                placeholder="タイトルを入力"
                 required
               />
             </FormControl>
           )}
 
-          {(kind === 0 || kind === 1) && (
+          {(kind === 0 || kind === 1 || kind === 2) && (
             <FormControl>
               <FormLabel>メモ</FormLabel>
               <Textarea

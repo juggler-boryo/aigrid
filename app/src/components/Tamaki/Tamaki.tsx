@@ -23,6 +23,7 @@ import { TamakiEvent } from "../../types/tamaki";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
+  if (kind === 2) return "最強レシピ";
   return "invalid kind";
 };
 
@@ -50,7 +51,7 @@ const Tamaki = () => {
 
   const tamakiList = useMemo(() => {
     if (!data?.pages) return [];
-    return data.pages.flatMap((page) => page.events);
+    return data.pages.flatMap((page) => page.events ?? []);
   }, [data?.pages]);
 
   const handleLoadMore = useCallback(async () => {
@@ -146,6 +147,7 @@ const Tamaki = () => {
           <Option value={-1}>すべて</Option>
           <Option value={0}>わくわくイベント</Option>
           <Option value={1}>風呂券</Option>
+          <Option value={2}>最強レシピ</Option>
         </Select>
       </Box>
       {isLoading ? (
@@ -154,7 +156,7 @@ const Tamaki = () => {
         </Box>
       ) : (
         <Box gap={1} display="flex" flexDirection="column">
-          {tamakiList.map(renderTamakiItem)}
+          {(tamakiList ?? []).map(renderTamakiItem)}
           <Box display="flex" width="100%" justifyContent="flex-end" gap={1}>
             {hasNextPage && (
               <Button

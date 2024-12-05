@@ -20,6 +20,12 @@ type TamakiEvent1DTO struct {
 	Memo             string   `json:"memo,omitempty"`
 }
 
+type TamakiEvent2DTO struct {
+	TamakiEventDTO
+	Title string `json:"title"`
+	Memo  string `json:"memo,omitempty"`
+}
+
 type TamakiEvent struct {
 	ID           string    `json:"id" firestore:"id"`
 	Kind         int       `json:"kind" firestore:"kind"`
@@ -39,4 +45,10 @@ type TamakiEvent1 struct {
 	TamakiEvent
 	ParticipantsUIDs []string `json:"participants_uids" firestore:"participants_uids"`
 	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
+}
+
+type TamakiEvent2 struct {
+	TamakiEvent
+	Title string `json:"title" firestore:"title"`
+	Memo  string `json:"memo,omitempty" firestore:"memo,omitempty"`
 }

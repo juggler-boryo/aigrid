@@ -90,6 +90,12 @@ const TamakiDetail = () => {
           memo,
           price: price !== undefined ? price : -1,
         };
+      } else if (tamaki.kind === 2) {
+        event = {
+          ...baseEvent,
+          title,
+          memo,
+        };
       } else {
         event = {
           ...baseEvent,
@@ -186,7 +192,7 @@ const TamakiDetail = () => {
             </Box>
           </Card>
 
-          {tamaki?.kind === 0 && (
+          {(tamaki?.kind === 0 || tamaki?.kind === 2) && (
             <FormControl>
               <FormLabel>タイトル</FormLabel>
               <Input
@@ -198,7 +204,7 @@ const TamakiDetail = () => {
             </FormControl>
           )}
 
-          {(tamaki?.kind === 0 || tamaki?.kind === 1) && (
+          {(tamaki?.kind === 0 || tamaki?.kind === 1 || tamaki?.kind === 2) && (
             <FormControl>
               <FormLabel>メモ</FormLabel>
               <Textarea
