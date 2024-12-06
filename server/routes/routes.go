@@ -12,6 +12,8 @@ import (
 func SetupRouter() http.Handler {
 	router := mux.NewRouter()
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
+	router.HandleFunc("/niwatori", handlers.WakeUpDiscordNotificationHandler).Methods("POST")
+	router.HandleFunc("/neporeon", handlers.SleepDiscordNotificationHandler).Methods("POST")
 	// -- Protected routes
 	protectedRouter := router.PathPrefix("").Subrouter()
 	protectedRouter.Use(middleware.TokenRequired)
