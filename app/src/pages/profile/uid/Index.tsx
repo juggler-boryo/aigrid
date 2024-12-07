@@ -42,11 +42,13 @@ const Profile = () => {
             <Box>
               <Typography level="title-md">UID: {uid}</Typography>
               {!loading && (
-                <InOutNotify
-                  offlineList={offlineList}
-                  isNoAnal={true}
-                  control_uid={uid || "114514"}
-                />
+                <Box mt={2}>
+                  <InOutNotify
+                    offlineList={offlineList}
+                    isNoAnal={true}
+                    control_uid={uid || "114514"}
+                  />
+                </Box>
               )}
             </Box>
           </Box>
