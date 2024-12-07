@@ -163,7 +163,7 @@ const TamakiDetail = () => {
                 <FaEdit />
                 <Typography level="title-lg">
                   {tamaki &&
-                    (tamaki.kind === 0
+                    (tamaki.kind === 0 || tamaki.kind === 2
                       ? tamaki.title
                       : Kind2title(tamaki.kind))}
                 </Typography>

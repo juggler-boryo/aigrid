@@ -23,7 +23,6 @@ import { TamakiEvent } from "../../types/tamaki";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
-  if (kind === 2) return "最強レシピ";
   return "invalid kind";
 };
 
@@ -113,7 +112,9 @@ const Tamaki = () => {
               <Divider orientation="vertical" />
               <Box display="flex" gap={1} alignItems="center">
                 <Typography level="title-md">
-                  {tamaki.kind === 0 ? tamaki.title : Kind2title(tamaki.kind)}
+                  {tamaki.kind === 0 || tamaki.kind === 2
+                    ? tamaki.title
+                    : Kind2title(tamaki.kind)}
                 </Typography>
                 <Typography level="title-sm">
                   {tamaki.participants_uids &&
