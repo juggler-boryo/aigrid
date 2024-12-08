@@ -19,6 +19,7 @@ import {
 import { app, auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import UserProfile from "../../components/UserProfile";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 const database = getDatabase(app);
 const ACTIVE_THRESHOLD = 3 * 60 * 1000; // 3 minutes in milliseconds
@@ -102,7 +103,10 @@ const Whiteboard = () => {
       <Box width={"85%"} sx={{ maxWidth: "100%" }}>
         <Card>
           <Box display="flex" flexDirection="column" gap={2}>
-            <Typography level="title-lg">Whiteboard</Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <LuLayoutDashboard size={20} />
+              <Typography level="title-md">編集中</Typography>
+            </Box>
             <Box display="flex" gap={1} flexWrap="wrap">
               {activeUsers.map((uid) => (
                 <Box key={uid}>
