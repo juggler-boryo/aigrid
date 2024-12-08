@@ -1,4 +1,12 @@
-import { Box, Card, Divider, Typography, Button, Textarea } from "@mui/joy";
+import {
+  Box,
+  Card,
+  Divider,
+  Typography,
+  Button,
+  Textarea,
+  Badge,
+} from "@mui/joy";
 import TopBar from "../../components/TopBar";
 import { useEffect, useState } from "react";
 import {
@@ -107,37 +115,45 @@ const Whiteboard = () => {
                 </Typography>
               )}
             </Box>
-            <Box>
-              <Textarea
-                value={draftContent}
-                onChange={handleChange}
-                placeholder="( ◠‿◠ )"
-                minRows={5}
-                sx={{
-                  fontFamily: "monospace",
-                  fontSize: "14px",
-                  lineHeight: 1.5,
-                  width: "100%",
-                  resize: "both",
-                  minHeight: "100px",
-                }}
-              />
-              <Typography level="body-sm" color="warning">
-                ※
-                みんなで同時編集すると大変なことになっちゃうから、一人ずつ編集してね
-              </Typography>
-
-              <Box mt={2} display="flex" justifyContent="flex-end">
-                <Button
-                  onClick={handleUpdate}
-                  disabled={!user || content === draftContent}
-                >
-                  更新
-                </Button>
-              </Box>
-            </Box>
           </Box>
         </Card>
+
+        <Box display="flex" flexDirection="column" gap={2} mt={2}>
+          <Badge
+            color="danger"
+            variant="solid"
+            anchorOrigin={{ vertical: "top", horizontal: "left" }}
+            invisible={content === draftContent}
+          >
+            <Textarea
+              value={draftContent}
+              onChange={handleChange}
+              placeholder="( ◠‿◠ )"
+              minRows={5}
+              sx={{
+                fontFamily: "monospace",
+                fontSize: "14px",
+                lineHeight: 1.5,
+                width: "100%",
+                resize: "both",
+                minHeight: "100px",
+              }}
+            />
+          </Badge>
+          <Typography level="body-sm" color="warning">
+            ※
+            みんなで同時編集すると大変なことになっちゃうから、一人ずつ編集してね
+          </Typography>
+
+          <Box mt={2} display="flex" justifyContent="flex-end">
+            <Button
+              onClick={handleUpdate}
+              disabled={!user || content === draftContent}
+            >
+              更新
+            </Button>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
