@@ -100,7 +100,7 @@ const Whiteboard = () => {
       <Box width={"90%"}>
         <Divider />
       </Box>
-      <Box width={"85%"} sx={{ maxWidth: "100%" }}>
+      <Box width={"90%"} sx={{ maxWidth: "100%" }}>
         <Card>
           <Box display="flex" flexDirection="column" gap={2}>
             <Box display="flex" alignItems="center" gap={1}>
@@ -144,6 +144,7 @@ const Whiteboard = () => {
               }}
             />
           </Badge>
+
           <Typography level="body-sm" color="warning">
             ※
             みんなで同時編集すると大変なことになっちゃうから、一人ずつ編集してね
