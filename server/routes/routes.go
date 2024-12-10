@@ -26,6 +26,7 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/inout/{uid}/minutes", handlers.GetInMinutesHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/kusa", handlers.GetInoutHistoryByMonthHandler).Methods("GET")
+	protectedRouter.HandleFunc("/inout/{uid}/exit_all", handlers.PostExitAllHandler).Methods("POST")
 	// Tamaki
 	protectedRouter.HandleFunc("/tamaki/{id}", handlers.GetTamakiHandler).Methods("GET")
 	protectedRouter.HandleFunc("/tamaki", handlers.ListTamakiHandler).Methods("GET")
