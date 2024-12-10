@@ -1,5 +1,17 @@
 # aigrid server impl
 
+## dev
+
+```bash
+make run
+```
+
+## lint
+
+```bash
+make lint
+```
+
 ## deploy
 
 ```bash

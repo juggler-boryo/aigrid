@@ -7,8 +7,8 @@ import (
 
 	"log"
 
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/auth"
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
 	"google.golang.org/api/option"
 )
 
@@ -16,9 +16,7 @@ var (
 	authClient *auth.Client
 )
 
-// Initialize Firebase App and Auth Client
 func init() {
-	// Replace "path/to/serviceAccountKey.json" with the path to your Firebase service account key
 	opt := option.WithCredentialsFile("./credentials/aigrid/sa.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -31,7 +29,6 @@ func init() {
 	}
 }
 
-// TokenRequired is a middleware that ensures the request has a valid Firebase token
 func TokenRequired(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Get the Authorization header
