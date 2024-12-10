@@ -5,4 +5,6 @@ export interface User {
   username?: string;
   avatar_image_url?: string;
   suica_id?: string;
+  greet_text?: string;
+  bye_text?: string;
 }
