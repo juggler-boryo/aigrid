@@ -30,6 +30,8 @@ const ProfileSettings = () => {
   });
 
   const [username, setUsername] = useState("");
+  const [greet, setGreet] = useState("");
+  const [bye, setBye] = useState("");
   const [avatarImageUrl, setAvatarImageUrl] = useState("");
   const [suicaId, setSuicaId] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -48,6 +50,8 @@ const ProfileSettings = () => {
         username,
         avatar_image_url: avatarImageUrl,
         suica_id: suicaId,
+        greet_text: greet,
+        bye_text: bye
       },
       accessToken
     );
@@ -87,6 +91,8 @@ const ProfileSettings = () => {
   useEffect(() => {
     if (me) {
       setUsername(me.username || "");
+      setGreet(me.greet_text || "");
+      setBye(me.bye_text || "");
       setAvatarImageUrl(me.avatar_image_url || "");
       setSuicaId(me.suica_id || "");
     }
@@ -149,6 +155,22 @@ const ProfileSettings = () => {
               />
             </Button>
           </Box>
+        </FormControl>
+        <FormControl>
+          <FormLabel>入室挨拶</FormLabel>
+          <Input
+            value={greet}
+            onChange={(e) => setGreet(e.target.value)}
+            placeholder="私が来た"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>退室挨拶</FormLabel>
+          <Input
+            value={bye}
+            onChange={(e) => setBye(e.target.value)}
+            placeholder="I'll be back."
+          />
         </FormControl>
 
         <FormControl disabled>
