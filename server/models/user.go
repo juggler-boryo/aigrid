@@ -7,4 +7,6 @@ type User struct {
 	Username       string `json:"username"`
 	AvatarImageUrl string `json:"avatar_image_url"`
 	SuicaId        string `json:"suica_id"`
+	GreetText      string `json:"greet_text"`
+	ByeText        string `json:"bye_text"`
 }
