@@ -9,8 +9,11 @@ import (
 )
 
 func main() {
-	config.Init()
-	err := lib.InitializeDiscord()
+	err := lib.InitializeFirebase("credentials/aigrid/sa.json")
+	if err != nil {
+		log.Fatalf("Failed to initialize Firebase: %v", err)
+	}
+	err = lib.InitializeDiscord()
 	if err != nil {
 		log.Fatalf("Failed to initialize Discord: %v", err)
 	}
