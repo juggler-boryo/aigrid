@@ -60,6 +60,18 @@ func GetUserByUIDHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			return ""
 		}(),
+		GreetText: func() string {
+			if v, ok := userData["greet_text"].(string); ok {
+				return v
+			}
+			return ""
+		}(),
+		ByeText: func() string {
+			if v, ok := userData["bye_text"].(string); ok {
+				return v
+			}
+			return ""
+		}(),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -91,6 +103,8 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		"username":         user.Username,
 		"avatar_image_url": user.AvatarImageUrl,
 		"suica_id":         user.SuicaId,
+		"greet_text":       user.GreetText,
+		"bye_text":         user.ByeText,
 	}
 
 	if err := lib.UpsertUser(uid, userData); err != nil {

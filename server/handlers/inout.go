@@ -63,17 +63,26 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if exists {
-		username := ""
-		if v, ok := userData["username"].(string); ok && v != "" {
-			username = v
-		}
+		username := userData["username"].(string)
 		isIn := "入室"
 		if !inoutReq.IsIn {
 			isIn = "退室"
 		}
-		msg := fmt.Sprintf("%sが%sしたよ", username, isIn)
-		log.Println(msg)
-		lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+		greetOrBye := ""
+		if inoutReq.IsIn && userData["greet_text"] != "" {
+			greetOrBye = userData["greet_text"].(string)
+		} else if !inoutReq.IsIn && userData["bye_text"] != "" {
+			greetOrBye = userData["bye_text"].(string)
+		}
+		if greetOrBye != "" {
+			msg := fmt.Sprintf("%s: %s", username, greetOrBye)
+			log.Println(msg)
+			lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+		} else {
+			msg := fmt.Sprintf("%sが%sしたよ", username, isIn)
+			log.Println(msg)
+			lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)
