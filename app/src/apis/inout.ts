@@ -22,9 +22,9 @@ export const postInout = async (
   }
 };
 
-export const postExitAll = async (accessToken: string): Promise<boolean> => {
+export const postExitAll = async (uid: string, accessToken: string): Promise<boolean> => {
   try {
-    const response = await fetch(`${Endpoint}inout/exit_all`, {
+    const response = await fetch(`${Endpoint}inout/${uid}/exit_all`, { 
       method: "POST",
       headers: {
         "Content-Type": "application/json",
