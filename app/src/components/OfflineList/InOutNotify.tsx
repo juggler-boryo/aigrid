@@ -2,19 +2,16 @@ import { Box, Button, IconButton } from "@mui/joy";
 import { IoStatsChart } from "react-icons/io5";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
-import { getDatabase, ref, set } from "firebase/database";
-import { app } from "../../libs/firebase";
 import { postInout } from "../../apis/inout";
 import { useNavigate } from "react-router-dom";
 import useSound from "use-sound";
 import { useState } from "react";
+
 interface Props {
   offlineList: Array<string>;
   control_uid: string;
-  isNoAnal?: boolean; // no analysis
+  isNoAnal?: boolean;
 }
-
-const database = getDatabase(app);
 
 const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
@@ -31,7 +28,6 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     setIsEntering(true);
 
     try {
-      await set(ref(database, `inoutList/${control_uid}`), true);
       const accessToken = await user.getIdToken();
       await postInout(control_uid, true, accessToken);
     } catch (error) {
@@ -47,7 +43,6 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     setIsExiting(true);
 
     try {
-      await set(ref(database, `inoutList/${control_uid}`), false);
       const accessToken = await user.getIdToken();
       await postInout(control_uid, false, accessToken);
     } catch (error) {
