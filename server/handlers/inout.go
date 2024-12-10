@@ -46,6 +46,11 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	if err := lib.UpdateRealtimeDBInout(uid, inoutReq.IsIn); err != nil {
+		log.Printf("Failed to update realtime DB: %v", err)
+		http.Error(w, "Failed to update realtime DB", http.StatusInternalServerError)
+		return
+	}
 
 	if err := lib.RecordInout(uid, inoutReq.IsIn); err != nil {
 		http.Error(w, "入退室記録の保存に失敗しました", http.StatusInternalServerError)

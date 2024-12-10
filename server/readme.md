@@ -1,5 +1,19 @@
 # aigrid server impl
 
+## dev
+
+- go install golang.org/dl/go1.22.7@latest && go1.22.7 download
+
+```bash
+make run
+```
+
+## lint
+
+```bash
+make lint
+```
+
 ## deploy
 
 ```bash
