@@ -30,6 +30,7 @@ const ProfileSettings = () => {
   });
 
   const [username, setUsername] = useState("");
+  const [greeting, ] = useState("");
   const [avatarImageUrl, setAvatarImageUrl] = useState("");
   const [suicaId, setSuicaId] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -127,6 +128,14 @@ const ProfileSettings = () => {
           <FormLabel>ユーザー名</FormLabel>
           <Input
             value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="ユーザー名を入力"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>挨拶</FormLabel>
+          <Input
+            value={greeting}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="ユーザー名を入力"
           />
