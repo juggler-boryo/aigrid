@@ -62,7 +62,7 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
 
     try {
       const accessToken = await user.getIdToken();
-      await postExitAll(accessToken);
+      await postExitAll(control_uid, accessToken);
     } catch (error) {
       console.error("Error exiting all:", error);
       alert("全員の退室に失敗しました。");
