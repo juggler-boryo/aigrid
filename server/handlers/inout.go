@@ -66,14 +66,16 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 		username := userData["username"].(string)
 		var msg string
 		if inoutReq.IsIn {
-			if userData["greet_text"] != "" {
-				msg = fmt.Sprintf("%s 🟢 %s", username, userData["greet_text"].(string))
+			greetText, ok := userData["greet_text"].(string)
+			if ok && greetText != "" {
+				msg = fmt.Sprintf("%s 🟢 %s", username, greetText)
 			} else {
 				msg = fmt.Sprintf("%s✋ 🟢 入室したよ", username)
 			}
 		} else {
-			if userData["bye_text"] != "" {
-				msg = fmt.Sprintf("%s 🟥 %s", username, userData["bye_text"].(string))
+			byeText, ok := userData["bye_text"].(string)
+			if ok && byeText != "" {
+				msg = fmt.Sprintf("%s 🟥 %s", username, byeText)
 			} else {
 				msg = fmt.Sprintf("%s✋ 🟥 退室したよ", username)
 			}
