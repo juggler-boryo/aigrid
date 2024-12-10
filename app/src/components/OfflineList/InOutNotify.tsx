@@ -2,7 +2,7 @@ import { Box, Button, IconButton } from "@mui/joy";
 import { IoStatsChart } from "react-icons/io5";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
-import { postInout } from "../../apis/inout";
+import { postInout, postExitAll } from "../../apis/inout"; // 追加
 import { useNavigate } from "react-router-dom";
 import useSound from "use-sound";
 import { useState } from "react";
@@ -19,8 +19,10 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const navigate = useNavigate();
   const [inSound] = useSound("/in.mp3");
   const [outSound] = useSound("/bb.mp3");
+  const [eloSound] = useSound("/elo.mp3");
   const [isEntering, setIsEntering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isExitingAll, setIsExitingAll] = useState(false); 
 
   const handleEnter = async () => {
     if (!user?.uid) return;
@@ -49,6 +51,23 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
       console.error("Error exiting:", error);
     } finally {
       setIsExiting(false);
+    }
+  };
+
+  const handleExitAll = async () => {
+    if (!user?.uid) return;
+    if (!window.confirm("本当に全員を爆発させますか？")) return;
+    eloSound();
+    setIsExitingAll(true);
+
+    try {
+      const accessToken = await user.getIdToken();
+      await postExitAll(accessToken);
+    } catch (error) {
+      console.error("Error exiting all:", error);
+      alert("全員の退室に失敗しました。");
+    } finally {
+      setIsExitingAll(false);
     }
   };
 
@@ -87,6 +106,15 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
           loading={isExiting}
         >
           撤退
+        </Button>
+        <Button
+          color="warning"
+          disabled={isExitingAll}
+          onClick={handleExitAll}
+          size="md"
+          loading={isExitingAll}
+        >
+          爆発的人生
         </Button>
       </Box>
     </Box>

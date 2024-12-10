@@ -22,6 +22,22 @@ export const postInout = async (
   }
 };
 
+export const postExitAll = async (accessToken: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${Endpoint}inout/exit_all`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.ok;
+  } catch (error) {
+    console.error("Error in postExitAll:", error);
+    return false;
+  }
+};
+
 export const getInMinutes = async (
   uid: string,
   accessToken: string
