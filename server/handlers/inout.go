@@ -64,25 +64,22 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if exists {
 		username := userData["username"].(string)
-		isIn := "入室"
-		if !inoutReq.IsIn {
-			isIn = "退室"
-		}
-		greetOrBye := ""
-		if inoutReq.IsIn && userData["greet_text"] != "" {
-			greetOrBye = userData["greet_text"].(string)
-		} else if !inoutReq.IsIn && userData["bye_text"] != "" {
-			greetOrBye = userData["bye_text"].(string)
-		}
-		if greetOrBye != "" {
-			msg := fmt.Sprintf("%s: %s", username, greetOrBye)
-			log.Println(msg)
-			lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+		var msg string
+		if inoutReq.IsIn {
+			if userData["greet_text"] != "" {
+				msg = fmt.Sprintf("%s 🟢 %s", username, userData["greet_text"].(string))
+			} else {
+				msg = fmt.Sprintf("%s✋ 🟢 入室したよ", username)
+			}
 		} else {
-			msg := fmt.Sprintf("%sが%sしたよ", username, isIn)
-			log.Println(msg)
-			lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+			if userData["bye_text"] != "" {
+				msg = fmt.Sprintf("%s 🟥 %s", username, userData["bye_text"].(string))
+			} else {
+				msg = fmt.Sprintf("%s✋ 🟥 退室したよ", username)
+			}
 		}
+		log.Println(msg)
+		lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
 	}
 
 	w.WriteHeader(http.StatusOK)
