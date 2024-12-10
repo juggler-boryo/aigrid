@@ -1,9 +1,8 @@
 import { Box, Button, IconButton } from "@mui/joy";
-import { IoStatsChart } from "react-icons/io5";
+import { GiFireBomb } from "react-icons/gi";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
-import { postInout, postExitAll } from "../../apis/inout"; // 追加
-import { useNavigate } from "react-router-dom";
+import { postInout, postExitAll } from "../../apis/inout";
 import useSound from "use-sound";
 import { useState } from "react";
 
@@ -16,7 +15,6 @@ interface Props {
 const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
   const isIn = offlineList.includes(control_uid);
-  const navigate = useNavigate();
   const [inSound] = useSound("/in.mp3");
   const [outSound] = useSound("/bb.mp3");
   const [eloSound] = useSound("/elo.mp3");
@@ -75,15 +73,27 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
       {!isNoAnal && (
         <IconButton
-          disabled
           color="primary"
           size="md"
           variant="soft"
-          onClick={() => {
-            navigate("/inout/anal");
+          disabled={isExitingAll}
+          onClick={handleExitAll}
+          loading={isExitingAll}
+          sx={{
+            background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)", 
+            color: "#FFFFFF", 
+            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.3)", 
+            "&:hover": {
+              background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)", 
+              boxShadow: "0 2px 3px rgba(0, 0, 0, 0.5)",
+            },
+            "&:active": {
+              background: "linear-gradient(135deg, #FF0000, #FF4500, #FF8C00)", 
+              boxShadow: "inset 0 4px 6px rgba(0, 0, 0, 0.4)",
+            },
           }}
         >
-          <IoStatsChart />
+          <GiFireBomb />
         </IconButton>
       )}
       {isNoAnal && <Box width={40} />}
@@ -106,15 +116,6 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
           loading={isExiting}
         >
           撤退
-        </Button>
-        <Button
-          color="warning"
-          disabled={isExitingAll}
-          onClick={handleExitAll}
-          size="md"
-          loading={isExitingAll}
-        >
-          爆発的人生
         </Button>
       </Box>
     </Box>
