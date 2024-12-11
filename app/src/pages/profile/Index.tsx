@@ -180,7 +180,7 @@ const ProfileSettings = () => {
           <FormLabel>権限</FormLabel>
           <Select
             value={permissionStr}
-            onChange={(e, value) => setPermissionStr(value ?? "GUEST")}
+            onChange={(_, value) => setPermissionStr(value ?? "GUEST")}
             placeholder="権限を選択"
           >
             <Option value="GUEST">ゲスト</Option>
