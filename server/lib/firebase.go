@@ -81,7 +81,9 @@ func GetUserBySuicaID(suicaID string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return doc.Data(), nil
+	data := doc.Data()
+	data["uid"] = doc.Ref.ID
+	return data, nil
 }
 
 // TODO: 危なそう

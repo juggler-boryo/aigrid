@@ -4,6 +4,7 @@ import (
 	"aigrid/server/lib"
 	"aigrid/server/models"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -19,9 +20,11 @@ func GetUserBySuicaIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := lib.GetUserBySuicaID(suicaID)
 	if err != nil {
-		http.Error(w, "Failed to get user data", http.StatusInternalServerError)
+		http.Error(w, "Failed to get user data, "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	log.Println("user: ", user)
 	uid, ok := user["uid"].(string)
 	if !ok {
 		http.Error(w, "Failed to get uid", http.StatusInternalServerError)
@@ -31,7 +34,7 @@ func GetUserBySuicaIDHandler(w http.ResponseWriter, r *http.Request) {
 	// get inout history
 	history, err := lib.GetInoutHistory(uid, 1)
 	if err != nil {
-		http.Error(w, "Failed to get inout history", http.StatusInternalServerError)
+		http.Error(w, "Failed to get inout history, "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
