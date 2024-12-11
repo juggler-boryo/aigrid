@@ -20,7 +20,7 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [eloSound] = useSound("/elo.mp3");
   const [isEntering, setIsEntering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const [isExitingAll, setIsExitingAll] = useState(false); 
+  const [isExitingAll, setIsExitingAll] = useState(false);
 
   const handleEnter = async () => {
     if (!user?.uid) return;
@@ -80,16 +80,14 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
           onClick={handleExitAll}
           loading={isExitingAll}
           sx={{
-            background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)", 
-            color: "#FFFFFF", 
-            boxShadow: "0 1px 2px rgba(0, 0, 0, 0.3)", 
+            background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)",
+            color: "#FFFFFF",
             "&:hover": {
-              background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)", 
-              boxShadow: "0 2px 3px rgba(0, 0, 0, 0.5)",
+              background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)",
+              transform: "scale(5)",
             },
             "&:active": {
-              background: "linear-gradient(135deg, #FF0000, #FF4500, #FF8C00)", 
-              boxShadow: "inset 0 4px 6px rgba(0, 0, 0, 0.4)",
+              background: "linear-gradient(135deg, #FF0000, #FF4500, #FF8C00)",
             },
           }}
         >
