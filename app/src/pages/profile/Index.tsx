@@ -211,7 +211,7 @@ const ProfileSettings = () => {
           <Input
             value={suicaId}
             onChange={(e) => setSuicaId(e.target.value)}
-            placeholder="Suica IDを入力"
+            placeholder="Suicaは登録されていません"
           />
         </FormControl>
 
