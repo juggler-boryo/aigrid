@@ -50,10 +50,8 @@ func InitializeFirebase(credPath string) error {
 
 	return nil
 }
-
 func ListUsers() ([]string, error) {
-	// Use Select to only fetch IDs rather than full documents
-	iter := DB.Collection("users").Select().Documents(context.Background())
+	iter := DB.Collection("users").Where("permission_str", "in", []string{"GENERAL", "ADMIN"}).Documents(context.Background())
 	docs, err := iter.GetAll()
 	if err != nil {
 		return nil, err

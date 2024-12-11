@@ -7,4 +7,5 @@ export interface User {
   suica_id?: string;
   greet_text?: string;
   bye_text?: string;
+  permission_str?: string;
 }

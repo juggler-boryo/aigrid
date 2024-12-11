@@ -1,4 +1,11 @@
-import { Avatar, Card, CircularProgress, Divider } from "@mui/joy";
+import {
+  Avatar,
+  Card,
+  CircularProgress,
+  Divider,
+  Option,
+  Select,
+} from "@mui/joy";
 import {
   Box,
   Button,
@@ -34,6 +41,7 @@ const ProfileSettings = () => {
   const [bye, setBye] = useState("");
   const [avatarImageUrl, setAvatarImageUrl] = useState("");
   const [suicaId, setSuicaId] = useState("");
+  const [permissionStr, setPermissionStr] = useState("GUEST");
   const [isUploading, setIsUploading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +59,8 @@ const ProfileSettings = () => {
         avatar_image_url: avatarImageUrl,
         suica_id: suicaId,
         greet_text: greet,
-        bye_text: bye
+        bye_text: bye,
+        permission_str: permissionStr,
       },
       accessToken
     );
@@ -95,6 +104,7 @@ const ProfileSettings = () => {
       setBye(me.bye_text || "");
       setAvatarImageUrl(me.avatar_image_url || "");
       setSuicaId(me.suica_id || "");
+      setPermissionStr(me.permission_str || "GUEST");
     }
   }, [me]);
 
@@ -104,13 +114,22 @@ const ProfileSettings = () => {
 
   return (
     <CheckAuth>
-      <Box sx={{mx: "auto", gap: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-        <TopBar/>
+      <Box
+        sx={{
+          mx: "auto",
+          gap: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <TopBar />
         <Box width={"90%"}>
-          <Divider/>
+          <Divider />
         </Box>
       </Box>
-        
+
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -156,6 +175,20 @@ const ProfileSettings = () => {
             </Button>
           </Box>
         </FormControl>
+
+        <FormControl>
+          <FormLabel>権限</FormLabel>
+          <Select
+            value={permissionStr}
+            onChange={(e, value) => setPermissionStr(value ?? "GUEST")}
+            placeholder="権限を選択"
+          >
+            <Option value="GUEST">ゲスト</Option>
+            <Option value="GENERAL">一般</Option>
+            <Option value="ADMIN">住居人</Option>
+          </Select>
+        </FormControl>
+
         <FormControl>
           <FormLabel>入室挨拶</FormLabel>
           <Input
