@@ -75,6 +75,15 @@ func GetUser(uid string) (map[string]interface{}, bool, error) {
 	return doc.Data(), true, nil
 }
 
+func GetUserBySuicaID(suicaID string) (map[string]interface{}, error) {
+	iter := DB.Collection("users").Where("suica_id", "==", suicaID).Documents(context.Background())
+	doc, err := iter.Next()
+	if err != nil {
+		return nil, err
+	}
+	return doc.Data(), nil
+}
+
 // TODO: 危なそう
 func UpsertUser(uid string, data map[string]interface{}) error {
 	_, err := DB.Collection("users").Doc(uid).Set(context.Background(), data)
