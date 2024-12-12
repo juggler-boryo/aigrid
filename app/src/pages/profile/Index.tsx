@@ -207,11 +207,11 @@ const ProfileSettings = () => {
         </FormControl>
 
         <FormControl>
-          <FormLabel>Suica ID</FormLabel>
+          <FormLabel>NFC ID</FormLabel>
           <Input
             value={suicaId}
             onChange={(e) => setSuicaId(e.target.value)}
-            placeholder="Suica IDを入力"
+            placeholder="NFC IDを入力"
           />
         </FormControl>
 
