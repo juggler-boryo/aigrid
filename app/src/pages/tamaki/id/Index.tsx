@@ -22,7 +22,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getTamaki, updateTamaki, deleteTamaki } from "../../../apis/tamaki";
 import TopBar from "../../../components/TopBar";
 import CheckAuth from "../../CheckAuth";
-import { FaEdit, FaShare } from "react-icons/fa";
+import { FaEdit, FaShare, FaTrash } from "react-icons/fa";
 import { GetAllUsers } from "../../../apis/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserProfile from "../../../components/UserProfile";
@@ -181,13 +181,13 @@ const TamakiDetail = () => {
                 >
                   <FaShare />
                 </IconButton>
-                <Button
+                <IconButton
                   variant="outlined"
                   color="danger"
                   onClick={() => setOpenDeleteDialog(true)}
                 >
-                  削除
-                </Button>
+                  <FaTrash />
+                </IconButton>
               </Box>
             </Box>
           </Card>
