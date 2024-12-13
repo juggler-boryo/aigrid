@@ -65,7 +65,15 @@ const UserProfile = ({
 
   return (
     <Box mr={2}>
-      <Badge badgeContent={Min2Str(inMinutes || 0)} variant="outlined" showZero>
+      <Badge
+        badgeContent={
+          userData?.permission_str === "ADMIN"
+            ? `🫧 ${Min2Str(inMinutes || 0)}`
+            : Min2Str(inMinutes || 0)
+        }
+        variant="outlined"
+        showZero
+      >
         <Chip
           variant="outlined"
           onClick={() => {
@@ -77,11 +85,13 @@ const UserProfile = ({
           sx={{
             cursor: disableClick ? "default" : "pointer",
             border: selected
-              ? "3px solid var(--joy-palette-primary-500)"
+              ? "3px solid var(--joy-palette-primary-400)"
               : undefined,
           }}
           startDecorator={
-            <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
+            userData?.permission_str !== "GUEST" && (
+              <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
+            )
           }
         >
           <Typography level="title-md">

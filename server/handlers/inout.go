@@ -46,6 +46,11 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	if err := lib.UpdateRealtimeDBInout(uid, inoutReq.IsIn); err != nil {
+		log.Printf("Failed to update realtime DB: %v", err)
+		http.Error(w, "Failed to update realtime DB", http.StatusInternalServerError)
+		return
+	}
 
 	if err := lib.RecordInout(uid, inoutReq.IsIn); err != nil {
 		http.Error(w, "入退室記録の保存に失敗しました", http.StatusInternalServerError)
@@ -58,17 +63,82 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if exists {
-		username := ""
-		if v, ok := userData["username"].(string); ok && v != "" {
-			username = v
+		username := userData["username"].(string)
+		var msg string
+		if inoutReq.IsIn {
+			greetText, ok := userData["greet_text"].(string)
+			if ok && greetText != "" {
+				msg = fmt.Sprintf("%s 🟢 %s", username, greetText)
+			} else {
+				msg = fmt.Sprintf("%s✋ 🟢 入室したよ", username)
+			}
+		} else {
+			byeText, ok := userData["bye_text"].(string)
+			if ok && byeText != "" {
+				msg = fmt.Sprintf("%s 🟥 %s", username, byeText)
+			} else {
+				msg = fmt.Sprintf("%s✋ 🟥 退室したよ", username)
+			}
 		}
-		isIn := "入室"
-		if !inoutReq.IsIn {
-			isIn = "退室"
-		}
-		msg := fmt.Sprintf("%sが%sしたよ", username, isIn)
 		log.Println(msg)
 		lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func PostExitAllHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	executingUID := vars["uid"]
+
+	userData, exists, err := lib.GetUser(executingUID)
+	if err != nil {
+		http.Error(w, "ユーザーデータの取得に失敗しました", http.StatusInternalServerError)
+		return
+	}
+
+	if !exists {
+		http.Error(w, "ユーザーが存在しません", http.StatusNotFound)
+		return
+	}
+
+	userIDs, err := lib.ListUsers()
+	if err != nil {
+		http.Error(w, "ユーザー一覧の取得に失敗しました", http.StatusInternalServerError)
+		return
+	}
+
+	for _, targetUID := range userIDs {
+		isIn, err := lib.GetIsIn(targetUID)
+		if err != nil {
+			log.Printf("ユーザー %s の状態取得に失敗しました: %v", targetUID, err)
+			continue
+		}
+		if !isIn {
+			continue
+		}
+
+		err = lib.RecordInout(targetUID, false)
+		if err != nil {
+			log.Printf("ユーザー %s の退室記録に失敗しました: %v", targetUID, err)
+			continue
+		}
+
+		err = lib.UpdateRealtimeDBInout(targetUID, false)
+		if err != nil {
+			log.Printf("リアルタイムDBの更新に失敗しました: %v", err)
+			continue
+		}
+	}
+
+	username := ""
+	if v, ok := userData["username"].(string); ok && v != "" {
+		username = v
+	}
+	msg := username + "が爆発しました🎆"
+	err = lib.SendMessageToDiscord(lib.GetDiscordChannelID(), msg)
+	if err != nil {
+		log.Printf("Discordへのメッセージ送信に失敗しました: %v", err)
 	}
 
 	w.WriteHeader(http.StatusOK)

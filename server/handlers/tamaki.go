@@ -64,6 +64,27 @@ func createTamakiEvent[T any](dto T, id string, w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(dto)
 }
 
+func sendDiscordNotification(kind int, id string, title string, memo string, price int) error {
+	url := fmt.Sprintf("ttps://aigrid.vercel.app/tamaki/%s", id)
+	var message string
+
+	switch kind {
+	case 0:
+		priceText := "未定"
+		if price > 0 {
+			priceText = fmt.Sprintf("%d円", price)
+		}
+		message = fmt.Sprintf("わくわくイベント発生\nLタイトル: %s\nLメモ: %s\nL値段: %s\nLURL: %s", title, memo, priceText, url)
+	case 1:
+		message = fmt.Sprintf("お風呂が沸きました🎵\nLメモ: %s\nLURL: %s", memo, url)
+	case 2:
+		message = fmt.Sprintf("最強レシピが投稿されました\nLタイトル: %s\nLURL: %s", title, url)
+	}
+
+	channelID := lib.GetDiscordChannelID()
+	return lib.SendMessageToDiscord(channelID, message)
+}
+
 func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	var baseDTO models.TamakiEventDTO
 	body, err := io.ReadAll(r.Body)
@@ -103,15 +124,7 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		createTamakiEvent(tamakiEvent, id, w, r)
 
-		priceText := "未定"
-		if dto.Price > 0 {
-			priceText = fmt.Sprintf("%d円", dto.Price)
-		}
-		url := fmt.Sprintf("ttps://aigrid.vercel.app/tamaki/%s", id)
-
-		message := fmt.Sprintf("わくわくイベント発生\nLタイトル: %s\nLメモ: %s\nL値段: %s\nLURL: %s", dto.Title, dto.Memo, priceText, url)
-		channelID := lib.GetDiscordChannelID()
-		if err := lib.SendMessageToDiscord(channelID, message); err != nil {
+		if err := sendDiscordNotification(dto.Kind, id, dto.Title, dto.Memo, dto.Price); err != nil {
 			fmt.Printf("Failed to send Discord notification: %v\n", err)
 		}
 
@@ -134,6 +147,10 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		createTamakiEvent(tamakiEvent, id, w, r)
 
+		if err := sendDiscordNotification(dto.Kind, id, "", dto.Memo, 0); err != nil {
+			fmt.Printf("Failed to send Discord notification: %v\n", err)
+		}
+
 	case 2:
 		var dto models.TamakiEvent2DTO
 		if err := json.Unmarshal(body, &dto); err != nil {
@@ -153,10 +170,7 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		createTamakiEvent(tamakiEvent, id, w, r)
 
-		url := fmt.Sprintf("ttps://aigrid.vercel.app/tamaki/%s", id)
-		message := fmt.Sprintf("最強レシピが投稿されました\nLタイトル: %s\nLURL: %s", dto.Title, url)
-		channelID := lib.GetDiscordChannelID()
-		if err := lib.SendMessageToDiscord(channelID, message); err != nil {
+		if err := sendDiscordNotification(dto.Kind, id, dto.Title, dto.Memo, 0); err != nil {
 			fmt.Printf("Failed to send Discord notification: %v\n", err)
 		}
 

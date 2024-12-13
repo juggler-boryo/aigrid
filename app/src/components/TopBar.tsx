@@ -7,6 +7,7 @@ import { auth } from "../libs/firebase";
 import { useQuery } from "@tanstack/react-query";
 import { GetUser } from "../apis/user";
 import { User } from "../types/user";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 const TopBar = () => {
   const navigate = useNavigate();
@@ -39,35 +40,54 @@ const TopBar = () => {
           px: 1,
         }}
       >
-        <Typography level={"body-lg"}>aigrid</Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography level={"body-lg"}>aigrid</Typography>
+        </Box>
       </Box>
       <Divider orientation="vertical" />
-      <Badge
-        badgeContent={isMeLoading ? 0 : me ? 0 : "!"}
-        color={isMeLoading ? "neutral" : "danger"}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        sx={{}}
-      >
+      <Box display="flex" alignItems="center" gap={1}>
         <Box ml={2}>
           <IconButton
             variant="outlined"
-            color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
+            color="neutral"
             size="sm"
             sx={{
               borderRadius: "12px",
             }}
             onClick={() => {
-              navigate("/profile");
+              navigate("/whiteboard");
             }}
-            loading={isMeLoading}
           >
-            <FaRegUser />
+            <LuLayoutDashboard size={16} />
           </IconButton>
         </Box>
-      </Badge>
+        <Badge
+          badgeContent={isMeLoading ? 0 : me ? 0 : "!"}
+          color={isMeLoading ? "neutral" : "danger"}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          sx={{}}
+        >
+          <Box>
+            <IconButton
+              variant="outlined"
+              color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
+              size="sm"
+              sx={{
+                borderRadius: "12px",
+              }}
+              onClick={() => {
+                navigate("/profile");
+              }}
+              loading={isMeLoading}
+            >
+              <FaRegUser />
+            </IconButton>
+          </Box>
+        </Badge>
+      </Box>
     </Box>
   );
 };

@@ -14,6 +14,12 @@ func SetupRouter() http.Handler {
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
 	router.HandleFunc("/niwatori", handlers.WakeUpDiscordNotificationHandler).Methods("POST")
 	router.HandleFunc("/neporeon", handlers.SleepDiscordNotificationHandler).Methods("POST")
+
+	// -- nfc nyukan system
+	// -- TODO: currently no auth implemented. dangerous.impl
+	router.HandleFunc("/nfc/{suica_id}", handlers.GetUserBySuicaIDHandler).Methods("GET")
+	router.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
+
 	// -- Protected routes
 	protectedRouter := router.PathPrefix("").Subrouter()
 	protectedRouter.Use(middleware.TokenRequired)
@@ -22,10 +28,10 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/users/{uid}", handlers.UpdateUserHandler).Methods("PUT")
 
 	// Inout
-	protectedRouter.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
 	protectedRouter.HandleFunc("/inout/{uid}/minutes", handlers.GetInMinutesHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/kusa", handlers.GetInoutHistoryByMonthHandler).Methods("GET")
+	protectedRouter.HandleFunc("/inout/{uid}/exit_all", handlers.PostExitAllHandler).Methods("POST")
 	// Tamaki
 	protectedRouter.HandleFunc("/tamaki/{id}", handlers.GetTamakiHandler).Methods("GET")
 	protectedRouter.HandleFunc("/tamaki", handlers.ListTamakiHandler).Methods("GET")
