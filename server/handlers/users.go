@@ -4,11 +4,14 @@ import (
 	"aigrid/server/lib"
 	"aigrid/server/models"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
+// TODO: 将来的にゲストも含める、複雑なパーミッション管理をする
+// TODO: 現在では、ゲストはユーザーとして扱わない
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users, err := lib.ListUsers()
 	if err != nil {
@@ -54,14 +57,33 @@ func GetUserByUIDHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			return ""
 		}(),
+		PermissionStr: func() string {
+			if v, ok := userData["permission_str"].(string); ok {
+				return v
+			}
+			return "GUEST"
+		}(),
 		SuicaId: func() string {
 			if v, ok := userData["suica_id"].(string); ok {
 				return v
 			}
 			return ""
 		}(),
+		GreetText: func() string {
+			if v, ok := userData["greet_text"].(string); ok {
+				return v
+			}
+			return ""
+		}(),
+		ByeText: func() string {
+			if v, ok := userData["bye_text"].(string); ok {
+				return v
+			}
+			return ""
+		}(),
 	}
 
+	log.Println(user)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
@@ -87,10 +109,18 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.PermissionStr != "GUEST" && user.PermissionStr != "GENERAL" && user.PermissionStr != "ADMIN" {
+		http.Error(w, "invalid permission", http.StatusBadRequest)
+		return
+	}
+
 	userData := map[string]interface{}{
 		"username":         user.Username,
 		"avatar_image_url": user.AvatarImageUrl,
 		"suica_id":         user.SuicaId,
+		"greet_text":       user.GreetText,
+		"bye_text":         user.ByeText,
+		"permission_str":   user.PermissionStr,
 	}
 
 	if err := lib.UpsertUser(uid, userData); err != nil {

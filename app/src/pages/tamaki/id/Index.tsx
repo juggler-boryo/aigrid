@@ -22,12 +22,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getTamaki, updateTamaki, deleteTamaki } from "../../../apis/tamaki";
 import TopBar from "../../../components/TopBar";
 import CheckAuth from "../../CheckAuth";
-import { FaEdit, FaShare } from "react-icons/fa";
+import { FaEdit, FaShare, FaTrash } from "react-icons/fa";
 import { GetAllUsers } from "../../../apis/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserProfile from "../../../components/UserProfile";
 import { Kind2title } from "../../../components/Tamaki/Tamaki";
 import { TamakiEventDTO } from "../../../types/tamaki";
+import CoolMo from "../../../components/CoolMo";
 
 const TamakiDetail = () => {
   const { id } = useParams();
@@ -143,128 +144,132 @@ const TamakiDetail = () => {
         }}
       >
         <TopBar />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            maxWidth: 400,
-            width: "90%",
-            p: 2,
-          }}
-        >
-          <Card>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Box display="flex" alignItems="center" gap={2}>
-                <FaEdit />
-                <Typography level="title-lg">
-                  {tamaki &&
-                    (tamaki.kind === 0 || tamaki.kind === 2
-                      ? tamaki.title
-                      : Kind2title(tamaki.kind))}
-                </Typography>
-              </Box>
-              <Box display="flex" gap={1}>
-                <IconButton
-                  variant="outlined"
-                  color="neutral"
-                  onClick={() => {
-                    const url = `https://aigrid.vercel.app/tamaki/${id}`;
-                    navigator.clipboard.writeText(url).then(() => {
-                      alert("URLをコピーしました");
-                    });
-                  }}
-                >
-                  <FaShare />
-                </IconButton>
-                <Button
-                  variant="outlined"
-                  color="danger"
-                  onClick={() => setOpenDeleteDialog(true)}
-                >
-                  削除
-                </Button>
-              </Box>
-            </Box>
-          </Card>
-
-          {(tamaki?.kind === 0 || tamaki?.kind === 2) && (
-            <FormControl>
-              <FormLabel>タイトル</FormLabel>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="イベントのタイトルを入力"
-                required
-              />
-            </FormControl>
-          )}
-
-          {(tamaki?.kind === 0 || tamaki?.kind === 1 || tamaki?.kind === 2) && (
-            <FormControl>
-              <FormLabel>メモ</FormLabel>
-              <Textarea
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                placeholder="メモを入力"
-                minRows={3}
-              />
-            </FormControl>
-          )}
-
-          {tamaki?.kind === 0 && (
-            <FormControl>
-              <FormLabel>価格</FormLabel>
-              <Input
-                type="number"
-                value={price !== undefined ? price : ""}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                placeholder="価格を入力"
-              />
-            </FormControl>
-          )}
-
-          {(tamaki?.kind === 0 || tamaki?.kind === 1) && (
-            <FormControl>
-              <FormLabel>参加者</FormLabel>
-              <Box display="flex" flexWrap="wrap" gap={1}>
-                {(allUsers || []).map((user) => (
-                  <Box
-                    key={user}
-                    display="flex"
-                    gap={2}
-                    alignItems="center"
+        <CoolMo>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              maxWidth: 400,
+              width: "90%",
+              p: 2,
+            }}
+          >
+            <Card>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Box display="flex" alignItems="center" gap={2}>
+                  <FaEdit />
+                  <Typography level="title-lg">
+                    {tamaki &&
+                      (tamaki.kind === 0 || tamaki.kind === 2
+                        ? tamaki.title
+                        : Kind2title(tamaki.kind))}
+                  </Typography>
+                </Box>
+                <Box display="flex" gap={1}>
+                  <IconButton
+                    variant="outlined"
+                    color="neutral"
                     onClick={() => {
-                      if (user === tamaki?.organizer_uid) return;
-                      setParticipants_uids(
-                        participants_uids.includes(user)
-                          ? participants_uids.filter((uid) => uid !== user)
-                          : [...participants_uids, user]
-                      );
+                      const url = `https://aigrid.vercel.app/tamaki/${id}`;
+                      navigator.clipboard.writeText(url).then(() => {
+                        alert("URLをコピーしました");
+                      });
                     }}
                   >
-                    <UserProfile
-                      uid={user}
-                      disableClick
-                      selected={
-                        participants_uids.includes(user) ||
-                        user === tamaki?.organizer_uid // 主催者は参加者として扱う
-                      }
-                    />
-                  </Box>
-                ))}
+                    <FaShare />
+                  </IconButton>
+                  <IconButton
+                    variant="outlined"
+                    color="danger"
+                    onClick={() => setOpenDeleteDialog(true)}
+                  >
+                    <FaTrash />
+                  </IconButton>
+                </Box>
               </Box>
-            </FormControl>
-          )}
+            </Card>
 
-          <Button onClick={handleUpdate} variant="solid">
-            更新
-          </Button>
-        </Box>
+            {(tamaki?.kind === 0 || tamaki?.kind === 2) && (
+              <FormControl>
+                <FormLabel>タイトル</FormLabel>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="イベントのタイトルを入力"
+                  required
+                />
+              </FormControl>
+            )}
+
+            {(tamaki?.kind === 0 ||
+              tamaki?.kind === 1 ||
+              tamaki?.kind === 2) && (
+              <FormControl>
+                <FormLabel>メモ</FormLabel>
+                <Textarea
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  placeholder="メモを入力"
+                  minRows={3}
+                />
+              </FormControl>
+            )}
+
+            {tamaki?.kind === 0 && (
+              <FormControl>
+                <FormLabel>価格</FormLabel>
+                <Input
+                  type="number"
+                  value={price !== undefined ? price : ""}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  placeholder="価格を入力"
+                />
+              </FormControl>
+            )}
+
+            {(tamaki?.kind === 0 || tamaki?.kind === 1) && (
+              <FormControl>
+                <FormLabel>参加者</FormLabel>
+                <Box display="flex" flexWrap="wrap" gap={1}>
+                  {(allUsers || []).map((user) => (
+                    <Box
+                      key={user}
+                      display="flex"
+                      gap={2}
+                      alignItems="center"
+                      onClick={() => {
+                        if (user === tamaki?.organizer_uid) return;
+                        setParticipants_uids(
+                          participants_uids.includes(user)
+                            ? participants_uids.filter((uid) => uid !== user)
+                            : [...participants_uids, user]
+                        );
+                      }}
+                    >
+                      <UserProfile
+                        uid={user}
+                        disableClick
+                        selected={
+                          participants_uids.includes(user) ||
+                          user === tamaki?.organizer_uid // 主催者は参加者として扱う
+                        }
+                      />
+                    </Box>
+                  ))}
+                </Box>
+              </FormControl>
+            )}
+
+            <Button onClick={handleUpdate} variant="solid">
+              更新
+            </Button>
+          </Box>
+        </CoolMo>
 
         <Modal
           open={openDeleteDialog}

@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { ref, onValue, getDatabase } from "firebase/database";
 import { app } from "../../../libs/firebase";
 import { useState } from "react";
+import CoolMo from "../../../components/CoolMo";
+import CheckAuth from "../../CheckAuth";
 const database = getDatabase(app);
 
 const Profile = () => {
@@ -30,35 +32,39 @@ const Profile = () => {
   }, []);
 
   return (
-    <Box gap={2} display="flex" flexDirection="column" alignItems="center">
-      <TopBar />
-      <Box width={"90%"}>
-        <Divider />
-      </Box>
-      <Box width={"85%"}>
-        <Card>
-          <Box display="flex" flexDirection="column" gap={2}>
-            <UserProfile uid={uid || ""} />
-            <Box>
-              <Typography level="title-md">UID: {uid}</Typography>
-              {!loading && (
-                <Box mt={2}>
-                  <InOutNotify
-                    offlineList={offlineList}
-                    isNoAnal={true}
-                    control_uid={uid || "114514"}
-                  />
+    <CheckAuth>
+      <Box gap={2} display="flex" flexDirection="column" alignItems="center">
+        <TopBar />
+        <Box width={"90%"}>
+          <Divider />
+        </Box>
+        <Box width={"85%"}>
+          <CoolMo>
+            <Card>
+              <Box display="flex" flexDirection="column" gap={2}>
+                <UserProfile uid={uid || ""} />
+                <Box>
+                  <Typography level="title-md">UID: {uid}</Typography>
+                  {!loading && (
+                    <Box mt={2}>
+                      <InOutNotify
+                        offlineList={offlineList}
+                        isNoAnal={true}
+                        control_uid={uid || "114514"}
+                      />
+                    </Box>
+                  )}
                 </Box>
-              )}
-            </Box>
-          </Box>
-          <Box m={0.5}>
-            <Divider />
-          </Box>
-          <InOutHistory uid={uid || ""} />
-        </Card>
+              </Box>
+              <Box m={0.5}>
+                <Divider />
+              </Box>
+              <InOutHistory uid={uid || ""} />
+            </Card>
+          </CoolMo>
+        </Box>
       </Box>
-    </Box>
+    </CheckAuth>
   );
 };
 

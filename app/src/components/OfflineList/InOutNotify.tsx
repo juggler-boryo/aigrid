@@ -1,29 +1,26 @@
 import { Box, Button, IconButton } from "@mui/joy";
-import { IoStatsChart } from "react-icons/io5";
+import { GiFireBomb } from "react-icons/gi";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
-import { getDatabase, ref, set } from "firebase/database";
-import { app } from "../../libs/firebase";
-import { postInout } from "../../apis/inout";
-import { useNavigate } from "react-router-dom";
+import { postInout, postExitAll } from "../../apis/inout";
 import useSound from "use-sound";
 import { useState } from "react";
+
 interface Props {
   offlineList: Array<string>;
   control_uid: string;
-  isNoAnal?: boolean; // no analysis
+  isNoAnal?: boolean;
 }
-
-const database = getDatabase(app);
 
 const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [user] = useIdToken(auth);
   const isIn = offlineList.includes(control_uid);
-  const navigate = useNavigate();
   const [inSound] = useSound("/in.mp3");
   const [outSound] = useSound("/bb.mp3");
+  const [eloSound] = useSound("/elo.mp3");
   const [isEntering, setIsEntering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isExitingAll, setIsExitingAll] = useState(false);
 
   const handleEnter = async () => {
     if (!user?.uid) return;
@@ -31,7 +28,6 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     setIsEntering(true);
 
     try {
-      await set(ref(database, `inoutList/${control_uid}`), true);
       const accessToken = await user.getIdToken();
       await postInout(control_uid, true, accessToken);
     } catch (error) {
@@ -47,7 +43,6 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     setIsExiting(true);
 
     try {
-      await set(ref(database, `inoutList/${control_uid}`), false);
       const accessToken = await user.getIdToken();
       await postInout(control_uid, false, accessToken);
     } catch (error) {
@@ -57,19 +52,46 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     }
   };
 
+  const handleExitAll = async () => {
+    if (!user?.uid) return;
+    if (!window.confirm("本当に全員を爆発させますか？")) return;
+    eloSound();
+    setIsExitingAll(true);
+
+    try {
+      const accessToken = await user.getIdToken();
+      await postExitAll(control_uid, accessToken);
+    } catch (error) {
+      console.error("Error exiting all:", error);
+      alert("全員の退室に失敗しました。");
+    } finally {
+      setIsExitingAll(false);
+    }
+  };
+
   return (
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
       {!isNoAnal && (
         <IconButton
-          disabled
           color="primary"
           size="md"
           variant="soft"
-          onClick={() => {
-            navigate("/inout/anal");
+          disabled={isExitingAll}
+          onClick={handleExitAll}
+          loading={isExitingAll}
+          sx={{
+            background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)",
+            color: "#FFFFFF",
+            "&:hover": {
+              background: "linear-gradient(135deg, #FF6347, #FF4500, #FFD700)",
+              transform: "scale(5)",
+            },
+            "&:active": {
+              background: "linear-gradient(135deg, #FF0000, #FF4500, #FF8C00)",
+            },
           }}
         >
-          <IoStatsChart />
+          <GiFireBomb />
         </IconButton>
       )}
       {isNoAnal && <Box width={40} />}
