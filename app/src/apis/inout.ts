@@ -38,15 +38,34 @@ export const getInMinutes = async (
 export const getInoutHistory = async (
   uid: string,
   accessToken: string
-): Promise<Inout[]> => {
-  const response = await fetch(`${Endpoint}inout/${uid}/history`, {
+): Promise<{ count: number; date: Date }[]> => {
+  const response = await fetch(`${Endpoint}inout/${uid}/kusa`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  const data = await response.json();
-  return data.history;
+
+  if (!response.ok) {
+    throw new Error(`APIエラー: ${response.status} - ${response.statusText}`);
+  }
+
+  const rawData = await response.json();
+  console.log("APIレスポンス:", rawData);
+
+  // `history` プロパティを取得
+  const dataArray = rawData.history;
+
+  if (!Array.isArray(dataArray)) {
+    throw new Error("レスポンスの `history` が配列ではありません: " + JSON.stringify(dataArray));
+  }
+
+  // 配列を整形して返す
+  return dataArray.map((item: { count: number; date: string }) => ({
+    count: item.count,
+    date: new Date(item.date),
+  }));
 };
+
 
 export const getInoutList = async (
   uid: string,
@@ -68,3 +87,4 @@ export const getInoutAnalytics = async (
   const data = await response.json();
   return data.history;
 };
+

@@ -1,12 +1,10 @@
+import React from "react";
 import { getInoutHistory } from "../../../apis/inout";
-import { Inout } from "../../../types/inout";
-import { auth } from "../../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { useQuery } from "@tanstack/react-query";
-import { CircularProgress } from "@mui/joy";
-import { List } from "@mui/joy";
-import { ListItem, Typography } from "@mui/joy";
-import { Box } from "@mui/joy";
+import { CircularProgress, Typography, Box } from "@mui/joy";
+import Heatmap from "./Heatmap"; // Heatmapコンポーネントをインポート
+import { auth } from "../../../libs/firebase";
 
 interface InOutHistoryProps {
   uid: string;
@@ -14,7 +12,7 @@ interface InOutHistoryProps {
 
 const InOutHistory = ({ uid }: InOutHistoryProps) => {
   const [user] = useIdToken(auth);
-  const { data, isLoading } = useQuery<Inout[]>({
+  const { data, isLoading } = useQuery<{ count: number; date: Date }[]>({
     queryKey: ["inoutHistory", uid],
     queryFn: async () => {
       const accessToken = await user?.getIdToken();
@@ -24,26 +22,23 @@ const InOutHistory = ({ uid }: InOutHistoryProps) => {
     },
     enabled: !!user,
   });
+
   if (isLoading) {
     return <CircularProgress />;
   }
 
+  // ヒートマップ用のデータを整形
+  const heatmapData = data?.map((entry) => ({
+    date: entry.date.toISOString().split("T")[0], // "YYYY-MM-DD" 形式
+    count: entry.count,
+  }));
+
   return (
     <Box>
-      <Typography level="title-lg">入退室履歴</Typography>
-      <List>
-        {data?.map((inout, index) => {
-          const opacity = Math.max(0.1, 1 - index * 0.15);
-          return (
-            <ListItem key={inout.created_at}>
-              <Typography sx={{ opacity }}>
-                {new Date(inout.created_at).toLocaleString()}:
-                {inout.is_in ? "入室" : "退室"}
-              </Typography>
-            </ListItem>
-          );
-        })}
-      </List>
+      <Typography level="title-lg" sx={{ marginBottom: 2 }}>
+      入退室履歴
+      </Typography>
+      <Heatmap data={heatmapData || []} />
     </Box>
   );
 };
