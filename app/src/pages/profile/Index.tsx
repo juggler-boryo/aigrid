@@ -26,6 +26,7 @@ import CheckAuth from "../CheckAuth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../libs/firebase";
 import TopBar from "../../components/TopBar";
+import CoolMo from "../../components/CoolMo";
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
@@ -129,105 +130,110 @@ const ProfileSettings = () => {
           <Divider />
         </Box>
       </Box>
+      <CoolMo>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            maxWidth: 400,
+            mx: "auto",
+            p: 2,
+          }}
+        >
+          <Card>
+            <Box display="flex" alignItems="center" gap={2}>
+              <FaRegUser />
+              <Typography level="title-lg">プロフィール設定</Typography>
+            </Box>
+          </Card>
+          <FormControl>
+            <FormLabel>ユーザー名</FormLabel>
+            <Input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="ユーザー名を入力"
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>アバター画像</FormLabel>
+            <Box display="flex" alignItems="center" gap={2}>
+              {isUploading ? (
+                <CircularProgress size="sm" />
+              ) : (
+                <Avatar src={avatarImageUrl} />
+              )}
+              <Button
+                component="label"
+                variant="outlined"
+                disabled={isUploading}
+              >
+                変更
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleImageUpload}
+                />
+              </Button>
+            </Box>
+          </FormControl>
 
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          maxWidth: 400,
-          mx: "auto",
-          p: 2,
-        }}
-      >
-        <Card>
-          <Box display="flex" alignItems="center" gap={2}>
-            <FaRegUser />
-            <Typography level="title-lg">プロフィール設定</Typography>
+          <FormControl>
+            <FormLabel>権限</FormLabel>
+            <Select
+              value={permissionStr}
+              onChange={(_, value) => setPermissionStr(value ?? "GUEST")}
+              placeholder="権限を選択"
+            >
+              <Option value="GUEST">ゲスト</Option>
+              <Option value="GENERAL">一般</Option>
+              <Option value="ADMIN">住居人</Option>
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>入室挨拶</FormLabel>
+            <Input
+              value={greet}
+              onChange={(e) => setGreet(e.target.value)}
+              placeholder="私が来た"
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel>退室挨拶</FormLabel>
+            <Input
+              value={bye}
+              onChange={(e) => setBye(e.target.value)}
+              placeholder="I'll be back."
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>NFC ID</FormLabel>
+            <Input
+              value={suicaId}
+              onChange={(e) => setSuicaId(e.target.value)}
+              placeholder="NFC IDを入力"
+            />
+          </FormControl>
+
+          <Box m={0.5}>
+            <Divider />
           </Box>
-        </Card>
-        <FormControl>
-          <FormLabel>ユーザー名</FormLabel>
-          <Input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="ユーザー名を入力"
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>アバター画像</FormLabel>
-          <Box display="flex" alignItems="center" gap={2}>
-            {isUploading ? (
-              <CircularProgress size="sm" />
-            ) : (
-              <Avatar src={avatarImageUrl} />
-            )}
-            <Button component="label" variant="outlined" disabled={isUploading}>
-              変更
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleImageUpload}
-              />
+
+          <Button type="submit" variant="solid">
+            更新
+          </Button>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button color="danger" onClick={onLogout} variant="outlined">
+              ログアウト
             </Button>
           </Box>
-        </FormControl>
-
-        <FormControl>
-          <FormLabel>権限</FormLabel>
-          <Select
-            value={permissionStr}
-            onChange={(_, value) => setPermissionStr(value ?? "GUEST")}
-            placeholder="権限を選択"
-          >
-            <Option value="GUEST">ゲスト</Option>
-            <Option value="GENERAL">一般</Option>
-            <Option value="ADMIN">住居人</Option>
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <FormLabel>入室挨拶</FormLabel>
-          <Input
-            value={greet}
-            onChange={(e) => setGreet(e.target.value)}
-            placeholder="私が来た"
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>退室挨拶</FormLabel>
-          <Input
-            value={bye}
-            onChange={(e) => setBye(e.target.value)}
-            placeholder="I'll be back."
-          />
-        </FormControl>
-
-        <FormControl>
-          <FormLabel>NFC ID</FormLabel>
-          <Input
-            value={suicaId}
-            onChange={(e) => setSuicaId(e.target.value)}
-            placeholder="NFC IDを入力"
-          />
-        </FormControl>
-
-        <Box m={0.5}>
-          <Divider />
         </Box>
-
-        <Button type="submit" variant="solid">
-          更新
-        </Button>
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button color="danger" onClick={onLogout} variant="outlined">
-            ログアウト
-          </Button>
-        </Box>
-      </Box>
+      </CoolMo>
     </CheckAuth>
   );
 };

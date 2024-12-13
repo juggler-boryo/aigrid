@@ -7,6 +7,7 @@ import {
   Textarea,
   Badge,
 } from "@mui/joy";
+import CheckAuth from "../CheckAuth";
 import TopBar from "../../components/TopBar";
 import { useEffect, useState } from "react";
 import {
@@ -20,7 +21,7 @@ import { app, auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
 import UserProfile from "../../components/UserProfile";
 import { LuLayoutDashboard } from "react-icons/lu";
-
+import CoolMo from "../../components/CoolMo";
 const database = getDatabase(app);
 const ACTIVE_THRESHOLD = 3 * 60 * 1000; // 3 minutes in milliseconds
 
@@ -95,72 +96,76 @@ const Whiteboard = () => {
   };
 
   return (
-    <Box gap={2} display="flex" flexDirection="column" alignItems="center">
-      <TopBar />
-      <Box width={"90%"}>
-        <Divider />
-      </Box>
-      <Box width={"90%"} sx={{ maxWidth: "100%" }}>
-        <Card>
-          <Box display="flex" flexDirection="column" gap={2}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <LuLayoutDashboard size={20} />
-              <Typography level="title-md">編集中</Typography>
-            </Box>
-            <Box display="flex" gap={1} flexWrap="wrap">
-              {activeUsers.map((uid) => (
-                <Box key={uid}>
-                  <UserProfile uid={uid} />
+    <CheckAuth>
+      <Box gap={2} display="flex" flexDirection="column" alignItems="center">
+        <TopBar />
+        <Box width={"90%"}>
+          <Divider />
+        </Box>
+        <Box width={"90%"} sx={{ maxWidth: "100%" }}>
+          <CoolMo>
+            <Card>
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <LuLayoutDashboard size={20} />
+                  <Typography level="title-md">編集中</Typography>
                 </Box>
-              ))}
-              {activeUsers.length === 0 && (
-                <Typography level="body-sm">
-                  編集している人はいません
-                </Typography>
-              )}
+                <Box display="flex" gap={1} flexWrap="wrap">
+                  {activeUsers.map((uid) => (
+                    <Box key={uid}>
+                      <UserProfile uid={uid} />
+                    </Box>
+                  ))}
+                  {activeUsers.length === 0 && (
+                    <Typography level="body-sm">
+                      編集している人はいません
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </Card>
+
+            <Box display="flex" flexDirection="column" gap={2} mt={2}>
+              <Badge
+                color="danger"
+                variant="solid"
+                anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                invisible={content === draftContent}
+              >
+                <Textarea
+                  value={draftContent}
+                  onChange={handleChange}
+                  placeholder="( ◠‿◠ )"
+                  minRows={5}
+                  sx={{
+                    fontFamily: "monospace",
+                    fontSize: "14px",
+                    lineHeight: 1.5,
+                    width: "100%",
+                    resize: "both",
+                    minHeight: "100px",
+                  }}
+                />
+              </Badge>
+
+              <Typography level="body-sm" color="warning">
+                ※
+                みんなで同時編集すると大変なことになっちゃうから、一人ずつ編集してね
+              </Typography>
+
+              <Box mt={2} display="flex" justifyContent="flex-end">
+                <Button
+                  onClick={handleUpdate}
+                  disabled={!user || content === draftContent}
+                >
+                  更新
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        </Card>
-
-        <Box display="flex" flexDirection="column" gap={2} mt={2}>
-          <Badge
-            color="danger"
-            variant="solid"
-            anchorOrigin={{ vertical: "top", horizontal: "left" }}
-            invisible={content === draftContent}
-          >
-            <Textarea
-              value={draftContent}
-              onChange={handleChange}
-              placeholder="( ◠‿◠ )"
-              minRows={5}
-              sx={{
-                fontFamily: "monospace",
-                fontSize: "14px",
-                lineHeight: 1.5,
-                width: "100%",
-                resize: "both",
-                minHeight: "100px",
-              }}
-            />
-          </Badge>
-
-          <Typography level="body-sm" color="warning">
-            ※
-            みんなで同時編集すると大変なことになっちゃうから、一人ずつ編集してね
-          </Typography>
-
-          <Box mt={2} display="flex" justifyContent="flex-end">
-            <Button
-              onClick={handleUpdate}
-              disabled={!user || content === draftContent}
-            >
-              更新
-            </Button>
-          </Box>
+          </CoolMo>
         </Box>
       </Box>
-    </Box>
+    </CheckAuth>
   );
 };
 
