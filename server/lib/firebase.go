@@ -131,12 +131,13 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 
 func GetInoutHistoryByMonthByUID(uid string) ([]map[string]interface{}, error) {
 	now := time.Now()
-	oneMonthAgo := now.AddDate(0, -1, 0)
+	// TODO: 1年分だとサーバー負荷が高いので、1ヶ月分にしたい。はやくクラスター作るぞ✨
+	oneYearAgo := now.AddDate(-1, 0, 0)
 
 	// Use streaming iterator for better memory efficiency
 	iter := DB.Collection("inouts").
 		Where("uid", "==", uid).
-		Where("created_at", ">=", oneMonthAgo).
+		Where("created_at", ">=", oneYearAgo).
 		Where("created_at", "<=", now).
 		Where("is_in", "==", true).
 		OrderBy("created_at", firestore.Desc).
