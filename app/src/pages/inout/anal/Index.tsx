@@ -9,6 +9,8 @@ import { Min2Str } from "../../../libs/min2str";
 import { GetUser } from "../../../apis/user";
 import TopBar from "../../../components/TopBar";
 import { useMemo } from "react";
+import CheckAuth from "../../CheckAuth";
+import CoolMo from "../../../components/CoolMo";
 
 const InOutList2EachPersonMinutes = (
   inoutList: Inout[]
@@ -164,72 +166,79 @@ const Index = () => {
   }, [data?.inoutList, data?.userMap]);
 
   return (
-    <Box
-      sx={{
-        mx: "auto",
-        gap: 2,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <TopBar />
-      <Card sx={{ width: "85%" }}>
-        {isFetching ? (
-          <Box display="flex" justifyContent="center" alignItems="center">
-            <CircularProgress />
-          </Box>
-        ) : chartData.length > 0 &&
-          userSeries.length > 0 &&
-          allDates.length > 0 ? (
-          <Box gap={1} display="flex" flexDirection="column">
-            <Box>
-              <PieChart
-                series={[
-                  {
-                    data: chartData,
-                    highlightScope: { faded: "global", highlighted: "item" },
-                    faded: { innerRadius: 30, additionalRadius: 30 },
-                  },
-                ]}
-                width={999}
-                height={400}
-                slotProps={{
-                  legend: {
-                    itemGap: 10,
-                  },
-                }}
-              />
-            </Box>
-            <Box m={0.5}>
-              <Divider />
-            </Box>
-            <Box>
-              {userSeries.length > 0 && allDates.length > 0 && (
-                <LineChart
-                  series={userSeries}
-                  width={999}
-                  height={400}
-                  xAxis={[
-                    {
-                      data: allDates,
-                      scaleType: "time",
-                    },
-                  ]}
-                  slotProps={{
-                    legend: {
-                      itemGap: 10,
-                    },
-                  }}
-                />
-              )}
-            </Box>
-          </Box>
-        ) : (
-          <Typography level="title-md">No data available</Typography>
-        )}
-      </Card>
-    </Box>
+    <CheckAuth>
+      <Box
+        sx={{
+          mx: "auto",
+          gap: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <TopBar />
+        <CoolMo>
+          <Card sx={{ width: "85%" }}>
+            {isFetching ? (
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <CircularProgress />
+              </Box>
+            ) : chartData.length > 0 &&
+              userSeries.length > 0 &&
+              allDates.length > 0 ? (
+              <Box gap={1} display="flex" flexDirection="column">
+                <Box>
+                  <PieChart
+                    series={[
+                      {
+                        data: chartData,
+                        highlightScope: {
+                          faded: "global",
+                          highlighted: "item",
+                        },
+                        faded: { innerRadius: 30, additionalRadius: 30 },
+                      },
+                    ]}
+                    width={999}
+                    height={400}
+                    slotProps={{
+                      legend: {
+                        itemGap: 10,
+                      },
+                    }}
+                  />
+                </Box>
+                <Box m={0.5}>
+                  <Divider />
+                </Box>
+                <Box>
+                  {userSeries.length > 0 && allDates.length > 0 && (
+                    <LineChart
+                      series={userSeries}
+                      width={999}
+                      height={400}
+                      xAxis={[
+                        {
+                          data: allDates,
+                          scaleType: "time",
+                        },
+                      ]}
+                      slotProps={{
+                        legend: {
+                          itemGap: 10,
+                        },
+                      }}
+                    />
+                  )}
+                </Box>
+              </Box>
+            ) : (
+              <Typography level="title-md">No data available</Typography>
+            )}
+          </Card>
+        </CoolMo>
+      </Box>
+    </CheckAuth>
   );
 };
 
