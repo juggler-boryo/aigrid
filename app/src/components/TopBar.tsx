@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GetUser } from "../apis/user";
 import { User } from "../types/user";
 import { LuLayoutDashboard } from "react-icons/lu";
+import { motion } from "framer-motion";
 
 const TopBar = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const TopBar = () => {
       display={"flex"}
       flexDirection={"row"}
       alignItems={"center"}
-      borderRadius={"12px"}
+      borderRadius={"16px"}
       p={1}
     >
       <Box
@@ -81,7 +82,6 @@ const TopBar = () => {
               onClick={() => {
                 navigate("/profile");
               }}
-              loading={isMeLoading}
             >
               <FaRegUser />
             </IconButton>
