@@ -1,10 +1,15 @@
 import React from "react";
-import CalendarHeatmap from "react-calendar-heatmap";
+import ReactCalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
+interface HeatmapValue {
+  date: string;
+  count: number;
+}
+
 interface HeatmapProps {
-  data: { date: string; count: number }[];
+  data: HeatmapValue[];
 }
 
 const Heatmap: React.FC<HeatmapProps> = ({ data }) => {
@@ -36,22 +41,18 @@ const Heatmap: React.FC<HeatmapProps> = ({ data }) => {
       }}
     >
       <div style={{ width: "100%" }}>
-        <CalendarHeatmap
+        <ReactCalendarHeatmap
           startDate={startDate.toISOString().split("T")[0]}
           endDate={today}
           values={data}
           classForValue={undefined}
           showWeekdayLabels={true}
-          tooltipDataAttrs={(
-            value: { date: string; count: number } | undefined
-          ) =>
-            value && value.date
-              ? { "data-tip": `${value.count} 回` }
-              : { "data-tip": "0 回" }
+          tooltipDataAttrs={(value: any) =>
+            value ? { "data-tip": `${value.count} 回` } : { "data-tip": "0 回" }
           }
-          transformDayElement={(rect, value) => {
+          transformDayElement={(element: any, value: any) => {
             const fillColor = getColor(value?.count);
-            return React.cloneElement(rect, {
+            return React.cloneElement(element, {
               style: {
                 fill: fillColor,
                 cursor: "pointer",
