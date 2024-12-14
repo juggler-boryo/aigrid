@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import { useState, useMemo, useCallback } from "react";
 import { TamakiEvent } from "../../types/tamaki";
+import MyCard from "../MyCard";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -137,7 +138,7 @@ const Tamaki = () => {
   );
 
   return (
-    <Card sx={{ width: "85%" }}>
+    <MyCard>
       <Box>
         <Select
           placeholder="Choose one…"
@@ -190,7 +191,7 @@ const Tamaki = () => {
           </Box>
         </Box>
       )}
-    </Card>
+    </MyCard>
   );
 };
 

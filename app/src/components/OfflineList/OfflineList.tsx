@@ -1,10 +1,11 @@
-import { Box, Typography, CircularProgress, Card, Divider } from "@mui/joy";
+import { Box, Typography, CircularProgress, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { app, auth } from "../../libs/firebase";
 import InOutNotify from "./InOutNotify";
 import UserProfile from "../UserProfile";
 import { useIdToken } from "react-firebase-hooks/auth";
+import MyCard from "../MyCard";
 
 const database = getDatabase(app);
 
@@ -30,11 +31,7 @@ const OfflineList = () => {
   }, []);
 
   return (
-    <Card
-      sx={{
-        width: "85%",
-      }}
-    >
+    <MyCard>
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center">
           <CircularProgress />
@@ -42,7 +39,7 @@ const OfflineList = () => {
       ) : (
         <Box gap={1} display={"flex"} flexWrap={"wrap"}>
           {offlineList.map((uid) => (
-            <Box key={uid}>
+            <Box key={uid} mt={0.5}>
               <UserProfile uid={uid} />
             </Box>
           ))}
@@ -60,7 +57,7 @@ const OfflineList = () => {
           control_uid={user.uid || "114514"}
         />
       )}
-    </Card>
+    </MyCard>
   );
 };
 
