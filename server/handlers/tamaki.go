@@ -121,6 +121,7 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 			Title:            dto.Title,
 			Memo:             dto.Memo,
 			Price:            dto.Price,
+			IsArchived:       dto.IsArchived,
 		}
 		createTamakiEvent(tamakiEvent, id, w, r)
 
@@ -237,6 +238,7 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		existingEvent.Title = dto.Title
 		existingEvent.Memo = dto.Memo
 		existingEvent.Price = dto.Price
+		existingEvent.IsArchived = dto.IsArchived
 
 		updateTamakiEvent(doc, existingEvent, userID, id, w, r)
 
@@ -293,10 +295,14 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 
 func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 	size := 3
+	isUnArchivedOnly := false
 	if sizeStr := r.URL.Query().Get("size"); sizeStr != "" {
 		if s, err := strconv.Atoi(sizeStr); err == nil && s > 0 {
 			size = s
 		}
+	}
+	if isUnArchivedOnlyStr := r.URL.Query().Get("is_un_archived_only"); isUnArchivedOnlyStr != "" {
+		isUnArchivedOnly = isUnArchivedOnlyStr == "true"
 	}
 
 	cursor := r.URL.Query().Get("cursor")
@@ -304,7 +310,6 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := lib.DB.Collection("tamaki_events").
 		OrderBy("created_at", firestore.Desc)
-
 	if kindStr != "" {
 		kind, err := strconv.Atoi(kindStr)
 		if err != nil {
@@ -312,6 +317,9 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		query = query.Where("kind", "==", kind)
+		if kind == 0 && isUnArchivedOnly {
+			query = query.Where("is_archived", "==", false)
+		}
 	}
 
 	query = query.Limit(size + 1)

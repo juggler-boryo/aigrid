@@ -8,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { GetUser } from "../apis/user";
 import { User } from "../types/user";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { motion } from "framer-motion";
 
 const TopBar = () => {
   const navigate = useNavigate();

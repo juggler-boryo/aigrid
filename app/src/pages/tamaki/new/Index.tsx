@@ -11,6 +11,7 @@ import {
   Chip,
   Input,
   CircularProgress,
+  Divider,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -74,6 +75,7 @@ const TamakiNew = () => {
           title,
           memo,
           price: price !== undefined ? price : -1,
+          is_archived: false,
         };
       } else if (kind === 1) {
         // お風呂券
@@ -214,6 +216,8 @@ const TamakiNew = () => {
               </Box>
             </FormControl>
           )}
+
+          <Divider />
 
           <Button
             type="submit"
