@@ -14,6 +14,8 @@ import {
   FormLabel,
   Input,
 } from "@mui/joy";
+import { ColorPicker, createColor } from "material-ui-color";
+import Cookies from "js-cookie";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../libs/firebase";
 import { useQuery } from "@tanstack/react-query";
@@ -28,7 +30,9 @@ import { storage } from "../../libs/firebase";
 import TopBar from "../../components/TopBar";
 import CoolMo from "../../components/CoolMo";
 
+
 const ProfileSettings = () => {
+
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const { data: me, isLoading } = useQuery<User>({
@@ -44,7 +48,11 @@ const ProfileSettings = () => {
   const [suicaId, setSuicaId] = useState("");
   const [permissionStr, setPermissionStr] = useState("GUEST");
   const [isUploading, setIsUploading] = useState(false);
+  const [color, setColor] = useState(Cookies.get("userColor") || "#808080");
 
+  const handleChange = (value: any) => {
+    setColor(value);
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.uid) return;
@@ -52,6 +60,9 @@ const ProfileSettings = () => {
     const accessToken = await user.getIdToken();
     if (!accessToken) return;
 
+    const colorHex = "#" + color.hex
+
+    Cookies.set("userColor", colorHex, { expires: 7, path: "/" });
     const success = await UpdateUser(
       user.uid,
       {
@@ -219,6 +230,13 @@ const ProfileSettings = () => {
               placeholder="NFC IDを入力"
             />
           </FormControl>
+          <FormControl>
+            <FormLabel>color map(heatmap)</FormLabel>
+            <div>
+              <ColorPicker value={color} onChange={handleChange} />
+            </div>
+          </FormControl>
+
 
           <Box m={0.5}>
             <Divider />
@@ -238,4 +256,4 @@ const ProfileSettings = () => {
   );
 };
 
-export default ProfileSettings;
+export default ProfileSettings

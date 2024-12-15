@@ -2,21 +2,38 @@ import React from "react";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Cookies from "js-cookie";
+import tinycolor from 'tinycolor2';
+
+
 
 interface HeatmapProps {
   data: { date: string; count: number }[];
 }
 
+function darkenHexColor(hexColor: string, amount: number = 10): string {
+  return tinycolor(hexColor).darken(amount).toHexString();
+}
+
 const Heatmap: React.FC<HeatmapProps> = ({ data }) => {
+  const userColorHex = Cookies.get("userColor") || "#000000";
   const today = new Date().toISOString().split("T")[0];
   const isMobile = useMediaQuery("(max-width:800px)");
 
-  // カスタムスタイル関数
+  const userColor = userColorHex
+  const level0Color = "#808080"
+
+  const level1Color = userColor
+
+  const level2Color = darkenHexColor(userColor, 20);
+   
+  const level3Color = darkenHexColor(userColor, 40);
+  
   const getColor = (count: number | undefined): string => {
-    if (!count || count === 0) return "#ebedf0"; // グレー
-    if (count <= 2) return "#c6e48b"; // 薄い緑
-    if (count <= 5) return "#7bc96f"; // 中間緑
-    return "#196127"; // 濃い緑
+    if (!count || count === 0) return level0Color
+    if (count <= 2) return level1Color
+    if (count <= 5) return level2Color
+    return level3Color
   };
 
   const startDate = isMobile
