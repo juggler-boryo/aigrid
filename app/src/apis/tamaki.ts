@@ -46,19 +46,20 @@ export const updateTamaki = async (
 
 export const listTamaki = async (
   accessToken: string,
-  isInitial: boolean = true,
-  cursor?: string,
-  kind?: number
+  isFirst: boolean,
+  cursor: string | undefined,
+  kind: number | undefined,
+  isUnArchivedOnly: boolean
 ): Promise<{
   events: TamakiEvent[];
   next_cursor?: string;
   has_more: boolean;
 }> => {
   const params = new URLSearchParams();
-  params.append("size", isInitial ? "3" : "10");
+  params.append("size", isFirst ? "3" : "10");
   if (cursor) params.append("cursor", cursor);
   if (kind !== undefined) params.append("kind", kind.toString());
-
+  if (isUnArchivedOnly) params.append("is_un_archived_only", "true");
   const response = await fetch(`${Endpoint}tamaki?${params.toString()}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,

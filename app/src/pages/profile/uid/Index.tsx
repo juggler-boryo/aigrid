@@ -1,4 +1,4 @@
-import { Box, Card, Divider, Typography } from "@mui/joy";
+import { Box, Divider, Typography } from "@mui/joy";
 import TopBar from "../../../components/TopBar";
 import UserProfile from "../../../components/UserProfile";
 import { useParams } from "react-router-dom";
@@ -8,8 +8,9 @@ import { useEffect } from "react";
 import { ref, onValue, getDatabase } from "firebase/database";
 import { app } from "../../../libs/firebase";
 import { useState } from "react";
-import CoolMo from "../../../components/CoolMo";
 import CheckAuth from "../../CheckAuth";
+import MyCard from "../../../components/MyCard";
+import CoolMo from "../../../components/CoolMo";
 const database = getDatabase(app);
 
 const Profile = () => {
@@ -38,10 +39,10 @@ const Profile = () => {
         <Box width={"90%"}>
           <Divider />
         </Box>
-        <Box width={"85%"}>
-          <CoolMo>
-            <Card>
-              <Box display="flex" flexDirection="column" gap={2}>
+        <CoolMo>
+          <MyCard>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Box display="flex" flexDirection="column" gap={2} mt={0.5}>
                 <UserProfile uid={uid || ""} />
                 <Box>
                   <Typography level="title-md">UID: {uid}</Typography>
@@ -60,9 +61,9 @@ const Profile = () => {
                 <Divider />
               </Box>
               <InOutHistory uid={uid || ""} />
-            </Card>
-          </CoolMo>
-        </Box>
+            </Box>
+          </MyCard>
+        </CoolMo>
       </Box>
     </CheckAuth>
   );
