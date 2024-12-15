@@ -24,6 +24,7 @@ const Heatmap: React.FC<HeatmapProps> = ({ data }) => {
   const userColorHex = Cookies.get("userColor") || "#000000";
   const today = new Date().toISOString().split("T")[0];
   const isMobile = useMediaQuery("(max-width:800px)");
+
   const userColor = userColorHex
   const level0Color = "#ebedf0"
 
