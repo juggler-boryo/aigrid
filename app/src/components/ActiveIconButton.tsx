@@ -7,7 +7,11 @@ type ActiveIconButtonProps = {
   color?: "neutral" | "danger" | "primary";
 };
 
-const ActiveIconButton = ({ to, icon, color = "neutral" }: ActiveIconButtonProps) => {
+const ActiveIconButton = ({
+  to,
+  icon,
+  color = "neutral",
+}: ActiveIconButtonProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -19,7 +23,7 @@ const ActiveIconButton = ({ to, icon, color = "neutral" }: ActiveIconButtonProps
       color={isActive ? "primary" : color}
       size="lg"
       sx={{
-        borderRadius: "12px",
+        borderRadius: "18px",
       }}
       onClick={() => navigate(to)}
     >
