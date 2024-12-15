@@ -116,6 +116,9 @@ const TamakiNew = () => {
         }}
       >
         <TopBar />
+        <Box width={"90%"}>
+          <Divider />
+        </Box>
         <Box
           component="form"
           onSubmit={handleSubmit}
