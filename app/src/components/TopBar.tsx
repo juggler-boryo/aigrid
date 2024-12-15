@@ -21,7 +21,7 @@ const TopBar = () => {
 
   return (
     <Box
-      mt={2}
+      mt={1}
       width={"90%"}
       display={"flex"}
       flexDirection={"row"}
@@ -43,7 +43,10 @@ const TopBar = () => {
         </Box>
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
-        <ActiveIconButton to="/whiteboard" icon={<LuLayoutDashboard size={16} />} />
+        <ActiveIconButton
+          to="/whiteboard"
+          icon={<LuLayoutDashboard size={18} />}
+        />
         <Badge
           badgeContent={isMeLoading ? 0 : me ? 0 : "!"}
           color={isMeLoading ? "neutral" : "danger"}
@@ -54,7 +57,7 @@ const TopBar = () => {
         >
           <ActiveIconButton
             to="/profile"
-            icon={<FaRegUser />}
+            icon={<FaRegUser size={18} />}
             color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
           />
         </Badge>
