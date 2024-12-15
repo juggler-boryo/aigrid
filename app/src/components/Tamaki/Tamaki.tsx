@@ -8,6 +8,7 @@ import {
   Chip,
   Select,
   Option,
+  Checkbox,
 } from "@mui/joy";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { listTamaki } from "../../apis/tamaki";
@@ -20,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import { useState, useMemo, useCallback } from "react";
 import { TamakiEvent } from "../../types/tamaki";
+import MyCard from "../MyCard";
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -31,9 +33,10 @@ const Tamaki = () => {
   const [user] = useIdToken(auth);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedKind, setSelectedKind] = useState<number | -1>(0);
+  const [isUnArchivedOnly, setIsUnArchivedOnly] = useState(true);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["tamaki", selectedKind],
+    queryKey: ["tamaki", selectedKind, isUnArchivedOnly],
     queryFn: async ({ pageParam }) => {
       const accessToken = await user?.getIdToken();
       if (!accessToken) return { events: [], has_more: false };
@@ -41,7 +44,8 @@ const Tamaki = () => {
         accessToken,
         !pageParam,
         pageParam,
-        selectedKind === -1 ? undefined : selectedKind
+        selectedKind === -1 ? undefined : selectedKind,
+        isUnArchivedOnly
       );
     },
     getNextPageParam: (lastPage) => lastPage.next_cursor,
@@ -137,11 +141,21 @@ const Tamaki = () => {
   );
 
   return (
-    <Card sx={{ width: "85%" }}>
-      <Box>
+    <MyCard>
+      <Box display="flex" gap={2} alignItems="center" width="100%">
+        <Checkbox
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            display: selectedKind === 0 ? "flex" : "none",
+          }}
+          checked={isUnArchivedOnly}
+          onChange={(event) => setIsUnArchivedOnly(event.target.checked)}
+        />
         <Select
           placeholder="Choose one…"
           variant="outlined"
+          sx={{ width: "100%" }}
           value={selectedKind}
           onChange={(_, value) => setSelectedKind(value ?? -1)}
         >
@@ -190,7 +204,7 @@ const Tamaki = () => {
           </Box>
         </Box>
       )}
-    </Card>
+    </MyCard>
   );
 };
 

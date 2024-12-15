@@ -14,6 +14,8 @@ import {
   Chip,
   Input,
   IconButton,
+  Divider,
+  Switch,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -38,6 +40,7 @@ const TamakiDetail = () => {
   const [memo, setMemo] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | undefined>(undefined);
+  const [isArchived, setIsArchived] = useState(false);
   const [participants_uids, setParticipants_uids] = useState<string[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -52,6 +55,7 @@ const TamakiDetail = () => {
       setTitle(data.title || "");
       setPrice(data.price);
       setParticipants_uids(data.participants_uids || []);
+      setIsArchived(data.is_archived || false);
       return data;
     },
     enabled: !!meUser && !!id,
@@ -90,6 +94,7 @@ const TamakiDetail = () => {
           title,
           memo,
           price: price !== undefined ? price : -1,
+          is_archived: isArchived,
         };
       } else if (tamaki.kind === 2) {
         event = {
@@ -144,14 +149,18 @@ const TamakiDetail = () => {
         }}
       >
         <TopBar />
+        <Box width={"90%"}>
+          <Divider />
+        </Box>
         <CoolMo>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               gap: 2,
-              maxWidth: 400,
+              maxWidth: 500,
               width: "90%",
+              minWidth: { xs: "300px", sm: "400px" },
               p: 2,
             }}
           >
@@ -160,8 +169,9 @@ const TamakiDetail = () => {
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
+                width={"100%"}
               >
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box width={"100%"} display="flex" alignItems="center" gap={2}>
                   <FaEdit />
                   <Typography level="title-lg">
                     {tamaki &&
@@ -193,6 +203,23 @@ const TamakiDetail = () => {
                 </Box>
               </Box>
             </Card>
+            {tamaki?.kind === 0 && (
+              <Card variant="outlined">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={2}
+                >
+                  <Typography level="body-sm">進行中</Typography>
+                  <Switch
+                    checked={isArchived}
+                    onChange={(e) => setIsArchived(e.target.checked)}
+                  />
+                  <Typography level="body-sm">終了</Typography>
+                </Box>
+              </Card>
+            )}
 
             {(tamaki?.kind === 0 || tamaki?.kind === 2) && (
               <FormControl>
@@ -264,6 +291,8 @@ const TamakiDetail = () => {
                 </Box>
               </FormControl>
             )}
+
+            <Divider />
 
             <Button onClick={handleUpdate} variant="solid">
               更新

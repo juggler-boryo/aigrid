@@ -149,7 +149,8 @@ const ProfileSettings = () => {
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            maxWidth: 400,
+            maxWidth: 500,
+            minWidth: { xs: "300px", sm: "400px" },
             mx: "auto",
             p: 2,
           }}

@@ -12,6 +12,7 @@ type TamakiEvent0DTO struct {
 	Title            string   `json:"title"`
 	Memo             string   `json:"memo,omitempty"`
 	Price            int      `json:"price"`
+	IsArchived       bool     `json:"is_archived"`
 }
 
 type TamakiEvent1DTO struct {
@@ -39,6 +40,7 @@ type TamakiEvent0 struct {
 	Title            string   `json:"title" firestore:"title"`
 	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
 	Price            int      `json:"price" firestore:"price"`
+	IsArchived       bool     `json:"is_archived" firestore:"is_archived"`
 }
 
 type TamakiEvent1 struct {

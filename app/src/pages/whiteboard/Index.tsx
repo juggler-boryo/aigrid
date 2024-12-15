@@ -6,6 +6,7 @@ import {
   Button,
   Textarea,
   Badge,
+  CircularProgress,
 } from "@mui/joy";
 import CheckAuth from "../CheckAuth";
 import TopBar from "../../components/TopBar";
@@ -30,6 +31,7 @@ const Whiteboard = () => {
   const [draftContent, setDraftContent] = useState<string>("");
   const [user] = useIdToken(auth);
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const updateContent = (newContent: string) => {
     if (user) {
@@ -57,6 +59,7 @@ const Whiteboard = () => {
         setContent(data);
         setDraftContent(data);
       }
+      setIsLoading(false);
     });
 
     // Active users subscription
@@ -104,26 +107,37 @@ const Whiteboard = () => {
         </Box>
         <Box width={"90%"} sx={{ maxWidth: "100%" }}>
           <CoolMo>
-            <Card>
-              <Box display="flex" flexDirection="column" gap={2}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <LuLayoutDashboard size={20} />
-                  <Typography level="title-md">編集中</Typography>
-                </Box>
-                <Box display="flex" gap={1} flexWrap="wrap">
-                  {activeUsers.map((uid) => (
-                    <Box key={uid}>
-                      <UserProfile uid={uid} />
-                    </Box>
-                  ))}
-                  {activeUsers.length === 0 && (
-                    <Typography level="body-sm">
-                      編集している人はいません
-                    </Typography>
-                  )}
-                </Box>
+            {isLoading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                p={2}
+              >
+                <CircularProgress />
               </Box>
-            </Card>
+            ) : (
+              <Card>
+                <Box display="flex" flexDirection="column" gap={2}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <LuLayoutDashboard size={20} />
+                    <Typography level="title-md">編集中</Typography>
+                  </Box>
+                  <Box display="flex" gap={1} flexWrap="wrap">
+                    {activeUsers.map((uid) => (
+                      <Box key={uid}>
+                        <UserProfile uid={uid} />
+                      </Box>
+                    ))}
+                    {activeUsers.length === 0 && (
+                      <Typography level="body-sm">
+                        編集している人はいません
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </Card>
+            )}
 
             <Box display="flex" flexDirection="column" gap={2} mt={2}>
               <Badge
