@@ -94,7 +94,7 @@ const UserProfile = ({
             )
           }
         >
-          <Typography level="title-md">
+          <Typography mr={1} level="title-md">
             {userData?.username || "anonymous"}
           </Typography>
         </Chip>

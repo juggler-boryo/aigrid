@@ -149,6 +149,9 @@ const TamakiDetail = () => {
         }}
       >
         <TopBar />
+        <Box width={"90%"}>
+          <Divider />
+        </Box>
         <CoolMo>
           <Box
             sx={{
