@@ -22,6 +22,13 @@ import { BsThreeDots } from "react-icons/bs";
 import { useState, useMemo, useCallback } from "react";
 import { TamakiEvent } from "../../types/tamaki";
 import MyCard from "../MyCard";
+import { keyframes } from "@emotion/react";
+
+const flicker = keyframes`
+     0% { background-color: var(--joy-palette-danger-100, #F0F4F8); }
+     50% { background-color: transparent; }
+     100% { background-color: var(--joy-palette-danger-100, #F0F4F8); }
+`;
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -102,8 +109,8 @@ const Tamaki = () => {
                 transition: "all 0.2s ease-in-out",
               },
               position: "relative",
-              backgroundColor: isOverOneWeek ? "var(--joy-palette-danger-100, #F0F4F8)" : undefined
-              ,
+              backgroundColor: isOverOneWeek ? "var(--joy-palette-danger-100, #F0F4F8)" : undefined,
+              animation: isOverOneWeek ? `${flicker} 1s infinite` : undefined,
             }}
             onClick={() => {
               navigate(`/tamaki/${tamaki.id}`);
