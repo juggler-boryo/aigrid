@@ -2,6 +2,10 @@ import React from "react";
 import ReactCalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Cookies from "js-cookie";
+import tinycolor from 'tinycolor2';
+
+
 
 interface HeatmapValue {
   date: string;
@@ -12,19 +16,29 @@ interface HeatmapProps {
   data: HeatmapValue[];
 }
 
+function darkenHexColor(hexColor: string, amount: number = 10): string {
+  return tinycolor(hexColor).darken(amount).toHexString();
+}
+
 const Heatmap: React.FC<HeatmapProps> = ({ data }) => {
+  const userColorHex = Cookies.get("userColor") || "#000000";
   const today = new Date().toISOString().split("T")[0];
   const isMobile = useMediaQuery("(max-width:800px)");
 
+  const userColor = userColorHex
+  const level0Color = "#ebedf0"
+
+  const level1Color = userColor
+
+  const level2Color = darkenHexColor(userColor, 20);
+   
+  const level3Color = darkenHexColor(userColor, 40);
+  
   const getColor = (count: number | undefined): string => {
-    if (!count || count === 0) return "#ebedf0";
-    if (count === 1) return "#c6e48b";
-    if (count === 2) return "#9ae264";
-    if (count === 3) return "#7bc96f";
-    if (count === 4) return "#5ab055";
-    if (count === 5) return "#3c8c3e";
-    if (count <= 7) return "#2a6b2c";
-    return "#196127";
+    if (!count || count === 0) return level0Color
+    if (count <= 2) return level1Color
+    if (count <= 5) return level2Color
+    return level3Color
   };
 
   const startDate = isMobile
