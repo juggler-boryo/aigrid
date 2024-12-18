@@ -1,5 +1,5 @@
 import { Badge } from "@mui/joy";
-import { Box, Typography } from "@mui/joy";
+import { Box } from "@mui/joy";
 import { FaRegUser } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
@@ -38,9 +38,11 @@ const TopBar = () => {
           px: 1,
         }}
       >
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography level={"body-lg"}>aigrid</Typography>
-        </Box>
+        <img
+          src="/logo_pink.png"
+          alt="Logo Pink"
+          width={70}
+        />
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
         <ActiveIconButton
@@ -62,7 +64,7 @@ const TopBar = () => {
           />
         </Badge>
       </Box>
-    </Box>
+    </Box >
   );
 };
 
