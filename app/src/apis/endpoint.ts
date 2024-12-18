@@ -3,5 +3,3 @@ export const Endpoint =
     ? "http://localhost:8080/"
     : "https://aigrid-731240201745.asia-northeast1.run.app/";
 
-
-// proxy server of finyl, connected to toyu

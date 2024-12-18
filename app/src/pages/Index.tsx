@@ -47,7 +47,6 @@ const Index = () => {
           <Typography level="title-sm">みんなでaigridを作ろう</Typography>
         </Chip>
 
-        {/* 追加：ホームシステムへの丸いボタン
         <Box
           sx={{
             position: 'fixed',
@@ -74,7 +73,7 @@ const Index = () => {
           >
             <RiHomeWifiLine size={32} />
           </IconButton>
-        </Box> */}
+        </Box>
       </Box>
     </CheckAuth>
   );

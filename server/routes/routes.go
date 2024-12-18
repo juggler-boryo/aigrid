@@ -9,8 +9,14 @@ import (
 	"github.com/rs/cors"
 )
 
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
 func SetupRouter() http.Handler {
 	router := mux.NewRouter()
+	router.HandleFunc("/", HealthCheckHandler).Methods("GET")
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
 	router.HandleFunc("/niwatori", handlers.WakeUpDiscordNotificationHandler).Methods("POST")
 	router.HandleFunc("/neporeon", handlers.SleepDiscordNotificationHandler).Methods("POST")
