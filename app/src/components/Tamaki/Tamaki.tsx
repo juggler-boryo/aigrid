@@ -71,19 +71,19 @@ const Tamaki = () => {
       <Box key={tamaki.id} position="relative">
         {(tamaki.participants_uids?.includes(user?.uid || "") ||
           tamaki.organizer_uid === user?.uid) && (
-          <Chip
-            size="sm"
-            variant="outlined"
-            color="success"
-            startDecorator={<IoMdCheckmark />}
-            sx={{
-              position: "absolute",
-              top: -4,
-              left: -4,
-              zIndex: 10,
-            }}
-          />
-        )}
+            <Chip
+              size="sm"
+              variant="outlined"
+              color="success"
+              startDecorator={<IoMdCheckmark />}
+              sx={{
+                position: "absolute",
+                top: -4,
+                left: -4,
+                zIndex: 10,
+              }}
+            />
+          )}
         <Card
           key={tamaki.id}
           variant="outlined"
@@ -110,7 +110,6 @@ const Tamaki = () => {
               <UserProfile
                 uid={tamaki.organizer_uid}
                 isOnlyAvatar
-                disableClick
               />
 
               <Divider orientation="vertical" />
@@ -129,8 +128,8 @@ const Tamaki = () => {
             <Typography level="body-sm" textColor="neutral.500">
               {Min2Str(
                 (new Date().getTime() - new Date(tamaki.created_at).getTime()) /
-                  1000 /
-                  60
+                1000 /
+                60
               )}
             </Typography>
           </Box>

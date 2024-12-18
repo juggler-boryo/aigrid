@@ -66,11 +66,7 @@ const UserProfile = ({
   return (
     <Box mr={2}>
       <Badge
-        badgeContent={
-          userData?.permission_str === "ADMIN"
-            ? `🫧 ${Min2Str(inMinutes || 0)}`
-            : Min2Str(inMinutes || 0)
-        }
+        badgeContent={Min2Str(inMinutes || 0)}
         variant="outlined"
         showZero
       >
