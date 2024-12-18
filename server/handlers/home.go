@@ -1,8 +1,12 @@
 package handlers
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 func CheckToyuHealthHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Checking Toyu Health")
 	resp, err := http.Get("http://14.9.49.192:28001/health")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
