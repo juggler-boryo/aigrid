@@ -22,6 +22,13 @@ import { BsThreeDots } from "react-icons/bs";
 import { useState, useMemo, useCallback } from "react";
 import { TamakiEvent } from "../../types/tamaki";
 import MyCard from "../MyCard";
+import { keyframes } from "@emotion/react";
+
+const flicker = keyframes`
+     0% { background-color: var(--joy-palette-danger-100, #F0F4F8); }
+     50% { background-color: transparent; }
+     100% { background-color: var(--joy-palette-danger-100, #F0F4F8); }
+`;
 
 export const Kind2title = (kind: number) => {
   if (kind === 1) return "風呂";
@@ -67,75 +74,82 @@ const Tamaki = () => {
   }, [fetchNextPage]);
 
   const renderTamakiItem = useCallback(
-    (tamaki: TamakiEvent) => (
-      <Box key={tamaki.id} position="relative">
-        {(tamaki.participants_uids?.includes(user?.uid || "") ||
-          tamaki.organizer_uid === user?.uid) && (
-            <Chip
-              size="sm"
-              variant="outlined"
-              color="success"
-              startDecorator={<IoMdCheckmark />}
-              sx={{
-                position: "absolute",
-                top: -4,
-                left: -4,
-                zIndex: 10,
-              }}
-            />
-          )}
-        <Card
-          key={tamaki.id}
-          variant="outlined"
-          sx={{
-            p: 1.5,
-            cursor: "pointer",
-            "&:hover": {
-              backgroundColor: "var(--joy-palette-neutral-100, #F0F4F8)",
-              transition: "all 0.2s ease-in-out",
-            },
-            position: "relative",
-          }}
-          onClick={() => {
-            navigate(`/tamaki/${tamaki.id}`);
-          }}
-        >
-          <Box
-            display="flex"
-            gap={2}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Box display="flex" gap={2} alignItems="center">
-              <UserProfile
-                uid={tamaki.organizer_uid}
-                isOnlyAvatar
+    (tamaki: TamakiEvent) => {
+      const min =
+        (new Date().getTime() - new Date(tamaki.created_at).getTime()) /
+        1000 /
+        60;
+      // if min is over 1 week, make this component background red
+      const isOverOneWeek = min > 10080
+      return (
+        <Box key={tamaki.id} position="relative">
+          {(tamaki.participants_uids?.includes(user?.uid || "") ||
+            tamaki.organizer_uid === user?.uid) && (
+              <Chip
+                size="sm"
+                variant="outlined"
+                color="success"
+                startDecorator={<IoMdCheckmark />}
+                sx={{
+                  position: "absolute",
+                  top: -4,
+                  left: -4,
+                  zIndex: 10,
+                }}
               />
+            )}
+          <Card
+            key={tamaki.id}
+            variant="outlined"
+            sx={{
+              p: 1.5,
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "var(--joy-palette-neutral-100, #F0F4F8)",
+                transition: "all 0.2s ease-in-out",
+              },
+              position: "relative",
+              backgroundColor: isOverOneWeek ? "var(--joy-palette-danger-100, #F0F4F8)" : undefined,
+              animation: isOverOneWeek ? `${flicker} 1s infinite` : undefined,
+            }}
+            onClick={() => {
+              navigate(`/tamaki/${tamaki.id}`);
+            }}
+          >
+            <Box
+              display="flex"
+              gap={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box display="flex" gap={2} alignItems="center">
+                <UserProfile
+                  uid={tamaki.organizer_uid}
+                  isOnlyAvatar
+                  disableClick
+                />
 
-              <Divider orientation="vertical" />
-              <Box display="flex" gap={1} alignItems="center">
-                <Typography level="title-md">
-                  {tamaki.kind === 0 || tamaki.kind === 2
-                    ? tamaki.title
-                    : Kind2title(tamaki.kind)}
-                </Typography>
-                <Typography level="title-sm">
-                  {tamaki.participants_uids &&
-                    `(${tamaki.participants_uids.length + 1})`}
-                </Typography>
+                <Divider orientation="vertical" />
+                <Box display="flex" gap={1} alignItems="center">
+                  <Typography level="title-md">
+                    {tamaki.kind === 0 || tamaki.kind === 2
+                      ? tamaki.title
+                      : Kind2title(tamaki.kind)}
+                  </Typography>
+                  <Typography level="title-sm">
+                    {tamaki.participants_uids &&
+                      `(${tamaki.participants_uids.length + 1})`}
+                  </Typography>
+                </Box>
               </Box>
+              <Typography level="body-sm" textColor="neutral.500">
+                {Min2Str(min)}
+              </Typography>
             </Box>
-            <Typography level="body-sm" textColor="neutral.500">
-              {Min2Str(
-                (new Date().getTime() - new Date(tamaki.created_at).getTime()) /
-                1000 /
-                60
-              )}
-            </Typography>
-          </Box>
-        </Card>
-      </Box>
-    ),
+          </Card>
+        </Box>
+      );
+    },
     [user?.uid, navigate]
   );
 

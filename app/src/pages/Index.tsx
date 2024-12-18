@@ -1,12 +1,18 @@
-import { Box, Chip, Divider, Typography } from "@mui/joy";
+import { Box, Button, Chip, Divider, Typography } from "@mui/joy";
 import CheckAuth from "./CheckAuth";
 import OfflineList from "../components/OfflineList/OfflineList";
 import TopBar from "../components/TopBar";
 import Tamaki from "../components/Tamaki/Tamaki";
+import { getToyu } from "../apis/home";
 
 const Index = () => {
   return (
     <CheckAuth>
+      <Button onClick={() => {
+        getToyu()
+      }}>
+        Toyu
+      </Button>
       <Box gap={2} display="flex" flexDirection="column" alignItems="center">
         <TopBar />
         <Box width={"90%"}>

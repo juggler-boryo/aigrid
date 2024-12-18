@@ -56,7 +56,7 @@ export const listTamaki = async (
   has_more: boolean;
 }> => {
   const params = new URLSearchParams();
-  params.append("size", isFirst ? "3" : "10");
+  params.append("size", isFirst ? "5" : "10");
   if (cursor) params.append("cursor", cursor);
   if (kind !== undefined) params.append("kind", kind.toString());
   if (isUnArchivedOnly) params.append("is_un_archived_only", "true");
