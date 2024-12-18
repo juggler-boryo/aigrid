@@ -2,7 +2,7 @@ import { Endpoint } from "./endpoint";
 import axios from "axios";
 
 export const CheckToyuHealth = async (accessToken: string) => {
-    const response = await axios.get(`${Endpoint}/home/toyu`, {
+    const response = await axios.get(`${Endpoint}home/toyu`, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },
