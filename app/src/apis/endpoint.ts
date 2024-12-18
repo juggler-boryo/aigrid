@@ -5,4 +5,3 @@ export const Endpoint =
 
 
 // proxy server of finyl, connected to toyu
-export const ToyuEndpoint = "https://192.168.2.105:8443"
