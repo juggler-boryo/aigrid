@@ -277,3 +277,32 @@ func UpdateRealtimeDBInout(uid string, isIn bool) error {
 
 	return nil
 }
+
+func TriggerHomeSystem(homeId string) error {
+	if RTDB == nil {
+		return fmt.Errorf("realtime database client is not initialized")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	ref := RTDB.NewRef("home/" + homeId)
+
+	var currentValue int
+	if err := ref.Get(ctx, &currentValue); err != nil {
+		if err.Error() == "snapshot: nil value" {
+			currentValue = 0
+		} else {
+			return fmt.Errorf("failed to get current value: %w", err)
+		}
+	}
+
+	// 1足した値をセットすることで、ホームシステム(finyl)をトリガーする
+	newValue := currentValue + 1
+	err := ref.Set(ctx, newValue)
+	if err != nil {
+		return fmt.Errorf("failed to update home system trigger: %w", err)
+	}
+
+	return nil
+}

@@ -46,8 +46,7 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/tamaki/{id}", handlers.DeleteTamakiHandler).Methods("DELETE")
 
 	// home
-	protectedRouter.HandleFunc("/home/toyu", handlers.CheckToyuHealthHandler).Methods("GET")
-	protectedRouter.HandleFunc("/home/toyu", handlers.TriggerToyuHandler).Methods("POST")
+	protectedRouter.HandleFunc("/home/{homeId}", handlers.TriggerHomeSystemHandler).Methods("POST")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

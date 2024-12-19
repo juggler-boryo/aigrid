@@ -4,36 +4,26 @@ import CoolMo from "../../components/CoolMo";
 import CheckAuth from "../CheckAuth";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../libs/firebase";
-import { CheckToyuHealth, TriggerToyu } from "../../apis/home";
-import { useEffect, useState } from "react";
+import { TriggerToyu } from "../../apis/home";
+import { useMutation } from "@tanstack/react-query";
 
 const Home = () => {
-    const [user] = useIdToken(auth)
-    const [isToyuHealth, setIsToyuHealth] = useState(false)
+    const [user] = useIdToken(auth);
 
-    const handleCheckHealthToyu = async () => {
-        if (!user) return;
-        const accessToken = await user.getIdToken();
-        const status = await CheckToyuHealth(accessToken);
-        if (status === 200) {
-            setIsToyuHealth(true);
-        } else {
-            setIsToyuHealth(false);
-        }
-    }
-
-    const handleTriggerToyu = async () => {
-        if (!user) return;
-        const accessToken = await user.getIdToken();
-        const status = await TriggerToyu(accessToken);
-        if (!status) {
+    const toyuMutation = useMutation({
+        mutationFn: async () => {
+            if (!user) return;
+            const accessToken = await user.getIdToken();
+            return TriggerToyu(accessToken);
+        },
+        onError: () => {
             alert("灯油ストーブを起動できませんでした");
         }
-    }
+    });
 
-    useEffect(() => {
-        handleCheckHealthToyu();
-    }, [user]);
+    const handleTriggerToyu = () => {
+        toyuMutation.mutate();
+    };
 
     return (
         <CheckAuth>
@@ -46,9 +36,8 @@ const Home = () => {
                     <CoolMo>
                         <Button
                             variant="outlined"
-                            loading={!isToyuHealth}
                             onClick={handleTriggerToyu}
-                            disabled={!isToyuHealth}
+                            disabled={toyuMutation.isLoading}
                         >
                             🔥 灯油ストーブ
                         </Button>
