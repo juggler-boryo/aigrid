@@ -1,0 +1,14 @@
+[Unit]
+Description=AIGrid Hub Service
+After=network.target
+
+[Service]
+Type=simple
+User=finyl
+WorkingDirectory=/home/finyl/aigrid/hub
+ExecStart=/usr/bin/python main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
