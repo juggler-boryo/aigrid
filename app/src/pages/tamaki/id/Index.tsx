@@ -43,6 +43,7 @@ const TamakiDetail = () => {
   const [isArchived, setIsArchived] = useState(false);
   const [participants_uids, setParticipants_uids] = useState<string[]>([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [payDict, setPayDict] = useState<Record<string, boolean>>({});
 
   const { data: tamaki } = useQuery({
     queryKey: ["tamaki", id],
@@ -56,6 +57,7 @@ const TamakiDetail = () => {
       setPrice(data.price);
       setParticipants_uids(data.participants_uids || []);
       setIsArchived(data.is_archived || false);
+      setPayDict(JSON.parse(data.pay_dict || "{}"));
       return data;
     },
     enabled: !!meUser && !!id,
@@ -95,6 +97,7 @@ const TamakiDetail = () => {
           memo,
           price: price !== undefined ? price : -1,
           is_archived: isArchived,
+          pay_dict: JSON.stringify(payDict),
         };
       } else if (tamaki.kind === 2) {
         event = {
@@ -203,24 +206,6 @@ const TamakiDetail = () => {
                 </Box>
               </Box>
             </Card>
-            {tamaki?.kind === 0 && (
-              <Card variant="outlined">
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={2}
-                >
-                  <Typography level="body-sm">進行中</Typography>
-                  <Switch
-                    checked={isArchived}
-                    onChange={(e) => setIsArchived(e.target.checked)}
-                  />
-                  <Typography level="body-sm">終了</Typography>
-                </Box>
-              </Card>
-            )}
-
             {(tamaki?.kind === 0 || tamaki?.kind === 2) && (
               <FormControl>
                 <FormLabel>タイトル</FormLabel>
@@ -236,16 +221,16 @@ const TamakiDetail = () => {
             {(tamaki?.kind === 0 ||
               tamaki?.kind === 1 ||
               tamaki?.kind === 2) && (
-              <FormControl>
-                <FormLabel>メモ</FormLabel>
-                <Textarea
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  placeholder="メモを入力"
-                  minRows={3}
-                />
-              </FormControl>
-            )}
+                <FormControl>
+                  <FormLabel>メモ</FormLabel>
+                  <Textarea
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    placeholder="メモを入力"
+                    minRows={3}
+                  />
+                </FormControl>
+              )}
 
             {tamaki?.kind === 0 && (
               <FormControl>
@@ -291,6 +276,72 @@ const TamakiDetail = () => {
                 </Box>
               </FormControl>
             )}
+
+            {tamaki?.kind === 0 && (
+              <FormControl>
+                <FormLabel>支払い状況</FormLabel>
+                <Box display="flex" flexDirection="column" gap={1} borderRadius="md">
+                  {(allUsers || [])
+                    .filter(
+                      (uid) =>
+                        participants_uids.includes(uid) ||
+                        uid === tamaki?.organizer_uid
+                    )
+                    .map((uid) => (
+                      <Box
+                        key={uid}
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        gap={2}
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 'sm',
+                          '&:hover': {
+                            backgroundColor: 'background.level2'
+                          }
+                        }}
+                        onClick={() => {
+                          setPayDict({
+                            ...payDict,
+                            [uid]: !payDict[uid],
+                          });
+                        }}
+                      >
+                        <UserProfile uid={uid} disableClick />
+                        <Switch
+                          checked={payDict[uid] || false}
+                          onChange={(e) => {
+                            setPayDict({
+                              ...payDict,
+                              [uid]: e.target.checked,
+                            });
+                          }}
+                          color={payDict[uid] ? "success" : "neutral"}
+                        />
+                      </Box>
+                    ))}
+                </Box>
+              </FormControl>
+            )}
+            {tamaki?.kind === 0 && (
+              <Card variant="outlined">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  gap={2}
+                >
+                  <Typography level="body-sm">進行中</Typography>
+                  <Switch
+                    checked={isArchived}
+                    onChange={(e) => setIsArchived(e.target.checked)}
+                  />
+                  <Typography level="body-sm">終了</Typography>
+                </Box>
+              </Card>
+            )}
+
 
             <Divider />
 

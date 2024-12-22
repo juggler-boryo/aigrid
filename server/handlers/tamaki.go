@@ -122,6 +122,7 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 			Memo:             dto.Memo,
 			Price:            dto.Price,
 			IsArchived:       dto.IsArchived,
+			PayDict:          dto.PayDict,
 		}
 		createTamakiEvent(tamakiEvent, id, w, r)
 
@@ -239,6 +240,7 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		existingEvent.Memo = dto.Memo
 		existingEvent.Price = dto.Price
 		existingEvent.IsArchived = dto.IsArchived
+		existingEvent.PayDict = dto.PayDict
 
 		updateTamakiEvent(doc, existingEvent, userID, id, w, r)
 

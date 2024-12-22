@@ -8,23 +8,24 @@ type TamakiEventDTO struct {
 
 type TamakiEvent0DTO struct {
 	TamakiEventDTO
-	ParticipantsUIDs []string `json:"participants_uids"`
-	Title            string   `json:"title"`
-	Memo             string   `json:"memo,omitempty"`
-	Price            int      `json:"price"`
-	IsArchived       bool     `json:"is_archived"`
+	ParticipantsUIDs []string `json:"participants_uids" firestore:"participants_uids"`
+	Title            string   `json:"title" firestore:"title"`
+	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
+	Price            int      `json:"price" firestore:"price"`
+	IsArchived       bool     `json:"is_archived" firestore:"is_archived"`
+	PayDict          string   `json:"pay_dict" firestore:"pay_dict"`
 }
 
 type TamakiEvent1DTO struct {
 	TamakiEventDTO
-	ParticipantsUIDs []string `json:"participants_uids"`
-	Memo             string   `json:"memo,omitempty"`
+	ParticipantsUIDs []string `json:"participants_uids" firestore:"participants_uids"`
+	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
 }
 
 type TamakiEvent2DTO struct {
 	TamakiEventDTO
-	Title string `json:"title"`
-	Memo  string `json:"memo,omitempty"`
+	Title string `json:"title" firestore:"title"`
+	Memo  string `json:"memo,omitempty" firestore:"memo,omitempty"`
 }
 
 type TamakiEvent struct {
@@ -41,6 +42,7 @@ type TamakiEvent0 struct {
 	Memo             string   `json:"memo,omitempty" firestore:"memo,omitempty"`
 	Price            int      `json:"price" firestore:"price"`
 	IsArchived       bool     `json:"is_archived" firestore:"is_archived"`
+	PayDict          string   `json:"pay_dict" firestore:"pay_dict"`
 }
 
 type TamakiEvent1 struct {

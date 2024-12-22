@@ -8,6 +8,7 @@ export interface TamakiEvent {
   participants_uids?: string[]; // 0,1: tip-02
   price?: number; // 0: tip-02
   is_archived?: boolean; // 0: tip-02
+  pay_dict?: string; // 0: tip-02
 }
 
 export interface TamakiEventDTO {
@@ -17,4 +18,5 @@ export interface TamakiEventDTO {
   participants_uids?: string[];
   price?: number;
   is_archived?: boolean;
+  pay_dict?: string;
 }

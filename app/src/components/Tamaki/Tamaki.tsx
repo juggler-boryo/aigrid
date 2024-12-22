@@ -80,7 +80,7 @@ const Tamaki = () => {
         1000 /
         60;
       // if min is over 1 week, make this component background red
-      const isOverOneWeek = min > 10080
+      const isOverOneWeek = min > 10080 && tamaki.kind === 0
       return (
         <Box key={tamaki.id} position="relative">
           {(tamaki.participants_uids?.includes(user?.uid || "") ||
