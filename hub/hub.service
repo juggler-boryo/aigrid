@@ -8,7 +8,9 @@ User=finyl
 WorkingDirectory=/home/finyl/aigrid/hub
 ExecStart=/usr/bin/python main.py
 Restart=always
-RestartSec=10
+RestartSec=600
+StartLimitIntervalSec=0
+StartLimitBurst=0
 
 [Install]
 WantedBy=multi-user.target
