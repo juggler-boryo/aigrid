@@ -6,6 +6,7 @@ import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../libs/firebase";
 import { TriggerToyu } from "../../apis/home";
 import { useMutation } from "@tanstack/react-query";
+import { FaFire } from "react-icons/fa";
 
 const Home = () => {
     const [user] = useIdToken(auth);
@@ -38,8 +39,17 @@ const Home = () => {
                             variant="outlined"
                             onClick={handleTriggerToyu}
                             disabled={toyuMutation.isLoading}
+                            sx={{
+                                width: "120px",
+                                height: "120px",
+                                fontSize: '24px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 1
+                            }}
                         >
-                            🔥 灯油ストーブ
+                            <FaFire size={40} />
+                            heater
                         </Button>
                     </CoolMo>
                 </Box>
