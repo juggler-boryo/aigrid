@@ -12,6 +12,8 @@ import {
   Input,
   CircularProgress,
   Divider,
+  Modal,
+  ModalDialog,
 } from "@mui/joy";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
@@ -47,6 +49,8 @@ const TamakiNew = () => {
     },
     enabled: !!meUser,
   });
+
+  const [openKindModal, setOpenKindModal] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +94,13 @@ const TamakiNew = () => {
           title,
           memo,
         };
+      } else if (kind === 3) {
+        // ときめきメモリアル
+        event = {
+          ...baseEvent,
+          title,
+          memo,
+        };
       } else {
         throw new Error("Unsupported event kind");
       }
@@ -106,6 +117,33 @@ const TamakiNew = () => {
 
   return (
     <CheckAuth>
+      <Modal open={openKindModal} onClose={() => setOpenKindModal(false)}>
+        <ModalDialog>
+          <Typography level="title-lg" mb={2}>
+            たまきの種類を選択
+          </Typography>
+          <FormControl>
+            <Select
+              value={kind}
+              onChange={(_, value) => {
+                setKind(Number(value));
+              }}
+            >
+              <Option value={0}>わくわくイベント</Option>
+              <Option value={3}>ときめきメモリアル</Option>
+              <Option value={1}>お風呂券</Option>
+              <Option value={2}>最強レシピ</Option>
+            </Select>
+          </FormControl>
+          <Button
+            variant="outlined"
+            onClick={() => setOpenKindModal(false)}
+            sx={{ mt: 2 }}
+          >
+            選択
+          </Button>
+        </ModalDialog>
+      </Modal>
       <Box
         sx={{
           mx: "auto",
@@ -146,12 +184,13 @@ const TamakiNew = () => {
               placeholder="たま���の種類を選択"
             >
               <Option value={0}>わくわくイベント</Option>
+              <Option value={3}>ときめきメモリアル</Option>
               <Option value={1}>お風呂券</Option>
               <Option value={2}>最強レシピ</Option>
             </Select>
           </FormControl>
 
-          {(kind === 0 || kind === 2) && (
+          {(kind === 0 || kind === 2 || kind === 3) && (
             <FormControl required>
               <FormLabel>タイトル</FormLabel>
               <Input
@@ -163,7 +202,7 @@ const TamakiNew = () => {
             </FormControl>
           )}
 
-          {(kind === 0 || kind === 1 || kind === 2) && (
+          {(kind === 0 || kind === 1 || kind === 2 || kind === 3) && (
             <FormControl>
               <FormLabel>メモ</FormLabel>
               <Textarea

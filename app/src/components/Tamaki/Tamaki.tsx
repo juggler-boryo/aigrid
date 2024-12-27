@@ -39,7 +39,7 @@ const Tamaki = () => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [selectedKind, setSelectedKind] = useState<number | -1>(0);
+  const [selectedKind, setSelectedKind] = useState<number | -1>(-1);
   const [isUnArchivedOnly, setIsUnArchivedOnly] = useState(true);
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
@@ -75,6 +75,9 @@ const Tamaki = () => {
 
   const renderTamakiItem = useCallback(
     (tamaki: TamakiEvent) => {
+      if (tamaki.kind === 0 && tamaki.is_archived) {
+        return null;
+      }
       const min =
         (new Date().getTime() - new Date(tamaki.created_at).getTime()) /
         1000 /
@@ -132,7 +135,7 @@ const Tamaki = () => {
                 <Divider orientation="vertical" />
                 <Box display="flex" gap={1} alignItems="center">
                   <Typography level="title-md">
-                    {tamaki.kind === 0 || tamaki.kind === 2
+                    {tamaki.kind === 0 || tamaki.kind === 2 || tamaki.kind === 3
                       ? tamaki.title
                       : Kind2title(tamaki.kind)}
                   </Typography>
@@ -174,6 +177,7 @@ const Tamaki = () => {
         >
           <Option value={-1}>すべて</Option>
           <Option value={0}>わくわくイベント</Option>
+          <Option value={3}>ときめきメモリアル</Option>
           <Option value={1}>風呂券</Option>
           <Option value={2}>最強レシピ</Option>
         </Select>

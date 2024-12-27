@@ -48,6 +48,8 @@ func GetTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		handleTamakiEvent[models.TamakiEvent1](doc, w)
 	case 2:
 		handleTamakiEvent[models.TamakiEvent2](doc, w)
+	case 3:
+		handleTamakiEvent[models.TamakiEvent3](doc, w)
 	default:
 		http.Error(w, fmt.Sprintf("Unknown event kind: %d", baseEvent.Kind), http.StatusBadRequest)
 	}
@@ -79,6 +81,8 @@ func sendDiscordNotification(kind int, id string, title string, memo string, pri
 		message = fmt.Sprintf("お風呂が沸きました🎵\nLメモ: %s\nLURL: %s", memo, url)
 	case 2:
 		message = fmt.Sprintf("最強レシピが投稿されました\nLタイトル: %s\nLURL: %s", title, url)
+	case 3:
+		message = fmt.Sprintf("ときメモ発生(⋈◍＞◡＜◍)。✧♡\nLタイトル: %s\nLメモ: %s\nLURL: %s", title, memo, url)
 	}
 
 	channelID := lib.GetDiscordChannelID()
@@ -176,6 +180,28 @@ func CreateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("Failed to send Discord notification: %v\n", err)
 		}
 
+	case 3:
+		var dto models.TamakiEvent3DTO
+		if err := json.Unmarshal(body, &dto); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		tamakiEvent := models.TamakiEvent3{
+			TamakiEvent: models.TamakiEvent{
+				ID:           id,
+				Kind:         dto.Kind,
+				OrganizerUID: userID,
+				CreatedAt:    createdAt,
+			},
+			Title: dto.Title,
+			Memo:  dto.Memo,
+		}
+		createTamakiEvent(tamakiEvent, id, w, r)
+
+		if err := sendDiscordNotification(dto.Kind, id, dto.Title, dto.Memo, 0); err != nil {
+			fmt.Printf("Failed to send Discord notification: %v\n", err)
+		}
 	default:
 		http.Error(w, "Unsupported event kind", http.StatusBadRequest)
 	}
@@ -290,6 +316,28 @@ func UpdateTamakiHandler(w http.ResponseWriter, r *http.Request) {
 
 		updateTamakiEvent(doc, existingEvent, userID, id, w, r)
 
+	case 3:
+		var dto models.TamakiEvent3DTO
+		if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if dto.Kind != 3 {
+			http.Error(w, "Invalid event kind", http.StatusBadRequest)
+			return
+		}
+
+		var existingEvent models.TamakiEvent3
+		if err := doc.DataTo(&existingEvent); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		existingEvent.Title = dto.Title
+		existingEvent.Memo = dto.Memo
+
+		updateTamakiEvent(doc, existingEvent, userID, id, w, r)
+
 	default:
 		http.Error(w, "Unsupported event kind", http.StatusBadRequest)
 	}
@@ -322,8 +370,8 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 		if kind == 0 && isUnArchivedOnly {
 			query = query.Where("is_archived", "==", false)
 		}
-	}
 
+	}
 	query = query.Limit(size + 1)
 
 	if cursor != "" {
@@ -374,6 +422,13 @@ func ListTamakiHandler(w http.ResponseWriter, r *http.Request) {
 			tamakiEvents = append(tamakiEvents, event)
 		case 2:
 			var event models.TamakiEvent2
+			if err := doc.DataTo(&event); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			tamakiEvents = append(tamakiEvents, event)
+		case 3:
+			var event models.TamakiEvent3
 			if err := doc.DataTo(&event); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
