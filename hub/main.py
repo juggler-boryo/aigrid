@@ -2,10 +2,13 @@ import firebase_admin
 from firebase_admin import credentials, db
 import requests
 import logging
-from typing import Dict, Optional, Callable
+from typing import Dict
+import switch_bot
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+print(switch_bot.get_devices())
 
 
 class DeviceManager:
@@ -24,14 +27,14 @@ class DeviceManager:
     def _trigger_toyu(self) -> bool:
         logger.info("Triggering toyu")
         try:
-            response = requests.get("http://192.168.2.127:28001/")
-            if response.status_code != 200:
-                logger.error(f"Unexpected status code: {response.status_code}")
+            success = switch_bot.switch_toyu()
+            if not success:
+                logger.error(f"Failed to switch toyu")
                 return False
-            logger.info(f"Toyu response: {response.text}")
+            logger.info(f"Toyu switched")
             return True
-        except requests.RequestException as e:
-            logger.error(f"Error making HTTP request: {e}")
+        except Exception as e:
+            logger.error(f"Error switching toyu: {e}")
             return False
 
     def handle_device_update(self, device_name: str, event) -> None:
