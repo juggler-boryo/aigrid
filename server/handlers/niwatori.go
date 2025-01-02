@@ -14,7 +14,6 @@ func WakeUpDiscordNotificationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-
 }
 
 // Cloud Scheduler APIから呼ばれる
