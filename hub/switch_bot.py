@@ -55,7 +55,7 @@ def switch_toyu():
 
     try:
         # Connect to the SwitchBot device
-        peripheral = btle.Peripheral(TOYU_MAC_ADDRESS, addrType=btle.ADDR_TYPE_RANDOM)
+        peripheral = btle.Peripheral(TOYU_MAC_ADDRESS, addrType=btle.ADDR_TYPE_PUBLIC)
 
         # These UUIDs are standard SwitchBot BLE service/characteristic IDs
         # Service UUID: cba20d00-224d-11e6-9fb8-0002a5d5c51b (SwitchBot service)
