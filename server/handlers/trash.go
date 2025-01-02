@@ -6,7 +6,7 @@ import (
 )
 
 func TrashDiscordNotificationHandler(w http.ResponseWriter, r *http.Request) {
-	message := "燃えるゴミ出せゴミども"
+	message := "明日は燃えるゴミの日です。"
 	channelID := lib.GetDiscordChannelID()
 	if err := lib.SendMessageToDiscord(channelID, message); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
