@@ -20,6 +20,7 @@ func SetupRouter() http.Handler {
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
 	router.HandleFunc("/niwatori", handlers.WakeUpDiscordNotificationHandler).Methods("POST")
 	router.HandleFunc("/neporeon", handlers.SleepDiscordNotificationHandler).Methods("POST")
+	router.HandleFunc("/trash", handlers.TrashDiscordNotificationHandler).Methods("POST")
 
 	// -- nfc nyukan system
 	// -- TODO: currently no auth implemented. dangerous.impl
