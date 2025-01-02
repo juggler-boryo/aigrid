@@ -7,8 +7,8 @@ import base64
 import hmac
 import hashlib
 
-# F5:1B:1A:AE:F0:FE
 TOYU_DEVICE_ID = "F51B1AAEF0FE"
+TOYU_MAC_ADDRESS = "F5:1B:1A:AE:F0:FE"
 
 
 def create_header():
@@ -55,9 +55,12 @@ def switch_toyu():
 
     try:
         # Connect to the SwitchBot device
-        peripheral = btle.Peripheral(TOYU_DEVICE_ID, addrType=btle.ADDR_TYPE_RANDOM)
+        peripheral = btle.Peripheral(TOYU_MAC_ADDRESS, addrType=btle.ADDR_TYPE_RANDOM)
 
-        # The characteristic UUID for SwitchBot commands
+        # These UUIDs are standard SwitchBot BLE service/characteristic IDs
+        # Service UUID: cba20d00-224d-11e6-9fb8-0002a5d5c51b (SwitchBot service)
+        # Characteristic UUID: cba20002-224d-11e6-9fb8-0002a5d5c51b (Write commands)
+        # These values are fixed and documented in SwitchBot's BLE protocol spec
         service = peripheral.getServiceByUUID("cba20d00-224d-11e6-9fb8-0002a5d5c51b")
         characteristic = service.getCharacteristics(
             "cba20002-224d-11e6-9fb8-0002a5d5c51b"
