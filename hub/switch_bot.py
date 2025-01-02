@@ -2,13 +2,37 @@ import json
 import requests
 import uuid
 import time
-from bluepy import btle
 import base64
 import hmac
 import hashlib
+from bluetooth.ble import GATTRequester
+from contextlib import contextmanager
 
 TOYU_DEVICE_ID = "F51B1AAEF0FE"
 TOYU_MAC_ADDRESS = "F5:1B:1A:AE:F0:FE"
+
+
+@contextmanager
+def connect(device: str, bt_interface: str = None, timeout: float = 5.0):
+    if bt_interface:
+        req = GATTRequester(device, False, bt_interface)
+    else:
+        req = GATTRequester(device, False)
+
+    req.connect(False, "random")
+    connect_start_time = time.time()
+
+    while not req.is_connected():
+        if time.time() - connect_start_time >= timeout:
+            raise ConnectionError(
+                "Connection to {} timed out after {} seconds".format(device, timeout)
+            )
+        time.sleep(0.1)
+
+    yield req
+
+    if req.is_connected():
+        req.disconnect()
 
 
 def create_header():
@@ -44,34 +68,15 @@ def get_devices():
         return f"Error: {response.status_code}, {response.json()}"
 
 
-# def switch_toyu():
-#     url = f"https://api.switch-bot.com/v1.1/devices/{TOYU_DEVICE_ID}/commands"
-#     response = requests.post(url, headers=create_header(), json={"command": "turnOn"})
-#     return response
-
-
 def switch_toyu():
-    """Switch toyu using BLE connection via bluepy"""
-
+    """Switch toyu using BLE connection via bluetooth library"""
     try:
-        # Connect to the SwitchBot device
-        peripheral = btle.Peripheral(TOYU_MAC_ADDRESS, addrType=btle.ADDR_TYPE_PUBLIC)
-
-        # These UUIDs are standard SwitchBot BLE service/characteristic IDs
-        # Service UUID: cba20d00-224d-11e6-9fb8-0002a5d5c51b (SwitchBot service)
-        # Characteristic UUID: cba20002-224d-11e6-9fb8-0002a5d5c51b (Write commands)
-        # These values are fixed and documented in SwitchBot's BLE protocol spec
-        service = peripheral.getServiceByUUID("cba20d00-224d-11e6-9fb8-0002a5d5c51b")
-        characteristic = service.getCharacteristics(
-            "cba20002-224d-11e6-9fb8-0002a5d5c51b"
-        )[0]
-
-        # Command to turn on (0x57 0x01 0x01)
-        command = bytes([0x57, 0x01, 0x01])
-        characteristic.write(command)
-
-        peripheral.disconnect()
-        return True
+        with connect(TOYU_MAC_ADDRESS) as req:
+            # Command to turn on (0x57 0x01 0x01)
+            command = b"\x57\x01\x01"
+            # Handle 0x16 is for press/on/off commands
+            req.write_by_handle(0x16, command)
+            return True
 
     except Exception as e:
         print(f"Failed to control SwitchBot: {str(e)}")
