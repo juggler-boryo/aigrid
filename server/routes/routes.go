@@ -20,6 +20,7 @@ func SetupRouter() http.Handler {
 	router.HandleFunc("/users/{uid}", handlers.GetUserByUIDHandler).Methods("GET")
 	router.HandleFunc("/niwatori", handlers.WakeUpDiscordNotificationHandler).Methods("POST")
 	router.HandleFunc("/neporeon", handlers.SleepDiscordNotificationHandler).Methods("POST")
+	router.HandleFunc("/trash", handlers.TrashDiscordNotificationHandler).Methods("POST")
 
 	// -- nfc nyukan system
 	// -- TODO: currently no auth implemented. dangerous.impl
@@ -38,6 +39,7 @@ func SetupRouter() http.Handler {
 	protectedRouter.HandleFunc("/inout/{uid}/history", handlers.GetInoutHistoryHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/kusa", handlers.GetInoutHistoryByMonthHandler).Methods("GET")
 	protectedRouter.HandleFunc("/inout/{uid}/exit_all", handlers.PostExitAllHandler).Methods("POST")
+	protectedRouter.HandleFunc("/inout/anal", handlers.GetInoutAnalyticsHandler).Methods("GET")
 	// Tamaki
 	protectedRouter.HandleFunc("/tamaki/{id}", handlers.GetTamakiHandler).Methods("GET")
 	protectedRouter.HandleFunc("/tamaki", handlers.ListTamakiHandler).Methods("GET")
