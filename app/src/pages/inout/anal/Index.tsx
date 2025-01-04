@@ -2,15 +2,15 @@ import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../../../libs/firebase";
 import { useQuery } from "@tanstack/react-query";
 import { getInoutAnalytics } from "../../../apis/inout";
-import { Box, CircularProgress, Card, Typography, Divider } from "@mui/joy";
+import { Box, CircularProgress, Card, Divider, Table } from "@mui/joy";
 import { Inout } from "../../../types/inout";
-import { PieChart, LineChart } from "@mui/x-charts";
-import { Min2Str } from "../../../libs/min2str";
+import { Min2StrDetailed } from "../../../libs/min2str";
 import { GetUser } from "../../../apis/user";
 import TopBar from "../../../components/TopBar";
 import { useMemo } from "react";
 import CheckAuth from "../../CheckAuth";
 import CoolMo from "../../../components/CoolMo";
+import UserProfile from "../../../components/UserProfile";
 
 const InOutList2EachPersonMinutes = (
   inoutList: Inout[]
@@ -49,70 +49,10 @@ const InOutList2EachPersonMinutes = (
   return result;
 };
 
-const getDailyMinutesByUser = (inoutList: Inout[]) => {
-  const userDailyMinutes: {
-    [key: string]: { date: number; minutes: number }[];
-  } = {};
-
-  // Get unique UIDs
-  const uids = [...new Set(inoutList.map((record) => record.uid))];
-
-  for (const uid of uids) {
-    const userRecords = inoutList
-      .filter((record) => record.uid === uid)
-      .sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
-
-    const dailyMinutes: { date: number; minutes: number }[] = [];
-    let lastInTime: Date | null = null;
-    let currentDate = "";
-    let currentDayMinutes = 0;
-
-    for (const record of userRecords) {
-      const recordDate = new Date(record.created_at)
-        .toISOString()
-        .split("T")[0];
-
-      if (currentDate && recordDate !== currentDate && currentDayMinutes > 0) {
-        dailyMinutes.push({
-          date: new Date(currentDate).getTime(),
-          minutes: Math.round(currentDayMinutes),
-        });
-        currentDayMinutes = 0;
-      }
-
-      currentDate = recordDate;
-
-      if (record.is_in) {
-        lastInTime = new Date(record.created_at);
-      } else if (lastInTime) {
-        const outTime = new Date(record.created_at);
-        const diffMinutes =
-          (outTime.getTime() - lastInTime.getTime()) / (1000 * 60);
-        currentDayMinutes += diffMinutes;
-        lastInTime = null;
-      }
-    }
-
-    if (currentDayMinutes > 0) {
-      dailyMinutes.push({
-        date: new Date(currentDate).getTime(),
-        minutes: Math.round(currentDayMinutes),
-      });
-    }
-
-    userDailyMinutes[uid] = dailyMinutes;
-  }
-
-  return userDailyMinutes;
-};
-
-const Index = () => {
+const StayTimeTable = () => {
   const [user] = useIdToken(auth);
-  const { data, isFetching } = useQuery({
-    queryKey: ["inoutList", user?.uid],
+  const { data: inoutData, isLoading } = useQuery({
+    queryKey: ['inoutAnalytics'],
     queryFn: async () => {
       const accessToken = await user?.getIdToken();
       const inoutList = await getInoutAnalytics(accessToken || "");
@@ -123,47 +63,29 @@ const Index = () => {
       return {
         inoutList,
         userMap,
-      };
+      }
     },
-    enabled: !!user,
+    enabled: !!user
   });
 
-  const { chartData } = useMemo(() => {
-    if (!data?.inoutList) return { chartData: [] };
+  const monthlyStayTime = useMemo(() => {
+    if (!inoutData) return {};
+    return InOutList2EachPersonMinutes(inoutData.inoutList);
+  }, [inoutData]);
 
-    const minutes = InOutList2EachPersonMinutes(data.inoutList);
-    const chart = Object.entries(minutes)
-      .filter(([, mins]) => mins > 0)
-      .map(([uid, mins], index) => ({
-        id: index,
-        value: mins,
-        label: `${data?.userMap[uid]?.username || "Unknown User"} (${Min2Str(
-          mins
-        )})`,
-      }));
+  const tableData = useMemo(() => {
+    if (!inoutData) return [];
 
-    return { chartData: chart };
-  }, [data?.inoutList, data?.userMap]);
+    const totalMinutes = Object.values(monthlyStayTime).reduce((sum, minutes) => sum + minutes, 0);
 
-  const { userSeries, allDates } = useMemo(() => {
-    if (!data?.inoutList) return { userSeries: [], allDates: [] };
-
-    const dailyData = getDailyMinutesByUser(data.inoutList);
-    const series = Object.entries(dailyData)
-      .filter(([, userData]) => userData.length > 0)
-      .map(([uid]) => ({
-        data: dailyData[uid].map((d) => d.minutes),
-        label: data?.userMap[uid]?.username || "Unknown User",
-      }));
-
-    const dates = Object.values(dailyData)
-      .flat()
-      .map((d) => d.date)
-      .filter((date, index, self) => self.indexOf(date) === index)
-      .sort((a, b) => a - b);
-
-    return { userSeries: series, allDates: dates };
-  }, [data?.inoutList, data?.userMap]);
+    return Object.entries(monthlyStayTime)
+      .map(([uid, minutes]) => {
+        const formattedMinutes = Min2StrDetailed(minutes);
+        const percentage = ((minutes / totalMinutes) * 100).toFixed(2);
+        return { uid, minutes, formattedMinutes, percentage };
+      })
+      .sort((a, b) => b.minutes - a.minutes);
+  }, [inoutData, monthlyStayTime]);
 
   return (
     <CheckAuth>
@@ -174,72 +96,65 @@ const Index = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <TopBar />
+        <Box width={"90%"}>
+          <Divider />
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          width: "80%",
+          p: 2,
+          mx: "auto",
+          gap: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
         <CoolMo>
-          <Card sx={{ width: "85%" }}>
-            {isFetching ? (
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <CircularProgress />
-              </Box>
-            ) : chartData.length > 0 &&
-              userSeries.length > 0 &&
-              allDates.length > 0 ? (
-              <Box gap={1} display="flex" flexDirection="column">
-                <Box>
-                  <PieChart
-                    series={[
-                      {
-                        data: chartData,
-                        highlightScope: {
-                          faded: "global",
-                          highlighted: "item",
-                        },
-                        faded: { innerRadius: 30, additionalRadius: 30 },
-                      },
-                    ]}
-                    width={999}
-                    height={400}
-                    slotProps={{
-                      legend: {
-                        itemGap: 10,
-                      },
-                    }}
-                  />
-                </Box>
-                <Box m={0.5}>
-                  <Divider />
-                </Box>
-                <Box>
-                  {userSeries.length > 0 && allDates.length > 0 && (
-                    <LineChart
-                      series={userSeries}
-                      width={999}
-                      height={400}
-                      xAxis={[
-                        {
-                          data: allDates,
-                          scaleType: "time",
-                        },
-                      ]}
-                      slotProps={{
-                        legend: {
-                          itemGap: 10,
-                        },
-                      }}
-                    />
+          {isLoading ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              p={2}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Card>
+              <Table
+                aria-label="stay time table"
+                sx={{ fontFamily: "Iosevka Aile Iaso, Transparent" }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ width: "20%" }}>ユーザー名</th>
+                    <th style={{ width: "15%" }}>先月の滞在時間(分)</th>
+                    <th style={{ width: "15%" }}>割合</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.map(({ uid, formattedMinutes, percentage }) => (
+                    <tr key={uid}>
+                      <td><UserProfile uid={uid} disablebadge={true} /></td>
+                      <td>{formattedMinutes}</td>
+                      <td>{percentage} %</td>
+                    </tr>
+                  )
                   )}
-                </Box>
-              </Box>
-            ) : (
-              <Typography level="title-md">No data available</Typography>
-            )}
-          </Card>
+                </tbody>
+              </Table>
+            </Card>
+          )}
         </CoolMo>
       </Box>
     </CheckAuth>
   );
 };
 
-export default Index;
+export default StayTimeTable;

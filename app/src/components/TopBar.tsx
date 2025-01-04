@@ -2,6 +2,7 @@ import { Badge } from "@mui/joy";
 import { Box } from "@mui/joy";
 import { FaRegUser } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
+import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth } from "../libs/firebase";
@@ -46,23 +47,18 @@ const TopBar = () => {
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
         <ActiveIconButton
+          to="/inout/anal"
+          icon={<TbBrandGoogleAnalytics size={18} />}
+        />
+        <ActiveIconButton
           to="/whiteboard"
           icon={<LuLayoutDashboard size={18} />}
         />
-        <Badge
-          badgeContent={isMeLoading ? 0 : me ? 0 : "!"}
-          color={isMeLoading ? "neutral" : "danger"}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-        >
-          <ActiveIconButton
-            to="/profile"
-            icon={<FaRegUser size={18} />}
-            color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
-          />
-        </Badge>
+        <ActiveIconButton
+          to="/profile"
+          icon={<FaRegUser size={18} />}
+          color={isMeLoading ? "neutral" : me ? "neutral" : "danger"}
+        />
       </Box>
     </Box >
   );
