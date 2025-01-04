@@ -5,12 +5,13 @@ import { getInoutAnalytics } from "../../../apis/inout";
 import { Box, CircularProgress, Card, Typography, Divider, Table } from "@mui/joy";
 import { Inout } from "../../../types/inout";
 import { PieChart, LineChart } from "@mui/x-charts";
-import { Min2Str } from "../../../libs/min2str";
+import { Min2Str, Min2StrDetailed } from "../../../libs/min2str";
 import { GetUser } from "../../../apis/user";
 import TopBar from "../../../components/TopBar";
 import { useMemo } from "react";
 import CheckAuth from "../../CheckAuth";
 import CoolMo from "../../../components/CoolMo";
+import UserProfile from "../../../components/UserProfile";
 
 const InOutList2EachPersonMinutes = (
   inoutList: Inout[]
@@ -175,9 +176,9 @@ const StayTimeTable = () => {
 
     return Object.entries(monthlyStayTime)
       .map(([uid, minutes]) => {
-        const userName = inoutData.userMap[uid]?.username || "Unknown User";
+        const formattedMinutes = Min2StrDetailed(minutes);
         const percentage = ((minutes / totalMinutes) * 100).toFixed(2);
-        return { uid, userName, minutes, percentage };
+        return { uid, minutes, formattedMinutes, percentage };
       })
       .sort((a, b) => b.minutes - a.minutes);
   }, [inoutData, monthlyStayTime]);
@@ -199,41 +200,55 @@ const StayTimeTable = () => {
           <Divider />
         </Box>
       </Box>
-      <CoolMo>
-        <Box
-          component="form"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            maxWidth: 1000,
-            minWidth: { xs: "300px", sm: "400px" },
-            mx: "auto",
-            p: 2,
-          }}
-        >
-
-          <Table aria-label="stay time table">
-            <thead>
-              <tr>
-                <th style={{ width: "20%" }}>User</th>
-                <th>Stay Time of Last Month (min)</th>
-                <th>Percentage </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map(({ uid, userName, minutes, percentage }) => (
-                <tr key={uid}>
-                  <td>{userName}</td>
-                  <td>{minutes} minutes</td>
-                  <td>{percentage} %</td>
-                </tr>
-              )
-              )}
-            </tbody>
-          </Table>
-        </Box>
-      </CoolMo>
+      <Box
+        sx={{
+          width: "80%",
+          p: 2,
+          mx: "auto",
+          gap: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+        <CoolMo>
+          {isLoading ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              p={2}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Card>
+              <Table
+                aria-label="stay time table"
+                sx={{ fontFamily: "Iosevka Aile Iaso, Transparent" }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ width: "20%" }}>ユーザー名</th>
+                    <th style={{ width: "15%" }}>先月の滞在時間(分)</th>
+                    <th style={{ width: "15%" }}>割合</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.map(({ uid, minutes, formattedMinutes, percentage }) => (
+                    <tr key={uid}>
+                      <td><UserProfile uid={uid} disablebadge={true} /></td>
+                      <td>{formattedMinutes}</td>
+                      <td>{percentage} %</td>
+                    </tr>
+                  )
+                  )}
+                </tbody>
+              </Table>
+            </Card>
+          )}
+        </CoolMo>
+      </Box>
     </CheckAuth>
   );
 };

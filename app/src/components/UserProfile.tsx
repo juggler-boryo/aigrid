@@ -20,6 +20,7 @@ interface UserProfileProps {
   isOnlyAvatar?: boolean;
   disableClick?: boolean;
   selected?: boolean;
+  disablebadge?: boolean;
 }
 
 const UserProfile = ({
@@ -27,6 +28,7 @@ const UserProfile = ({
   isOnlyAvatar = false,
   disableClick = false,
   selected = false,
+  disablebadge = false,
 }: UserProfileProps) => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
@@ -43,10 +45,10 @@ const UserProfile = ({
       if (!accessToken) return 0;
       return await getInMinutes(uid, accessToken);
     },
-    enabled: !!uid,
+    enabled: !!uid && !disablebadge,
   });
 
-  if (isUserDataLoading || inMinutesLoading) {
+  if (isUserDataLoading) {
     return <CircularProgress size="sm" />;
   }
 
@@ -68,7 +70,6 @@ const UserProfile = ({
       <Badge
         badgeContent={Min2Str(inMinutes || 0)}
         variant="outlined"
-        showZero
       >
         <Chip
           variant="outlined"
