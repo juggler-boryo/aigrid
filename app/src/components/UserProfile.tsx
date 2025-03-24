@@ -38,7 +38,7 @@ const UserProfile = ({
     enabled: !!uid,
   });
 
-  const { data: inMinutes, isLoading: inMinutesLoading } = useQuery<number>({
+  const { data: inMinutes } = useQuery<number>({
     queryKey: ["inMinutes", uid],
     queryFn: async () => {
       const accessToken = await user?.getIdToken();
@@ -70,6 +70,7 @@ const UserProfile = ({
       <Badge
         badgeContent={Min2Str(inMinutes || 0)}
         variant="outlined"
+        color="primary"
       >
         <Chip
           variant="outlined"
