@@ -92,13 +92,33 @@ const UserProfile = ({
             )
           }
         >
-          <Typography mr={1} level="title-md">
-            {userData?.username || "anonymous"}
-          </Typography>
+          {userData?.username == "さこ" ? (
+            <Typography mr={1} level="title-md" sx={sakoStyle}>
+              {userData?.username || "anonymous"}
+            </Typography>
+          ) : (
+            <Typography mr={1} level="title-md">
+              {userData?.username || "anonymous"}
+            </Typography>
+          )}
         </Chip>
       </Badge>
     </Box>
   );
+};
+
+const sakoStyle = {
+  background:
+    "linear-gradient(45deg, red, orange, yellow, green, cyan, blue, indigo, violet, purple, pink, red)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundSize: "400% 400%",
+  animation: "gradientShift 5s infinite linear",
+  "@keyframes gradientShift": {
+    "0%": { backgroundPosition: "0% 50%" },
+    "50%": { backgroundPosition: "100% 50%" },
+    "100%": { backgroundPosition: "0% 50%" },
+  },
 };
 
 export default UserProfile;
