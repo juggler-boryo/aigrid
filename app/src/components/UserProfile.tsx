@@ -92,8 +92,12 @@ const UserProfile = ({
             )
           }
         >
-          {userData?.username == "さこ" ? (
+          {userData?.uid == "d3vzW4JXK4TuDHs1QBM5ce3uh5y2" ? (
             <Typography mr={1} level="title-md" sx={sakoStyle}>
+              {userData?.username || "anonymous"}
+            </Typography>
+          ) : userData?.uid == "ZewnOPpCyZgorBom7SbLcopxJxx2" ? (
+            <Typography mr={1} level="title-md" sx={jumangoStyle}>
               {userData?.username || "anonymous"}
             </Typography>
           ) : (
@@ -118,6 +122,26 @@ const sakoStyle = {
     "0%": { backgroundPosition: "0% 50%" },
     "50%": { backgroundPosition: "100% 50%" },
     "100%": { backgroundPosition: "0% 50%" },
+  },
+};
+
+const jumangoStyle = {
+  background: "black",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundSize: "400% 400%",
+  animation: "shake 2s infinite",
+  "@keyframes shake": {
+    "0%, 100%": { transform: "translate(0, 0) scaleY(1)" },
+    "10%": { transform: "translate(-6px, 0) scaleY(3.55)" },
+    "20%": { transform: "translate(6px, 0) scaleY(0.85)" },
+    "30%": { transform: "translate(-5px, 0) scaleY(1.1)" },
+    "40%": { transform: "translate(5px, 0) scaleY(0.9)" },
+    "50%": { transform: "translate(-4px, 0) scaleY(1.05)" },
+    "60%": { transform: "translate(4px, 0) scaleY(0.95)" },
+    "70%": { transform: "translate(-3px, 0) scaleY(1.03)" },
+    "80%": { transform: "translate(3px, 0) scaleY(0.97)" },
+    "90%": { transform: "translate(-1px, 0) scaleY(1)" },
   },
 };
 

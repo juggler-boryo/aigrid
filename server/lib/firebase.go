@@ -306,3 +306,35 @@ func TriggerHomeSystem(homeId string) error {
 
 	return nil
 }
+
+func GetInoutHistoryByDateRange(startDate, endDate time.Time) ([]models.Inout, error) {
+	// Use streaming iterator for better memory efficiency
+	iter := DB.Collection("inouts").
+		Where("created_at", ">=", startDate).
+		Where("created_at", "<=", endDate).
+		OrderBy("created_at", firestore.Desc).
+		Documents(context.Background())
+
+	var inouts []models.Inout
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		data := doc.Data()
+		inouts = append(inouts, models.Inout{
+			Uid:       data["uid"].(string),
+			IsIn:      data["is_in"].(bool),
+			CreatedAt: data["created_at"].(time.Time),
+		})
+	}
+
+	if len(inouts) == 0 {
+		return []models.Inout{}, nil
+	}
+	return inouts, nil
+}

@@ -22,9 +22,12 @@ export const postInout = async (
   }
 };
 
-export const postExitAll = async (uid: string, accessToken: string): Promise<boolean> => {
+export const postExitAll = async (
+  uid: string,
+  accessToken: string
+): Promise<boolean> => {
   try {
-    const response = await fetch(`${Endpoint}inout/${uid}/exit_all`, { 
+    const response = await fetch(`${Endpoint}inout/${uid}/exit_all`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +75,10 @@ export const getInoutHistory = async (
   const dataArray = rawData.history;
 
   if (!Array.isArray(dataArray)) {
-    throw new Error("レスポンスの `history` が配列ではありません: " + JSON.stringify(dataArray));
+    throw new Error(
+      "レスポンスの `history` が配列ではありません: " +
+        JSON.stringify(dataArray)
+    );
   }
 
   // 配列を整形して返す
@@ -81,7 +87,6 @@ export const getInoutHistory = async (
     date: new Date(item.date),
   }));
 };
-
 
 export const getInoutList = async (
   uid: string,
@@ -95,12 +100,18 @@ export const getInoutList = async (
 };
 
 export const getInoutAnalytics = async (
-  accessToken: string
+  accessToken: string,
+  from_year: number,
+  from_month: number,
+  to_year: number,
+  to_month: number
 ): Promise<Inout[]> => {
-  const response = await fetch(`${Endpoint}inout/anal`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  const response = await fetch(
+    `${Endpoint}inout/anal?from_year=${from_year}&from_month=${from_month}&to_year=${to_year}&to_month=${to_month}`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
   const data = await response.json();
   return data.history;
 };
-

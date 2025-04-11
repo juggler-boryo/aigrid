@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"aigrid/server/lib"
 
@@ -226,7 +228,46 @@ func GetIsInHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetInoutAnalyticsHandler(w http.ResponseWriter, r *http.Request) {
-	history, err := lib.GetInoutHistoryByMonth()
+	// Get date range parameters from query
+	fromYearStr := r.URL.Query().Get("from_year")
+	fromMonthStr := r.URL.Query().Get("from_month")
+	toYearStr := r.URL.Query().Get("to_year")
+	toMonthStr := r.URL.Query().Get("to_month")
+
+	if fromYearStr == "" || fromMonthStr == "" || toYearStr == "" || toMonthStr == "" {
+		http.Error(w, "from_year, from_month, to_year, and to_month parameters are required", http.StatusBadRequest)
+		return
+	}
+
+	fromYear, err := strconv.Atoi(fromYearStr)
+	if err != nil {
+		http.Error(w, "Invalid from_year parameter", http.StatusBadRequest)
+		return
+	}
+
+	fromMonth, err := strconv.Atoi(fromMonthStr)
+	if err != nil || fromMonth < 1 || fromMonth > 12 {
+		http.Error(w, "Invalid from_month parameter", http.StatusBadRequest)
+		return
+	}
+
+	toYear, err := strconv.Atoi(toYearStr)
+	if err != nil {
+		http.Error(w, "Invalid to_year parameter", http.StatusBadRequest)
+		return
+	}
+
+	toMonth, err := strconv.Atoi(toMonthStr)
+	if err != nil || toMonth < 1 || toMonth > 12 {
+		http.Error(w, "Invalid to_month parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Calculate start and end of the date range
+	startDate := time.Date(fromYear, time.Month(fromMonth), 1, 0, 0, 0, 0, time.Local)
+	endDate := time.Date(toYear, time.Month(toMonth), 1, 0, 0, 0, 0, time.Local).AddDate(0, 1, -1).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+
+	history, err := lib.GetInoutHistoryByDateRange(startDate, endDate)
 	if err != nil {
 		http.Error(w, "Failed to get inout history: "+err.Error(), http.StatusInternalServerError)
 		return
