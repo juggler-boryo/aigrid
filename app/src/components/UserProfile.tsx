@@ -97,9 +97,13 @@ const UserProfile = ({
               {userData?.username || "anonymous"}
             </Typography>
           ) : userData?.uid == "ZewnOPpCyZgorBom7SbLcopxJxx2" ? (
-            <Typography mr={1} level="title-md" sx={jumangoStyle}>
-              {userData?.username || "anonymous"}
-            </Typography>
+            <Box display="flex" alignItems="center" sx={jumangoStyle}>
+              <img
+                src="/jl.png"
+                alt="jl"
+                style={{ height: "24px", zIndex: -100 }}
+              />
+            </Box>
           ) : (
             <Typography mr={1} level="title-md">
               {userData?.username || "anonymous"}
@@ -126,22 +130,43 @@ const sakoStyle = {
 };
 
 const jumangoStyle = {
-  background: "black",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   backgroundSize: "400% 400%",
-  animation: "shake 2s infinite",
+  animation: "shake 2s 1s infinite",
   "@keyframes shake": {
     "0%, 100%": { transform: "translate(0, 0) scaleY(1)" },
-    "10%": { transform: "translate(-6px, 0) scaleY(3.55)" },
-    "20%": { transform: "translate(6px, 0) scaleY(0.85)" },
-    "30%": { transform: "translate(-5px, 0) scaleY(1.1)" },
-    "40%": { transform: "translate(5px, 0) scaleY(0.9)" },
-    "50%": { transform: "translate(-4px, 0) scaleY(1.05)" },
-    "60%": { transform: "translate(4px, 0) scaleY(0.95)" },
-    "70%": { transform: "translate(-3px, 0) scaleY(1.03)" },
-    "80%": { transform: "translate(3px, 0) scaleY(0.97)" },
-    "90%": { transform: "translate(-1px, 0) scaleY(1)" },
+    "10%": {
+      transform: "translate(-100px, 0) scaleX(5.55) scaleY(200.55)",
+    },
+    "20%": {
+      transform: "translate(8px, 0) scaleY(0.7)",
+      filter: "blur(0px)",
+    },
+    "30%": {
+      transform: "translate(-7px, 0) scaleY(1.2)",
+    },
+    "40%": {
+      transform: "translate(6px, 0) scaleY(0.8)",
+    },
+    "50%": {
+      transform: "translate(-5px, 0) scaleY(1.15)",
+    },
+    "60%": {
+      transform: "translate(4px, 0) scaleY(0.85)",
+    },
+    "70%": {
+      transform: "translate(-3px, 0) scaleY(1.08)",
+    },
+    "80%": {
+      transform: "translate(2px, 0) scaleY(0.92)",
+    },
+    "90%": {
+      transform: "translate(-1px, 0) scaleY(1.03)",
+    },
+    "100%": {
+      transform: "translate(0, 0) scaleY(1)",
+    },
   },
 };
 
