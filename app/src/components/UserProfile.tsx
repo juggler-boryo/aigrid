@@ -104,6 +104,10 @@ const UserProfile = ({
                 style={{ height: "24px", zIndex: -100 }}
               />
             </Box>
+          ) : userData?.uid == "fERHLtD4iSbRbYsg0lAuNiXYfvT2" ? (
+            <Typography mr={1} level="title-md" sx={sakinaStyle}>
+              {userData?.username || "anonymous"}
+            </Typography>
           ) : (
             <Typography mr={1} level="title-md">
               {userData?.username || "anonymous"}
@@ -167,6 +171,23 @@ const jumangoStyle = {
     "100%": {
       transform: "translate(0, 0) scaleY(1)",
     },
+  },
+};
+
+const sakinaStyle = {
+  color: "black",
+  backgroundSize: "400% 400%",
+  animation: "fluffy 3s infinite ease-in-out, spin 0.1s infinite linear",
+  "@keyframes fluffy": {
+    "0%": { transform: "scale(0.9) rotate(0deg)" },
+    "25%": { transform: "scale(1.03) rotate(90deg)" },
+    "50%": { transform: "scale(1.1) rotate(180deg)" },
+    "75%": { transform: "scale(1.03) rotate(270deg)" },
+    "100%": { transform: "scale(0.9) rotate(360deg)" },
+  },
+  "@keyframes spin": {
+    "0%": { transform: "rotate(0deg)" },
+    "100%": { transform: "rotate(360deg)" },
   },
 };
 

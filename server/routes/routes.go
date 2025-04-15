@@ -26,6 +26,7 @@ func SetupRouter() http.Handler {
 	// -- TODO: currently no auth implemented. dangerous.impl
 	router.HandleFunc("/nfc/{suica_id}", handlers.GetUserBySuicaIDHandler).Methods("GET")
 	router.HandleFunc("/inout/{uid}", handlers.PostInoutHandler).Methods("POST")
+	router.HandleFunc("/inout/{uid}/addHours/{hours}", handlers.AddHoursHandler).Methods("POST")
 
 	// -- Protected routes
 	protectedRouter := router.PathPrefix("").Subrouter()

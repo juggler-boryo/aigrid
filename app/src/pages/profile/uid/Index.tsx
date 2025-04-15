@@ -49,6 +49,7 @@ const Profile = () => {
                   {!loading && (
                     <Box mt={2}>
                       <InOutNotify
+                        isShowAddHours={true}
                         offlineList={offlineList}
                         isNoAnal={true}
                         control_uid={uid || "114514"}

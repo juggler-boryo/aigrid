@@ -115,3 +115,31 @@ export const getInoutAnalytics = async (
   const data = await response.json();
   return data.history;
 };
+
+export const addHours = async (
+  uid: string,
+  hours: number,
+  accessToken: string
+): Promise<boolean> => {
+  try {
+    const response = await fetch(`${Endpoint}inout/${uid}/addHours/${hours}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error(
+        `Error adding hours: ${response.status} - ${response.statusText}`
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in addHours:", error);
+    return false;
+  }
+};

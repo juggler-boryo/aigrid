@@ -150,6 +150,7 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 			Uid:       data["uid"].(string),
 			IsIn:      data["is_in"].(bool),
 			CreatedAt: data["created_at"].(time.Time),
+			Id:        doc.Ref.ID,
 		})
 	}
 
@@ -157,6 +158,15 @@ func GetInoutHistory(uid string, limit int) ([]models.Inout, error) {
 		return []models.Inout{}, nil
 	}
 	return inouts, nil
+}
+
+func UpdateInout(input models.Inout) error {
+	_, err := DB.Collection("inouts").Doc(input.Id).Set(context.Background(), map[string]interface{}{
+		"created_at": input.CreatedAt,
+		"is_in":      input.IsIn,
+		"uid":        input.Uid,
+	})
+	return err
 }
 
 func GetInoutHistoryByMonthByUID(uid string) ([]map[string]interface{}, error) {

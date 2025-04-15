@@ -89,6 +89,54 @@ func PostInoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func AddHoursHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid := vars["uid"]
+	if uid == "" {
+		http.Error(w, "uid is required", http.StatusBadRequest)
+		return
+	}
+
+	hours := vars["hours"]
+	if hours == "" {
+		http.Error(w, "hours is required", http.StatusBadRequest)
+		return
+	}
+
+	history, err := lib.GetInoutHistory(uid, 1)
+	if err != nil {
+		http.Error(w, "Failed to get inout history", http.StatusInternalServerError)
+		return
+	}
+
+	if len(history) == 0 {
+		http.Error(w, "No inout history found", http.StatusBadRequest)
+		return
+	}
+
+	if !history[0].IsIn {
+		http.Error(w, "Already out", http.StatusBadRequest)
+		return
+	}
+
+	latestRecord := history[0]
+	hoursInt, err := strconv.Atoi(hours)
+	if err != nil {
+		http.Error(w, "Invalid hours parameter", http.StatusBadRequest)
+		return
+	}
+	if latestRecord.IsIn {
+		latestRecord.CreatedAt = latestRecord.CreatedAt.Add(-time.Duration(hoursInt) * time.Hour)
+	}
+
+	if err := lib.UpdateInout(latestRecord); err != nil {
+		http.Error(w, "Failed to update inout", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func PostExitAllHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	executingUID := vars["uid"]

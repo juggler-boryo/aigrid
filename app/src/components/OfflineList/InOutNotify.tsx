@@ -2,17 +2,23 @@ import { Box, Button, IconButton } from "@mui/joy";
 import { GiFireBomb } from "react-icons/gi";
 import { auth } from "../../libs/firebase";
 import { useIdToken } from "react-firebase-hooks/auth";
-import { postInout, postExitAll } from "../../apis/inout";
+import { postInout, postExitAll, addHours } from "../../apis/inout";
 import useSound from "use-sound";
 import { useState } from "react";
-
+import { useQueryClient } from "@tanstack/react-query";
 interface Props {
   offlineList: Array<string>;
   control_uid: string;
   isNoAnal?: boolean;
+  isShowAddHours?: boolean;
 }
 
-const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
+const InOutNotify = ({
+  offlineList,
+  control_uid,
+  isNoAnal,
+  isShowAddHours = false,
+}: Props) => {
   const [user] = useIdToken(auth);
   const isIn = offlineList.includes(control_uid);
   const [inSound] = useSound("/in.mp3");
@@ -21,7 +27,8 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
   const [isEntering, setIsEntering] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [isExitingAll, setIsExitingAll] = useState(false);
-
+  const [isSendingHours, setIsSendingHours] = useState(false);
+  const queryClient = useQueryClient();
   const handleEnter = async () => {
     if (!user?.uid) return;
     inSound();
@@ -69,6 +76,21 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
     }
   };
 
+  const handleAddHours = async () => {
+    if (!user?.uid) return;
+    setIsSendingHours(true);
+    try {
+      const accessToken = await user.getIdToken();
+      await addHours(control_uid, 1, accessToken);
+      // Invalidate the inMinutes query to refresh the timer display
+      queryClient.invalidateQueries({ queryKey: ["inMinutes", control_uid] });
+    } catch (error) {
+      console.error("Error adding hours:", error);
+    } finally {
+      setIsSendingHours(false);
+    }
+  };
+
   return (
     <Box gap={2} display={"flex"} sx={{ justifyContent: "space-between" }}>
       {!isNoAnal && (
@@ -97,6 +119,17 @@ const InOutNotify = ({ offlineList, control_uid, isNoAnal }: Props) => {
       {isNoAnal && <Box width={40} />}
 
       <Box gap={2} display={"flex"}>
+        {isShowAddHours && (
+          <Button
+            color="primary"
+            disabled={!isIn || isExiting}
+            onClick={handleAddHours}
+            size="md"
+            loading={isSendingHours}
+          >
+            +1 ⏰
+          </Button>
+        )}
         <Button
           color="primary"
           disabled={isIn || isEntering}
