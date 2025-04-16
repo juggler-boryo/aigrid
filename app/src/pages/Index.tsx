@@ -3,6 +3,21 @@ import CheckAuth from "./CheckAuth";
 import OfflineList from "../components/OfflineList/OfflineList";
 import TopBar from "../components/TopBar";
 
+const banners = [
+  "https://sub-straightline.ssl-lolipop.jp/banner/3507.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/3414.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/3295.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/3236.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/2857.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/2792.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/2680.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/2066.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/1991.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/1537.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/455.gif",
+  "https://sub-straightline.ssl-lolipop.jp/banner/380.gif",
+];
+
 const Index = () => {
   return (
     <CheckAuth>
@@ -13,25 +28,29 @@ const Index = () => {
         </Box>
         <OfflineList />
         {/* <Tamaki /> */}
-        <Box display="flex" flexDirection="row" gap={2} justifyContent="center">
-          <Box
-            component="img"
-            src="/catg.gif"
-            alt="Cat GIF"
-            sx={{
-              maxWidth: "50%",
-              height: "auto",
-            }}
-          />
-          <Box
-            component="img"
-            src="/catg2.gif"
-            alt="Cat GIF 2"
-            sx={{
-              maxWidth: "50%",
-              height: "auto",
-            }}
-          />
+        <Box
+          display="flex"
+          flexDirection="row"
+          flexWrap="wrap"
+          gap={1}
+          justifyContent="center"
+          alignItems="center"
+          width="100%"
+          px={2}
+        >
+          {banners.map((banner) => (
+            <Box
+              key={banner}
+              component="img"
+              src={banner}
+              alt="Banner"
+              sx={{
+                width: "80px",
+                height: "auto",
+                objectFit: "contain",
+              }}
+            />
+          ))}
         </Box>
         <Chip
           variant="outlined"
