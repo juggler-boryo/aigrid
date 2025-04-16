@@ -108,6 +108,10 @@ const UserProfile = ({
             <Typography mr={1} level="title-md" sx={sakinaStyle}>
               {userData?.username || "anonymous"}
             </Typography>
+          ) : userData?.uid == "XE9fomuhL8X2T93xij71ifQPTAw1" ? (
+            <Typography mr={1} level="title-md" sx={yousanStyle}>
+              {userData?.username || "anonymous"}
+            </Typography>
           ) : (
             <Typography mr={1} level="title-md">
               {userData?.username || "anonymous"}
@@ -189,6 +193,22 @@ const sakinaStyle = {
     "0%": { transform: "rotate(0deg)" },
     "100%": { transform: "rotate(360deg)" },
   },
+};
+
+const yousanStyle = {
+  background: "linear-gradient(to right, #8f6B29, #FDE08D, #DF9F28, #8f6B29)",
+  backgroundSize: "200% 100%",
+  animation: "goldShimmer 1s infinite linear, textFlash 0.07s infinite linear",
+  "@keyframes goldShimmer": {
+    "0%": { backgroundPosition: "0% 50%" },
+    "100%": { backgroundPosition: "200% 50%" },
+  },
+  "@keyframes textFlash": {
+    "0%": { color: "#000" },
+    "50%": { color: "#ff0" },
+    "100%": { color: "#fff" },
+  },
+  textShadow: "0 1px 20px rgba(0, 0, 0, 0.3)",
 };
 
 export default UserProfile;
