@@ -112,6 +112,10 @@ const UserProfile = ({
             <Typography mr={1} level="title-md" sx={yousanStyle}>
               {userData?.username || "anonymous"}
             </Typography>
+          ) : userData?.uid == "Cbc3hoRDk1VQ4LMG455oKQCFVCl2" ? (
+            <Typography mr={1} level="title-md" sx={mouseStyle}>
+              {userData?.username || "anonymous"}
+            </Typography>
           ) : (
             <Typography mr={1} level="title-md">
               {userData?.username || "anonymous"}
@@ -209,6 +213,33 @@ const yousanStyle = {
     "100%": { color: "#fff" },
   },
   textShadow: "0 1px 20px rgba(0, 0, 0, 0.3)",
+};
+
+const mouseStyle = {
+  WebkitBackgroundClip: "text",
+  backgroundSize: "400% 400%",
+  animation:
+    "rotate 1s linear infinite, scale 0.5s ease-in-out infinite, vibrate 0.1s linear infinite, rainbow 4s linear infinite",
+  "@keyframes rainbow": {
+    "0%": { backgroundPosition: "0% 50%" },
+    "100%": { backgroundPosition: "400% 50%" },
+  },
+  "@keyframes rotate": {
+    "0%": { transform: "rotate(0deg)" },
+    "100%": { transform: "rotate(360deg)" },
+  },
+  "@keyframes scale": {
+    "0%": { transform: "scale(1)" },
+    "50%": { transform: "scale(5.2)" },
+    "100%": { transform: "scale(1)" },
+  },
+  "@keyframes vibrate": {
+    "0%": { transform: "translate(0)" },
+    "25%": { transform: "translate(-2px, 2px)" },
+    "50%": { transform: "translate(2px, -2px)" },
+    "75%": { transform: "translate(-2px, -2px)" },
+    "100%": { transform: "translate(2px, 2px)" },
+  },
 };
 
 export default UserProfile;

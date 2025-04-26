@@ -2,7 +2,7 @@ import { Box, Chip, Divider, Typography } from "@mui/joy";
 import CheckAuth from "./CheckAuth";
 import OfflineList from "../components/OfflineList/OfflineList";
 import TopBar from "../components/TopBar";
-
+// import Tamaki from "../components/Tamaki/Tamaki";
 const banners = [
   "https://sub-straightline.ssl-lolipop.jp/banner/3507.gif",
   "https://sub-straightline.ssl-lolipop.jp/banner/3414.gif",

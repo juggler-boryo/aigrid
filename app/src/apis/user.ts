@@ -20,13 +20,20 @@ export const GetAllUsers = async (accessToken: string): Promise<string[]> => {
   }
 };
 
-export const GetUser = async (uid: string): Promise<User> => {
+export const GetUser = async (
+  uid: string,
+  accessToken?: string
+): Promise<User> => {
   try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
     const response = await fetch(`${Endpoint}users/${uid}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     });
     if (!response.ok) {
       return {} as User;
