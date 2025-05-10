@@ -218,27 +218,50 @@ const yousanStyle = {
 const mouseStyle = {
   WebkitBackgroundClip: "text",
   backgroundSize: "400% 400%",
-  animation:
-    "rotate 1s linear infinite, scale 0.5s ease-in-out infinite, vibrate 0.1s linear infinite, rainbow 4s linear infinite",
-  "@keyframes rainbow": {
-    "0%": { backgroundPosition: "0% 50%" },
-    "100%": { backgroundPosition: "400% 50%" },
-  },
-  "@keyframes rotate": {
-    "0%": { transform: "rotate(0deg)" },
-    "100%": { transform: "rotate(360deg)" },
-  },
-  "@keyframes scale": {
-    "0%": { transform: "scale(1)" },
-    "50%": { transform: "scale(5.2)" },
-    "100%": { transform: "scale(1)" },
-  },
-  "@keyframes vibrate": {
-    "0%": { transform: "translate(0)" },
-    "25%": { transform: "translate(-2px, 2px)" },
-    "50%": { transform: "translate(2px, -2px)" },
-    "75%": { transform: "translate(-2px, -2px)" },
-    "100%": { transform: "translate(2px, 2px)" },
+  animation: "effect 1s linear infinite",
+  "@keyframes effect": {
+    "0%": {
+      backgroundPosition: "0% 50%",
+      color: "red",
+      background:
+        "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      filter: "brightness(1.5) saturate(1.2)",
+      transform: "scale(10.1) translate(0, 0)",
+    },
+    "25%": {
+      backgroundPosition: "25% 50%",
+      color: "blue",
+      background:
+        "linear-gradient(to right, blue, indigo, violet, red, orange, yellow, green)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      filter: "brightness(1.5) saturate(1.2)",
+      transform: "scale(1.1) translate(10px, 0)",
+    },
+    "75%": {
+      backgroundPosition: "75% 50%",
+      color: "green",
+      background:
+        "linear-gradient(to right, green, blue, indigo, violet, red, orange, yellow)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      filter: "brightness(1.5) saturate(1.2)",
+      transform: "scale(1.1) translate(10px, 0)",
+    },
+    "100%": {
+      backgroundPosition: "400% 50%",
+      color: "red",
+      background:
+        "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      filter: "brightness(1.5) saturate(1.2)",
+      transform: "scale(0.5)",
+      // shake
+      transform: "translate(0, 0)",
+    },
   },
 };
 
