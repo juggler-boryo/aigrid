@@ -9,7 +9,6 @@ import { Box, CssVarsProvider, extendTheme, CircularProgress } from "@mui/joy";
 import Profile from "./pages/profile/uid/Index";
 import TamakiNew from "./pages/tamaki/new/Index";
 import { lazy, Suspense } from "react";
-import Whiteboard from "./pages/whiteboard/Index";
 import Home from "./pages/home/Index";
 
 const TamakiDetail = lazy(() => import("./pages/tamaki/id/Index"));
@@ -85,10 +84,6 @@ const router = createBrowserRouter([
         <InOutAnal />
       </Suspense>
     ),
-  },
-  {
-    path: "/whiteboard",
-    element: <Whiteboard />,
   },
   {
     path: "/home",

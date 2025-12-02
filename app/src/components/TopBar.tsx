@@ -1,7 +1,6 @@
 import { Badge } from "@mui/joy";
 import { Box } from "@mui/joy";
 import { FaRegUser } from "react-icons/fa";
-import { LuLayoutDashboard } from "react-icons/lu";
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { useIdToken } from "react-firebase-hooks/auth";
@@ -49,10 +48,6 @@ const TopBar = () => {
         <ActiveIconButton
           to="/inout/anal"
           icon={<TbBrandGoogleAnalytics size={18} />}
-        />
-        <ActiveIconButton
-          to="/whiteboard"
-          icon={<LuLayoutDashboard size={18} />}
         />
         <ActiveIconButton
           to="/profile"

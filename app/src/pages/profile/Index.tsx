@@ -3,8 +3,7 @@ import {
   Card,
   CircularProgress,
   Divider,
-  Option,
-  Select,
+  FormHelperText,
 } from "@mui/joy";
 import {
   Box,
@@ -28,6 +27,8 @@ import { storage } from "../../libs/firebase";
 import TopBar from "../../components/TopBar";
 import CoolMo from "../../components/CoolMo";
 
+const macAddressPattern = /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/;
+
 const ProfileSettings = () => {
   const navigate = useNavigate();
   const [user] = useIdToken(auth);
@@ -41,8 +42,8 @@ const ProfileSettings = () => {
   const [greet, setGreet] = useState("");
   const [bye, setBye] = useState("");
   const [avatarImageUrl, setAvatarImageUrl] = useState("");
-  const [suicaId, setSuicaId] = useState("");
-  const [permissionStr, setPermissionStr] = useState("GUEST");
+  const [macAddress, setMacAddress] = useState("");
+  const [macAddressError, setMacAddressError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,16 +53,27 @@ const ProfileSettings = () => {
     const accessToken = await user.getIdToken();
     if (!accessToken) return;
 
+    setMacAddressError("");
+    const trimmedMac = macAddress.trim();
+    if (trimmedMac && !macAddressPattern.test(trimmedMac)) {
+      setMacAddressError("MACアドレスの形式が正しくありません");
+      return;
+    }
+
+    const normalizedMac = trimmedMac.toUpperCase();
+    if (normalizedMac !== macAddress) {
+      setMacAddress(normalizedMac);
+    }
+
     const success = await UpdateUser(
       user.uid,
       {
         uid: user.uid,
         username,
         avatar_image_url: avatarImageUrl,
-        suica_id: suicaId,
         greet_text: greet,
         bye_text: bye,
-        permission_str: permissionStr,
+        mac_address: normalizedMac,
       },
       accessToken
     );
@@ -104,8 +116,7 @@ const ProfileSettings = () => {
       setGreet(me.greet_text || "");
       setBye(me.bye_text || "");
       setAvatarImageUrl(me.avatar_image_url || "");
-      setSuicaId(me.suica_id || "");
-      setPermissionStr(me.permission_str || "GUEST");
+      setMacAddress((me.mac_address || "").toUpperCase());
     }
   }, [me]);
 
@@ -183,19 +194,6 @@ const ProfileSettings = () => {
           </FormControl>
 
           <FormControl>
-            <FormLabel>権限</FormLabel>
-            <Select
-              value={permissionStr}
-              onChange={(_, value) => setPermissionStr(value ?? "GUEST")}
-              placeholder="権限を選択"
-            >
-              <Option value="GUEST">ゲスト</Option>
-              <Option value="GENERAL">一般</Option>
-              <Option value="ADMIN">住居人</Option>
-            </Select>
-          </FormControl>
-
-          <FormControl>
             <FormLabel>入室挨拶</FormLabel>
             <Input
               value={greet}
@@ -212,13 +210,19 @@ const ProfileSettings = () => {
             />
           </FormControl>
 
-          <FormControl>
-            <FormLabel>NFC ID</FormLabel>
+          <FormControl error={!!macAddressError}>
+            <FormLabel>MACアドレス</FormLabel>
             <Input
-              value={suicaId}
-              onChange={(e) => setSuicaId(e.target.value)}
-              placeholder="NFC IDを入力"
+              value={macAddress}
+              onChange={(e) => {
+                setMacAddress(e.target.value.toUpperCase());
+                setMacAddressError("");
+              }}
+              placeholder="96:D9:74:1D:A7:26"
             />
+            {macAddressError && (
+              <FormHelperText>{macAddressError}</FormHelperText>
+            )}
           </FormControl>
 
           <Box m={0.5}>

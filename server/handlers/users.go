@@ -6,9 +6,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/gorilla/mux"
 )
+
+var macAddressRegex = regexp.MustCompile(`^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$`)
 
 // TODO: 将来的にゲストも含める、複雑なパーミッション管理をする
 // TODO: 現在では、ゲストはユーザーとして扱わない
@@ -57,18 +60,6 @@ func GetUserByUIDHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			return ""
 		}(),
-		PermissionStr: func() string {
-			if v, ok := userData["permission_str"].(string); ok {
-				return v
-			}
-			return "GUEST"
-		}(),
-		SuicaId: func() string {
-			if v, ok := userData["suica_id"].(string); ok {
-				return v
-			}
-			return ""
-		}(),
 		GreetText: func() string {
 			if v, ok := userData["greet_text"].(string); ok {
 				return v
@@ -77,6 +68,12 @@ func GetUserByUIDHandler(w http.ResponseWriter, r *http.Request) {
 		}(),
 		ByeText: func() string {
 			if v, ok := userData["bye_text"].(string); ok {
+				return v
+			}
+			return ""
+		}(),
+		MacAddress: func() string {
+			if v, ok := userData["mac_address"].(string); ok {
 				return v
 			}
 			return ""
@@ -109,18 +106,19 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.PermissionStr != "GUEST" && user.PermissionStr != "GENERAL" && user.PermissionStr != "ADMIN" {
-		http.Error(w, "invalid permission", http.StatusBadRequest)
-		return
+	if user.MacAddress != "" {
+		if !macAddressRegex.MatchString(user.MacAddress) {
+			http.Error(w, "invalid mac address", http.StatusBadRequest)
+			return
+		}
 	}
 
 	userData := map[string]interface{}{
 		"username":         user.Username,
 		"avatar_image_url": user.AvatarImageUrl,
-		"suica_id":         user.SuicaId,
 		"greet_text":       user.GreetText,
 		"bye_text":         user.ByeText,
-		"permission_str":   user.PermissionStr,
+		"mac_address":      user.MacAddress,
 	}
 
 	if err := lib.UpsertUser(uid, userData); err != nil {

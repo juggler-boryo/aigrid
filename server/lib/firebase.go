@@ -51,7 +51,7 @@ func InitializeFirebase(credPath string) error {
 	return nil
 }
 func ListUsers() ([]string, error) {
-	iter := DB.Collection("users").Where("permission_str", "in", []string{"GENERAL", "ADMIN"}).Documents(context.Background())
+	iter := DB.Collection("users").Documents(context.Background())
 	docs, err := iter.GetAll()
 	if err != nil {
 		return nil, err

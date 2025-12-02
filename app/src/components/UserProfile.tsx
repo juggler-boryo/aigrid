@@ -87,9 +87,7 @@ const UserProfile = ({
               : undefined,
           }}
           startDecorator={
-            userData?.permission_str !== "GUEST" && (
-              <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
-            )
+            <Avatar size="sm" src={userData?.avatar_image_url ?? ""} />
           }
         >
           {userData?.uid == "d3vzW4JXK4TuDHs1QBM5ce3uh5y2" ? (
